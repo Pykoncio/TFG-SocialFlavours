@@ -14,10 +14,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_user;
+    @Column(unique = true)
     private String username;
     private String password;
-    @Column(unique = true)
-    private String name;
     private String email;
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
     private Set<FriendshipRequest> receivedFriendshipRequests = new HashSet<>();
@@ -34,11 +33,10 @@ public class User {
 
     public User(){}
 
-    public User(Long idUser, String username, String password, String name, String email) {
+    public User(Long idUser, String username, String password, String email) {
         this.id_user = idUser;
         this.username = username;
         this.password = password;
-        this.name = name;
         this.email = email;
     }
 
@@ -87,14 +85,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getEmail() {

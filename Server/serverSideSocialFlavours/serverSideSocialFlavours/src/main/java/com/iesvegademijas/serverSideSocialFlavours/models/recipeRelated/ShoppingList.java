@@ -11,7 +11,7 @@ import java.util.Set;
 public class ShoppingList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_ShoppingList;
+    private Long id_shoppingList;
     @ManyToOne
     private User user;
     @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL)
@@ -20,17 +20,17 @@ public class ShoppingList {
     public ShoppingList(){}
 
     public ShoppingList(Long id_ShoppingList, User user, Set<Item> itemList) {
-        this.id_ShoppingList = id_ShoppingList;
+        this.id_shoppingList = id_ShoppingList;
         this.user = user;
         this.itemList = itemList;
     }
 
-    public Long getId_ShoppingList() {
-        return id_ShoppingList;
+    public Long getId_shoppingList() {
+        return id_shoppingList;
     }
 
-    public void setId_ShoppingList(Long id_ShoppingList) {
-        this.id_ShoppingList = id_ShoppingList;
+    public void setId_shoppingList(Long id_ShoppingList) {
+        this.id_shoppingList = id_ShoppingList;
     }
 
     public User getUser() {
