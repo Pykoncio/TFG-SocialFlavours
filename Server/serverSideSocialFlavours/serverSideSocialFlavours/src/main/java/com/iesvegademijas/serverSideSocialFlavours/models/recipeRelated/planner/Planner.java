@@ -1,10 +1,9 @@
-package com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated;
+package com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.planner;
 
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Planner {
@@ -13,15 +12,15 @@ public class Planner {
     private Long id_planner;
     @OneToOne
     private User user;
-    @ManyToMany
-    private Set<Recipe> recipeList = new HashSet<>();
+    @OneToMany(mappedBy = "planner", cascade = CascadeType.ALL)
+    private Set<PlannerEntry> plannerEntries = new HashSet<>();
 
     public Planner(){}
 
-    public Planner(Long id_planner, User user, Set<Recipe> recipeList) {
+    public Planner(Long id_planner, User user, Set<PlannerEntry> plannerEntries) {
         this.id_planner = id_planner;
         this.user = user;
-        this.recipeList = recipeList;
+        this.plannerEntries = plannerEntries;
     }
 
     public Long getId_planner() {
@@ -40,11 +39,11 @@ public class Planner {
         this.user = user;
     }
 
-    public Set<Recipe> getRecipeList() {
-        return recipeList;
+    public Set<PlannerEntry> getPlannerEntries() {
+        return plannerEntries;
     }
 
-    public void setRecipeList(Set<Recipe> recipeList) {
-        this.recipeList = recipeList;
+    public void setPlannerEntries(Set<PlannerEntry> plannerEntries) {
+        this.plannerEntries = plannerEntries;
     }
 }
