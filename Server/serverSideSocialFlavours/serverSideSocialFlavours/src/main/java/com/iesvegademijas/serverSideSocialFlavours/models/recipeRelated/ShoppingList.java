@@ -1,6 +1,6 @@
 package com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated;
 
-import com.iesvegademijas.serverSideSocialFlavours.models.dto.Item;
+import com.iesvegademijas.serverSideSocialFlavours.models.entities.Item;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
 import jakarta.persistence.*;
 

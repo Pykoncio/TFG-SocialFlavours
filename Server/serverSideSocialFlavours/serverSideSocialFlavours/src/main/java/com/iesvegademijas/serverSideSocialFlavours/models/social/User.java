@@ -73,14 +73,6 @@ public class User {
         this.filters = filters;
     }
 
-    public Long getId_User() {
-        return id_user;
-    }
-
-    public void setId_User(Long idUser) {
-        this.id_user = idUser;
-    }
-
     public String getUsername() {
         return username;
     }

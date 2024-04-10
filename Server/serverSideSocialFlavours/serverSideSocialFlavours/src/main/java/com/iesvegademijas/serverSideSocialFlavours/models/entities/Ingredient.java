@@ -1,30 +1,29 @@
-package com.iesvegademijas.serverSideSocialFlavours.models.dto;
+package com.iesvegademijas.serverSideSocialFlavours.models.entities;
 
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.Recipe;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Ingredient {
     @Id
-    private String ingredientName;
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id_ingredient;
+    private String name;
     @ManyToOne
     private Recipe recipe;
 
     public Ingredient(){}
 
     public Ingredient(String ingredientName) {
-        this.ingredientName = ingredientName;
+        this.name = ingredientName;
     }
 
     public String getIngredientName() {
-        return ingredientName;
+        return name;
     }
 
     public void setIngredientName(String ingredientName) {
-        this.ingredientName = ingredientName;
+        this.name = ingredientName;
     }
 
 

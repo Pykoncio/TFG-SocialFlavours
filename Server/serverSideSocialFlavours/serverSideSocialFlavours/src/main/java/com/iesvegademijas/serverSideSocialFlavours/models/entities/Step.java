@@ -1,15 +1,14 @@
-package com.iesvegademijas.serverSideSocialFlavours.models.dto;
+package com.iesvegademijas.serverSideSocialFlavours.models.entities;
 
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.Recipe;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Step {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id_step;
     private String step;
-
     @ManyToOne
     private Recipe recipe;
 

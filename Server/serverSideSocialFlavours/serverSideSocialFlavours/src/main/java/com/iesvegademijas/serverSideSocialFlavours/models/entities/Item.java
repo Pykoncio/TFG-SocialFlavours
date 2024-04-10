@@ -1,4 +1,4 @@
-package com.iesvegademijas.serverSideSocialFlavours.models.dto;
+package com.iesvegademijas.serverSideSocialFlavours.models.entities;
 
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.ShoppingList;
 import jakarta.persistence.*;
@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 public class Item {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id_item;
     private String name;
     private int quantity;
     private boolean isChecked;
