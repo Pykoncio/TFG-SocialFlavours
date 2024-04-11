@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 public class FriendshipRequest {
 
-    public enum status {
+    public enum Status {
         PENDING,
         APPROVED
     }
@@ -21,13 +21,14 @@ public class FriendshipRequest {
     private User receiver;
     private String status;
 
-    public FriendshipRequest(){}
+    public FriendshipRequest(){
+        this.status = Status.PENDING.toString();
+    }
 
-    public FriendshipRequest(Long idFriendship, User userSender, User userReceiver, String status) {
-        this.id_friendship = idFriendship;
+    public FriendshipRequest(User userSender, User userReceiver) {
         this.sender = userSender;
         this.receiver = userReceiver;
-        this.status = status;
+        this.status = Status.PENDING.toString();
     }
 
     public Long getId_friendship() {

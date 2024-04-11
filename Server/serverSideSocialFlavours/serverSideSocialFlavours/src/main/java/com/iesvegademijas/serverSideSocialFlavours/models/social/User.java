@@ -43,12 +43,12 @@ public class User {
     public Set<User> getFriends() {
         Set<User> friends = new HashSet<>();
         for (FriendshipRequest request : receivedFriendshipRequests) {
-            if (request.getStatus().equals(FriendshipRequest.status.APPROVED.toString())) {
+            if (request.getStatus().equals(FriendshipRequest.Status.APPROVED.toString())) {
                 friends.add(request.getSender());
             }
         }
         for (FriendshipRequest request : sentFriendshipRequests) {
-            if (request.getStatus().equals(FriendshipRequest.status.APPROVED.toString())) {
+            if (request.getStatus().equals(FriendshipRequest.Status.APPROVED.toString())) {
                 friends.add(request.getReceiver());
             }
         }
