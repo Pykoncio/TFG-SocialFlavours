@@ -12,10 +12,23 @@ public class Recipe {
     @Id
     @GeneratedValue
     private Long id_recipe;
+
     @ManyToOne
     private User user;
 
     private String name;
+
+    private String description;
+
+    private int rating;
+
+    private String imagePath;
+
+    private int preparationTime;
+
+    @Column(columnDefinition = "date")
+    private Date creationDate;
+
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private Set<Ingredient> ingredients = new HashSet<>();
 
@@ -24,15 +37,17 @@ public class Recipe {
 
     @OneToMany(mappedBy = "filter", cascade = CascadeType.ALL)
     private Set<Filter> filters = new HashSet<>();
-    @Column(columnDefinition = "date")
-    private Date creationDate;
 
     public Recipe(){}
 
-    public Recipe(Long id_recipe, User user, String name, Date creationDate) {
+    public Recipe(Long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date creationDate) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
+        this.description = description;
+        this.rating = rating;
+        this.imagePath = imagePath;
+        this.preparationTime = preparationTime;
         this.creationDate = creationDate;
     }
 
@@ -60,6 +75,46 @@ public class Recipe {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public int getPreparationTime() {
+        return preparationTime;
+    }
+
+    public void setPreparationTime(int preparationTime) {
+        this.preparationTime = preparationTime;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
     public Set<Ingredient> getIngredients() {
         return ingredients;
     }
@@ -82,13 +137,5 @@ public class Recipe {
 
     public void setFilters(Set<Filter> filters) {
         this.filters = filters;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 }
