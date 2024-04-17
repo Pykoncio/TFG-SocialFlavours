@@ -1,4 +1,4 @@
-package com.iesvegademijas.serverSideSocialFlavours.repository.recipeRelated;
+package com.iesvegademijas.serverSideSocialFlavours.repository.recipeRelated.planner;
 
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.planner.Planner;
 import org.springframework.data.repository.CrudRepository;

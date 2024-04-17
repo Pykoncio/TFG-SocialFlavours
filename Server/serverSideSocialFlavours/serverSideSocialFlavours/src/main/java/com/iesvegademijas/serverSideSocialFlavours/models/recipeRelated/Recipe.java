@@ -10,7 +10,7 @@ import java.util.*;
 @Entity
 public class Recipe {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_recipe;
 
     @ManyToOne
@@ -35,7 +35,7 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private Set<Step> steps = new HashSet<>();
 
-    @OneToMany(mappedBy = "filter", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private Set<Filter> filters = new HashSet<>();
 
     public Recipe(){}

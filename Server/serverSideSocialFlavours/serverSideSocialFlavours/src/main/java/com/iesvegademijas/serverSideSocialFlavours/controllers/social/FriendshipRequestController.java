@@ -1,21 +1,19 @@
-package com.iesvegademijas.serverSideSocialFlavours.controllers;
+package com.iesvegademijas.serverSideSocialFlavours.controllers.social;
 
 import com.iesvegademijas.serverSideSocialFlavours.models.social.FriendshipRequest;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
 import com.iesvegademijas.serverSideSocialFlavours.repository.social.FriendshipRequestRepository;
 import com.iesvegademijas.serverSideSocialFlavours.repository.social.UserRepository;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/friendship-requests")
+@RequestMapping("/friendshipapi")
 public class FriendshipRequestController {
 
     private final FriendshipRequestRepository friendshipRequestRepository;
@@ -27,14 +25,14 @@ public class FriendshipRequestController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping(path = "/pending")
+    @GetMapping(path = "/pending") // Obtain all the pending request so the user can see them in the inbox
     public List<FriendshipRequest> getPendingFriendRequestsFromUser(@RequestParam Long idUser) {
-        return friendshipRequestRepository.findAllByReceiverId_userReceiverAndStatus(idUser, FriendshipRequest.Status.PENDING.name());
+        return friendshipRequestRepository.findAllFriendshipRequestByReceiverAndStatus(idUser, FriendshipRequest.Status.PENDING.name());
     }
 
-    @GetMapping(path = "/approved")
+    @GetMapping(path = "/approved") // Obtain all the friends from the user
     public List<FriendshipRequest> getApprovedFriendRequestsFromUser(@RequestParam Long idUser) {
-        return friendshipRequestRepository.findAllByReceiverId_userReceiverAndStatus(idUser, FriendshipRequest.Status.APPROVED.name());
+        return friendshipRequestRepository.findAllApprovedRequestsFromUser(idUser, FriendshipRequest.Status.APPROVED.name());
     }
 
 

@@ -6,11 +6,12 @@ import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.Recipe;
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.ShoppingList;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_user;

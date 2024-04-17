@@ -17,5 +17,13 @@ public interface FriendshipRequestRepository extends CrudRepository<FriendshipRe
             "AND fr.status IN ('PENDING', 'APPROVED')")
     Optional<FriendshipRequest> findExistingRequest(@Param("sender") User sender, @Param("receiver") User receiver);
 
-    List<FriendshipRequest> findAllByReceiverId_userReceiverAndStatus(Long id_userReceiver, String status);
+    @Query("SELECT fr FROM FriendshipRequest fr " +
+            "WHERE fr.receiver = :receiver " +
+            "AND fr.status = :status")
+    List<FriendshipRequest> findAllFriendshipRequestByReceiverAndStatus(Long receiver, String status);
+
+    @Query("SELECT fr FROM FriendshipRequest fr " +
+            "WHERE (fr.sender = :user OR fr.receiver = :user)" +
+            "AND fr.status = :status")
+    List<FriendshipRequest> findAllApprovedRequestsFromUser(Long user, String status);
 }
