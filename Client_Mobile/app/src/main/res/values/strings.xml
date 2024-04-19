@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">SocialFlavours</string>
+    <string name="main_url">http://10.0.2.2:8080/socialflavours</string>
+    <string name="error_undelivered">The message could not be sent</string>
+    <string name="error_connection">Connection error</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="compulsory_field">Compulsory field</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="write_here">Write here...</string>
+    <string name="accept">Accept</string>
+    <string name="hasLoggedBefore"></string>
+</resources>
