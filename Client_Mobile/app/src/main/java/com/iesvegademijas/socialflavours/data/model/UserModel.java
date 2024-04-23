@@ -1,4 +1,6 @@
 package com.iesvegademijas.socialflavours.data.model;
 
-public class UserModel {
+import java.util.Observable;
+
+public class UserModel extends Observable {
 }

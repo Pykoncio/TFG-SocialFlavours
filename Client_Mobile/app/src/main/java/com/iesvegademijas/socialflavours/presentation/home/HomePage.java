@@ -29,7 +29,9 @@ import com.google.android.material.navigation.NavigationView;
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.remote.dto.User;
 
-public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+import java.util.Observer;
+
+public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Observer {
 
     // Launch the fragments
     private DrawerLayout drawerLayout;
@@ -76,7 +78,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         String username = sharedPref.getString("username", "");
         String password = sharedPref.getString("password", "");
 
-        User user = getUser(username, password);
+        //User user = getUser(username, password);
 
         //loadRecipes();
 
@@ -88,6 +90,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
     }
 
+    /*
     private User getUser(String username, String password) {
         if (isNetworkAvailable())
         {
@@ -114,7 +117,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
         }
     }
-
+*/
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);

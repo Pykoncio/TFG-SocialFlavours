@@ -16,6 +16,9 @@
         android:theme="@style/Theme.SocialFlavours"
         tools:targetApi="31">
         <activity
+            android:name=".presentation.accrecovery.Recovery"
+            android:exported="false" />
+        <activity
             android:name=".presentation.login.Login"
             android:exported="false" />
         <activity

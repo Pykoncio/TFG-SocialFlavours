@@ -11,4 +11,16 @@
     <string name="write_here">Write here...</string>
     <string name="accept">Accept</string>
     <string name="hasLoggedBefore"></string>
+    <string name="goToRegister">New to Social Flavours? Register here</string>
+    <string name="forgetPassword">Forgot password?</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="register">Register</string>
+    <string name="alreadyRegistered">Already Registered? Login Here</string>
+    <string name="recoverPassword">Recover your password:</string>
+    <string name="enterEmailDescription">Recovering your password starts with the email linked to your account.</string>
+    <string name="enterEmailDescription2">We will send a reminder of your password to the email linked to the inserted username.</string>
+    <string name="sendRecoveryEmail">Send recovery Email</string>
 </resources>
