@@ -3,15 +3,10 @@ package com.iesvegademijas.socialflavours.presentation.home;
 
 import static android.app.PendingIntent.getActivity;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,18 +15,31 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.ParseException;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.iesvegademijas.socialflavours.R;
-import com.iesvegademijas.socialflavours.data.remote.dto.User;
+import com.iesvegademijas.socialflavours.data.model.UserModel;
+import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
+import com.iesvegademijas.socialflavours.presentation.login.Login;
 
-import java.util.Observer;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Observer {
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+
+public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     // Launch the fragments
     private DrawerLayout drawerLayout;
@@ -40,37 +48,19 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     // private ArrayList<Recipe> recipes;
     // private RecipesAdapter recipesAdapter;
 
+    private User user;
     SharedPreferences sharedPref;
-
-    ActivityResultLauncher<Intent> newResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-
-                        sharedPref = getSharedPreferences("MyUserPrefs", Context.MODE_PRIVATE);
-
-                        // Use these credentials to retrieve the user, if its null, then the user will be redirected to the login form
-                        String username = sharedPref.getString("username", "");
-                        String password = sharedPref.getString("password", "");
-
-                        //loadRecipes();
-
-                        // To write into our shared preferences
-                        // SharedPreferences.Editor editor = sharedPref.edit();
-                        // editor.putString("username", String of the username);
-                        // editor.putString("password", String containing the password);
-                        // editor.commit();
-                    }
-                }
-            });
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+
+        // To write into our shared preferences
+        // SharedPreferences.Editor editor = sharedPref.edit();
+        // editor.putString("username", String of the username);
+        // editor.putString("password", String containing the password);
+        // editor.commit();
 
         sharedPref = getSharedPreferences("MyUserPrefs", Context.MODE_PRIVATE);
 
@@ -78,9 +68,18 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         String username = sharedPref.getString("username", "");
         String password = sharedPref.getString("password", "");
 
-        //User user = getUser(username, password);
+        getUser(username, password);
 
-        //loadRecipes();
+        if (user != null)
+        {
+            //loadRecipes();
+        }
+        else // Send the user to the login form
+        {
+            Intent intent = new Intent(this, Login.class);
+            startActivity(intent);
+        }
+
 
         // To write into our shared preferences
         // SharedPreferences.Editor editor = sharedPref.edit();
@@ -90,19 +89,10 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
     }
 
-    /*
-    private User getUser(String username, String password) {
-        if (isNetworkAvailable())
-        {
 
-        }
-        else {
-            showError("error.IOException");
-        }
 
-        return user;
-    }
 
+    //region fragment navegation
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         int titleId = getTitleId(menuItem);
@@ -117,7 +107,71 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
         }
     }
-*/
+    //endregion
+
+    //region server request
+
+    private User getUser(String username, String password) {
+        if (isNetworkAvailable())
+        {
+            ProgressBar pbMain = (ProgressBar) findViewById(R.id.pb_home);
+            pbMain.setVisibility(View.VISIBLE);
+            Resources res = getResources();
+
+            String url = res.getString(R.string.main_url) + "/userLogin";
+            getTaskList(url);
+        }
+        else {
+            showError("error.IOException");
+        }
+
+        return user;
+    }
+
+    private void getTaskList(String url) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ApiOperator apiOp= ApiOperator.getInstance();
+                String result = apiOp.getString(url);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(result.equalsIgnoreCase("error.IOException")||
+                                result.equals("error.OKHttp")) {
+                            showError(result);
+                        }
+                        else if(result.equalsIgnoreCase("null")){
+                            showError("error.desconocido");
+                        }
+                        else{
+                            // If we obtained the user we should read the JSON received from the server
+                            getResultFromJSON(result);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void getResultFromJSON(String result)
+    {
+        try
+        {
+            JSONObject userData = new JSONObject(result);
+            User user = new User();
+            user.fromJSON(userData);
+
+            
+
+        }
+        catch (JSONException | java.text.ParseException e)
+        {
+            showError(e.getMessage());
+        }
+    }
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -155,4 +209,6 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         Toast toast = Toast.makeText(this, message, duration);
         toast.show();
     }
+
+    //endregion
 }
