@@ -106,6 +106,39 @@ public class ApiOperator {
         }
     }
 
+    public String okGetString(String myurl, Map<String, String> params){
+        try {
+            OkHttpClient client = new OkHttpClient();
+            JSONObject jsonObject = new JSONObject();
+            for (String pair: params.keySet()) {
+                jsonObject.put(pair, params.get(pair));
+            }
+
+            RequestBody body = RequestBody.create(jsonObject.toString(),
+                    MediaType.parse("application/json"));
+
+            Request request = new Request.Builder()
+                    .url(myurl)
+                    .put(body)
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()){
+                return "error.OKHttp";
+            }
+            else{
+                return response.body().string();
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+            return "error.IOException";
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+            return "error.JSONException";
+        }
+    }
+
     public String getString(String myurl){
         int cont=0;
         String res=okGetString(myurl);

@@ -27,6 +27,120 @@ public class User {
     private List<Recipe> recipes;
     private List<User> friends;
 
+    public User(){}
+
+    public User(long id_user, String username, String password, String email, List<FriendShip> receivedFriendshipRequests, List<FriendShip> sentFriendshipsRequests, MealPlan mealPlan) {
+        this.id_user = id_user;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.receivedFriendshipRequests = receivedFriendshipRequests;
+        this.sentFriendshipsRequests = sentFriendshipsRequests;
+        this.mealPlan = mealPlan;
+    }
+
+    public User(long id_user, String username, String password, String email, List<FriendShip> receivedFriendshipRequests, List<FriendShip> sentFriendshipsRequests, MealPlan mealPlan, List<Filter> filters, List<ShoppingList> shoppingLists, List<Recipe> recipes, List<User> friends) {
+        this.id_user = id_user;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.receivedFriendshipRequests = receivedFriendshipRequests;
+        this.sentFriendshipsRequests = sentFriendshipsRequests;
+        this.mealPlan = mealPlan;
+        this.filters = filters;
+        this.shoppingLists = shoppingLists;
+        this.recipes = recipes;
+        this.friends = friends;
+    }
+
+    public long getId_user() {
+        return id_user;
+    }
+
+    public void setId_user(long id_user) {
+        this.id_user = id_user;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<FriendShip> getReceivedFriendshipRequests() {
+        return receivedFriendshipRequests;
+    }
+
+    public void setReceivedFriendshipRequests(List<FriendShip> receivedFriendshipRequests) {
+        this.receivedFriendshipRequests = receivedFriendshipRequests;
+    }
+
+    public List<FriendShip> getSentFriendshipsRequests() {
+        return sentFriendshipsRequests;
+    }
+
+    public void setSentFriendshipsRequests(List<FriendShip> sentFriendshipsRequests) {
+        this.sentFriendshipsRequests = sentFriendshipsRequests;
+    }
+
+    public MealPlan getMealPlan() {
+        return mealPlan;
+    }
+
+    public void setMealPlan(MealPlan mealPlan) {
+        this.mealPlan = mealPlan;
+    }
+
+    public List<Filter> getFilters() {
+        return filters;
+    }
+
+    public void setFilters(List<Filter> filters) {
+        this.filters = filters;
+    }
+
+    public List<ShoppingList> getShoppingLists() {
+        return shoppingLists;
+    }
+
+    public void setShoppingLists(List<ShoppingList> shoppingLists) {
+        this.shoppingLists = shoppingLists;
+    }
+
+    public List<Recipe> getRecipes() {
+        return recipes;
+    }
+
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
+    }
+
+    public List<User> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(List<User> friends) {
+        this.friends = friends;
+    }
+
     public void fromJSON(JSONObject jsonObject) throws JSONException, ParseException, java.text.ParseException {
         if (!jsonObject.isNull("id_user")) {
             this.id_user = jsonObject.getLong("id_user");
