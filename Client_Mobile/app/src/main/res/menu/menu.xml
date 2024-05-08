@@ -5,14 +5,23 @@
     <group android:checkableBehavior="single">
 
         <item android:id="@+id/nav_ubicacion"
-            android:title="Ubicacion" />
+            android:title="My Recipes" />
 
         <item android:id="@+id/nav_camara"
-            android:title="Camera"/>
+            android:title="My Friends Recipes"/>
         <!-- android:icon="@drawable/ic_menu_camera"
          -->
         <item android:id="@+id/nav_otro"
-            android:title="Otro" />
+            android:title="Create a recipe"/>
+
+        <item android:id="@+id/nav_otro"
+            android:title="Meal Planner"/>
+
+        <item android:id="@+id/nav_otro"
+            android:title="Shopping Lists"/>
+
+        <item android:id="@+id/nav_otro"
+            android:title="Create a recipe"/>
 
     </group>
 </menu>

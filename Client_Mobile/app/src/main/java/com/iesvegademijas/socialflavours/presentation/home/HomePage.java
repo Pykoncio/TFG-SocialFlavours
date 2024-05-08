@@ -39,9 +39,11 @@ import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
 import com.iesvegademijas.socialflavours.presentation.login.Login;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,6 +62,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     };
 
     // All the objects related to the recipes
+    private ArrayList<Recipe> recipeModels;
 
     // We create the instance of the login activity, either to retrieve user data or to send the user to log in
     final Intent loginIntent = new Intent(this, Login.class);
@@ -110,7 +113,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             }
             else
             {
-                loadRecipes(user.getId_user());
+                setUpRecipes();
             }
         }
         else // We write the new Login values into the shared preferences
@@ -119,17 +122,116 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             editor.putString("username", user.getUsername());
             editor.putString("password", user.getPassword());
             editor.commit();
+
+            setUpRecipes();
         }
 
 
     }
 
     //region load the recipes
-    private void loadRecipes(long idUser) {
-        // Just a placeholder
-        ProgressBar pbHome = findViewById(R.id.pb_home);
-        pbHome.setVisibility(View.GONE);
+    private void setUpRecipes()
+    {
+        String url = R.string.main_url + "recipeapi/getAllRecipesFromUser" + user.getId_user();
+        if (isNetworkAvailable()) {
+            for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
+                try {
+                    getListTask(url);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (retryCount < MAX_RETRIES) {
+                        showError(e.getMessage());
+                    } else {
+                        showError("error.connection");
+                    }
+                }
+            }
+        } else {
+            showError("error.IOException");
+        }
     }
+
+    private void getListaTask(String url) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ApiOperator apiOperator= ApiOperator.getInstance();
+                    String result = apiOperator.getString(url);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(result.equalsIgnoreCase("error.IOException")||
+                                    result.equals("error.OKHttp")) {
+                                showError(result);
+                            }
+                            else if(result.equalsIgnoreCase("null")){
+                                showError("error.desconocido");
+                            } else{
+                                resetList(result);
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            showError(e.getMessage());
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void resetList(String result)
+    {
+        try
+        {
+            JSONArray recipeList = new JSONArray(result);
+
+            if (recipeModels == null)
+            {
+                recipeModels = new ArrayList<>();
+            }
+            else
+            {
+                recipeModels.clear();
+            }
+
+            for (int i = 0; i < recipeList.length(); i++)
+            {
+                JSONObject recipeObject = recipeList.getJSONObject(i);
+                Recipe recipe = new Recipe();
+                recipe.fromJSON(recipeObject);
+                recipeModels.add(recipe);
+            }
+
+            if (recipesAdapter==null)
+            {
+                recipesAdapter = new RecipeAdapter(this, recipeModels);
+                recipesAdapter.setCallBack(this);
+                listView.setAdapter(recipesAdapter);
+            }
+            else
+            {
+                recipesAdapter.notifyDataSetChanged();
+            }
+
+            ProgressBar pbMain = findViewById(R.id.pb_home);
+            pbMain.setVisibility(View.GONE);
+        }
+        catch (JSONException | ParseException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
     //endregion
 
     //region fragment navigation
@@ -204,7 +306,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         ProgressBar pbMain = (ProgressBar) findViewById(R.id.pb_home);
         pbMain.setVisibility(View.VISIBLE);
         Resources res = getResources();
-        String url = res.getString(R.string.main_url) + "/userLogin";
+        String url = res.getString(R.string.main_url) + "userapi/userLogin";
         if (isNetworkAvailable())
         {
             for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
@@ -261,11 +363,6 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             JSONObject userData = new JSONObject(result);
             this.user = new User();
             user.fromJSON(userData);
-
-            if (user.getId_user() != -1)
-            {
-                loadRecipes(user.getId_user());
-            }
         }
         catch (JSONException | java.text.ParseException e)
         {
