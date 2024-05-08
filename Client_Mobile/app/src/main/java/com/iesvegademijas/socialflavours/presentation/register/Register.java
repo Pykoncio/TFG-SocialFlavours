@@ -35,7 +35,7 @@ public class Register extends AppCompatActivity {
         setContentView(R.layout.activity_register);
     }
 
-    public void goToLoginPage()
+    public void returnToLoginScreen()
     {
         finish();
     }
@@ -88,6 +88,7 @@ public class Register extends AppCompatActivity {
         }
     }
 
+    //region server request
     private void sendTask(String url, String username, String email,String password) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -167,4 +168,5 @@ public class Register extends AppCompatActivity {
         Toast toast = Toast.makeText(this, message, duration);
         toast.show();
     }
+    //endregion
 }

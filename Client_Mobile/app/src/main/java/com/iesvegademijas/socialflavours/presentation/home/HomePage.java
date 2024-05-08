@@ -3,13 +3,16 @@ package com.iesvegademijas.socialflavours.presentation.home;
 
 import static android.app.PendingIntent.getActivity;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -49,14 +52,21 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     // Launch the fragments
     private DrawerLayout drawerLayout;
 
-    // List of the recipes of the user
-    private ArrayList<Recipe> recipes;
-    //private RecipesAdapter recipesAdapter;
+    private OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            back();
+        }
+    };
+
+    // All the objects related to the recipes
 
     // We create the instance of the login activity, either to retrieve user data or to send the user to log in
     final Intent loginIntent = new Intent(this, Login.class);
     private User user;
     private SharedPreferences sharedPref;
+
+    // Tries to make the connection
     private static final int MAX_RETRIES = 5;
 
     ActivityResultLauncher<Intent> newResultLauncher = registerForActivityResult(
@@ -122,27 +132,70 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     }
     //endregion
 
-    //region fragment navegation
-    /*
+    //region fragment navigation
+
+    private void back()
+    {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+        {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+        else
+        {
+            finish();
+        }
+    }
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         int titleId = getTitleId(menuItem);
         showFragment(titleId);
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     private int getTitleId(@NonNull MenuItem menuItem) {
         int idMenu = menuItem.getItemId();
+        Resources res = getResources();
 
-        switch (idMenu)
+        if (idMenu == R.id.nav_ubicacion)
         {
-
+            return 1;
+        }
+        else if (idMenu == R.id.nav_camara)
+        {
+            return 2;
+        }
+        else
+        {
+            return 3;
         }
     }
-    */
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
+
+    private void showFragment(int fragmentId)
+    {
+        Fragment fragment;
+        String title;
+
+        switch (fragmentId)
+        {
+            case 1:
+                fragment = Fragment.newInstance("", "");
+                title = "Test";
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.home_content, fragment)
+                .commit();
+
+        setTitle(title);
     }
+
     //endregion
 
     //region server request

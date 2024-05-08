@@ -88,7 +88,7 @@
             android:textColor="#FFFFFF"
             android:textStyle="bold"
             android:layout_marginTop="10dp"
-            android:onClick="goToLoginPage"/>
+            android:onClick="returnToLoginScreen"/>
 
     </LinearLayout>
 
