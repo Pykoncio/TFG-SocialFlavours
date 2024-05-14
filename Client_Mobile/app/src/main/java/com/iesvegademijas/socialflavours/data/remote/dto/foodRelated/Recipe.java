@@ -22,13 +22,14 @@ public class Recipe {
     private String imagePath;
     private int preparationTime;
     private Date date;
+    private String tag;
     private List<Ingredient> ingredients;
     private List<Step> steps;
     private List<Filter> filters;
 
     public Recipe(){}
 
-    public Recipe(long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date date) {
+    public Recipe(long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date date, String tag) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
@@ -37,9 +38,10 @@ public class Recipe {
         this.imagePath = imagePath;
         this.preparationTime = preparationTime;
         this.date = date;
+        this.tag = tag;
     }
 
-    public Recipe(long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date date, List<Ingredient> ingredients, List<Step> steps, List<Filter> filters) {
+    public Recipe(long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date date, String tag,  List<Ingredient> ingredients, List<Step> steps, List<Filter> filters) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
@@ -48,6 +50,7 @@ public class Recipe {
         this.imagePath = imagePath;
         this.preparationTime = preparationTime;
         this.date = date;
+        this.tag  = tag;
         this.ingredients = ingredients;
         this.steps = steps;
         this.filters = filters;
@@ -63,6 +66,14 @@ public class Recipe {
 
     public User getUser() {
         return user;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public void setUser(User user) {
@@ -148,7 +159,6 @@ public class Recipe {
             this.id_recipe = -1;
         }
 
-        // Assuming "user" is a JSONObject
         if (!jsonObject.isNull("user")) {
             JSONObject userObject = jsonObject.getJSONObject("user");
             this.user = new User();
@@ -192,6 +202,12 @@ public class Recipe {
             this.date = DateUtil.parseDate(unParsedDate);
         } else {
             this.date = null;
+        }
+
+        if (!jsonObject.isNull("tag")) {
+            this.tag = jsonObject.getString("tag");
+        } else {
+            this.tag = "";
         }
 
         // Handling lists

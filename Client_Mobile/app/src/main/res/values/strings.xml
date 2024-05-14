@@ -23,4 +23,13 @@
     <string name="enterEmailDescription">Recovering your password starts with the email linked to your account.</string>
     <string name="enterEmailDescription2">We will send a reminder of your password to the email linked to the inserted username.</string>
     <string name="sendRecoveryEmail">Send recovery Email</string>
+    <string name="deleteRecipe">Delete recipe</string>
+    <string name="deleteRecipeMessage">Are you sure you want to delete this recipe?</string>
+    <string name="incomingFriendshipRequests">Incoming Friendship Requests</string>
+    <string name="myRecipes">My Recipes</string>
+    <string name="myFriendRecipes">My Friends Recipes</string>
+    <string name="sendFriendshipRequest">Send a Friendship Request</string>
+    <string name="createRecipe">Create a recipe</string>
+    <string name="mealPlanner">Meal Planner</string>
+    <string name="shoppingLists">Shopping Lists</string>
 </resources>

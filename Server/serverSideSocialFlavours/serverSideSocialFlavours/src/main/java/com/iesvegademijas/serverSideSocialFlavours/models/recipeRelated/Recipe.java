@@ -29,6 +29,8 @@ public class Recipe {
     @Column(columnDefinition = "date")
     private Date creationDate;
 
+    private String tag;
+
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private Set<Ingredient> ingredients = new HashSet<>();
 
@@ -40,7 +42,7 @@ public class Recipe {
 
     public Recipe(){}
 
-    public Recipe(Long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date creationDate) {
+    public Recipe(Long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date creationDate, String tag) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
@@ -49,6 +51,15 @@ public class Recipe {
         this.imagePath = imagePath;
         this.preparationTime = preparationTime;
         this.creationDate = creationDate;
+        this.tag = tag;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public Long getId_recipe() {

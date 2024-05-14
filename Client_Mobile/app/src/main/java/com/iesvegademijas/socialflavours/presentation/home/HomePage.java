@@ -1,14 +1,13 @@
 package com.iesvegademijas.socialflavours.presentation.home;
 
 
-import static android.app.PendingIntent.getActivity;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -16,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -29,11 +29,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.iesvegademijas.socialflavours.R;
+import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
@@ -49,7 +51,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RecipeAdapter.RecipesAdapterCallBack {
 
     // Launch the fragments
     private DrawerLayout drawerLayout;
@@ -62,7 +64,9 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     };
 
     // All the objects related to the recipes
+    private ListView listView;
     private ArrayList<Recipe> recipeModels;
+    private RecipeAdapter recipesAdapter;
 
     // We create the instance of the login activity, either to retrieve user data or to send the user to log in
     final Intent loginIntent = new Intent(this, Login.class);
@@ -152,7 +156,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         }
     }
 
-    private void getListaTask(String url) {
+    private void getListTask(String url) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(new Runnable() {
@@ -215,7 +219,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             if (recipesAdapter==null)
             {
                 recipesAdapter = new RecipeAdapter(this, recipeModels);
-                recipesAdapter.setCallBack(this);
+                recipesAdapter.setCallback(this);
                 listView.setAdapter(recipesAdapter);
             }
             else
@@ -230,6 +234,99 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void editPressed(int position) {
+        if (recipeModels!=null)
+        {
+            if (recipeModels.size() > position)
+            {
+                Recipe recipe = recipeModels.get(position);
+                Intent myIntent = new Intent().setClass(this, ModifyRecipe.class);
+                myIntent.putExtra("id_recipe", recipe.getId_recipe());
+                newResultLauncher.launch(myIntent);
+            }
+        }
+    }
+
+    @Override
+    public void deletePressed(int position) {
+        androidx.appcompat.app.AlertDialog diaBox = AskOption(position);
+        diaBox.show();
+    }
+
+    private androidx.appcompat.app.AlertDialog AskOption(final int position)
+    {
+        androidx.appcompat.app.AlertDialog myQuittingDialogBox =new AlertDialog.Builder(this)
+                .setTitle(R.string.deleteRecipe)
+                .setMessage(R.string.deleteRecipeMessage)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        deleteRecipe(position);
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+    }
+
+    private void deleteRecipe(int position){
+        if(recipeModels!=null){
+            if(recipeModels.size()>position) {
+                Recipe recipe = recipeModels.get(position);
+                if (isNetworkAvailable()) {
+                    ProgressBar pbMain = (ProgressBar) findViewById(R.id.pb_home);
+                    pbMain.setVisibility(View.VISIBLE);
+                    Resources res = getResources();
+                    String url = res.getString(R.string.main_url) + "recipeapi/deleteRecipe" + recipe.getId_recipe();
+                    deleteTask(url);
+                }
+                else{
+                    showError("error.IOException");
+                }
+            }
+            else{
+                showError("error.Unknown");
+            }
+        }
+        else{
+            showError("error.Unknown");
+        }
+    }
+
+    private void deleteTask(String url){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ApiOperator apiOperator= ApiOperator.getInstance();
+                String result = apiOperator.deleteTask(url);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(result.equalsIgnoreCase("error.IOException")||
+                                result.equals("error.OKHttp")) {
+                            showError(result);
+                        }
+                        else if(result.equalsIgnoreCase("null")){
+                            showError("error.Unknown");
+                        }
+                        else{
+                            ProgressBar pbMain = (ProgressBar) findViewById(R.id.pb_home);
+                            pbMain.setVisibility(View.GONE);
+                            setUpRecipes();
+                        }
+                    }
+                });
+            }
+        });
     }
 
     //endregion
@@ -406,6 +503,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         Toast toast = Toast.makeText(this, message, duration);
         toast.show();
     }
+
+
 
     //endregion
 }

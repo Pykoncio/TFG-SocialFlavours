@@ -45,4 +45,19 @@ public class RecipeController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @DeleteMapping(path = "/deleteRecipe{id}")
+    public ResponseEntity<Object> deleteRecipe(@PathVariable Long id)
+    {
+        Optional<Recipe> deletedRecipe = recipeRepository.findById(id);
+
+        if (deletedRecipe.isPresent()) {
+            recipeRepository.delete(deletedRecipe.get());
+            return ResponseEntity.noContent().build();
+        }
+        else
+        {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

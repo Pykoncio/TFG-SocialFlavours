@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:openDrawer="end"
+    tools:openDrawer="start"
     tools:context=".presentation.home.HomePage">
 
         <LinearLayout
@@ -43,20 +43,12 @@
                 android:layout_centerVertical="true"
                 android:visibility="gone"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/homeReciclerView"
+            <ListView
+                android:id="@+id/recipeList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="65dp"></androidx.recyclerview.widget.RecyclerView>
+                android:layout_marginTop="65dp"></ListView>
 
-            <EditText
-                android:id="@+id/et_test"
-                android:text="This is just a test"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                ></EditText>
         </RelativeLayout>
 
 

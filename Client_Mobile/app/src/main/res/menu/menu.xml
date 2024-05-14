@@ -4,24 +4,33 @@
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
 
-        <item android:id="@+id/nav_ubicacion"
-            android:title="My Recipes" />
+        <item android:id="@+id/myRecipes"
+            android:title="@string/myRecipes"
+            android:icon="@drawable/baseline_boy_24"/>
 
-        <item android:id="@+id/nav_camara"
-            android:title="My Friends Recipes"/>
-        <!-- android:icon="@drawable/ic_menu_camera"
-         -->
-        <item android:id="@+id/nav_otro"
-            android:title="Create a recipe"/>
+        <item android:id="@+id/MyFriendsRecipes"
+            android:title="@string/myFriendRecipes"
+            android:icon="@drawable/baseline_connect_without_contact_24"/>
 
-        <item android:id="@+id/nav_otro"
-            android:title="Meal Planner"/>
+        <item android:id="@+id/incomingFriendshipRequests"
+            android:title="@string/incomingFriendshipRequests"
+            android:icon="@drawable/baseline_attach_email_24"/>
 
-        <item android:id="@+id/nav_otro"
-            android:title="Shopping Lists"/>
+        <item android:id="@+id/sendFriendRequest"
+            android:title="@string/sendFriendshipRequest"
+            android:icon="@drawable/baseline_add_reaction_24"/>
 
-        <item android:id="@+id/nav_otro"
-            android:title="Create a recipe"/>
+        <item android:id="@+id/createRecipe"
+            android:title="@string/createRecipe"
+            android:icon="@drawable/baseline_add_circle_outline_24"/>
+
+        <item android:id="@+id/mealPlanner"
+            android:title="@string/mealPlanner"
+            android:icon="@drawable/baseline_calendar_month_24"/>
+
+        <item android:id="@+id/shoppingLists"
+            android:title="@string/shoppingLists"
+            android:icon="@drawable/baseline_add_shopping_cart_24"/>
 
     </group>
 </menu>
