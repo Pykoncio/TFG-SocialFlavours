@@ -20,7 +20,7 @@ public class Recipe {
 
     private String description;
 
-    private int rating;
+    private String rating;
 
     private String imagePath;
 
@@ -39,7 +39,7 @@ public class Recipe {
 
     public Recipe(){}
 
-    public Recipe(Long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date creationDate, String tag) {
+    public Recipe(Long id_recipe, User user, String name, String description, String rating, String imagePath, int preparationTime, Date creationDate, String tag) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
@@ -91,11 +91,11 @@ public class Recipe {
         this.description = description;
     }
 
-    public int getRating() {
+    public String getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 

@@ -97,11 +97,11 @@ public class Register extends AppCompatActivity {
             @Override
             public void run() {
                 ApiOperator apiOperator= ApiOperator.getInstance();
-                Map<String, String> params = new HashMap<>();
+                Map<String, Object> params = new HashMap<>();
                 params.put("username", username);
                 params.put("email", email);
                 params.put("password", password);
-                String result = apiOperator.postText(url,params);
+                String result = apiOperator.postText(url, params);
                 handler.post(new Runnable() {
                     @Override
                     public void run() {

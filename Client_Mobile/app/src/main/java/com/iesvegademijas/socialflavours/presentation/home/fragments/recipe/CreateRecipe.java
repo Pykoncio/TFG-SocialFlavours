@@ -2,8 +2,6 @@ package com.iesvegademijas.socialflavours.presentation.home.fragments.recipe;
 
 import static android.app.Activity.RESULT_OK;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -29,22 +27,35 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
+import com.iesvegademijas.socialflavours.common.DateUtil;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+import com.iesvegademijas.socialflavours.data.remote.dto.entities.Ingredient;
 import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -117,11 +128,16 @@ public class CreateRecipe extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+    }
 
-        getUser(mParam1);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        myView = inflater.inflate(R.layout.fragment_create_recipe, container, false);
 
         // Find the button by its id
-        Button createButton = myView.findViewById(R.id.new_recipe_button_accept);
+        Button createButton = myView.findViewById(R.id.new_recipe_button_create);
 
         // Set OnClickListener for the button
         createButton.setOnClickListener(new View.OnClickListener() {
@@ -131,14 +147,6 @@ public class CreateRecipe extends Fragment {
                 create();
             }
         });
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        myView = inflater.inflate(R.layout.fragment_create_recipe, container, false);
-
 
         recipeImageView = myView.findViewById(R.id.new_recipe_image);
         recipeImageView.setOnClickListener(new View.OnClickListener() {
@@ -147,6 +155,10 @@ public class CreateRecipe extends Fragment {
                 checkPermissionAndPickImage();
             }
         });
+
+        getUser(mParam1);
+
+        populateSpinners();
 
 
         //region Ingredient List
@@ -261,11 +273,191 @@ public class CreateRecipe extends Fragment {
         return myView;
     }
 
+    //region Populate Spinners and Create Recipe
+
+    private void populateSpinners(){
+        // Rating
+        Resources res = getResources();
+
+        Spinner sRating = (Spinner) myView.findViewById(R.id.new_recipe_ratingSpinner);
+        ArrayList<String> ratings = new ArrayList<>();
+
+        ratings.add(res.getString(R.string.oneStar));
+        ratings.add(res.getString(R.string.twoStars));
+        ratings.add(res.getString(R.string.threeStars));
+        ratings.add(res.getString(R.string.fourStars));
+        ratings.add(res.getString(R.string.fiveStars));
+
+        ArrayAdapter<String> adRating = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_item,
+                ratings);
+
+        adRating.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sRating.setAdapter(adRating);
+
+        // Tags
+        Spinner sTag = (Spinner) myView.findViewById(R.id.new_recipe_tagSpinner);
+        ArrayList<String> tags = new ArrayList<>();
+
+        tags.add(res.getString(R.string.breakfast));
+        tags.add(res.getString(R.string.lunch));
+        tags.add(res.getString(R.string.dinner));
+        tags.add(res.getString(R.string.snack));
+
+        ArrayAdapter<String> adTag = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_item,
+                tags);
+
+        adTag.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sTag.setAdapter(adTag);
+    }
+    private ArrayList<String> getSteps() {
+        ArrayList<String> steps = new ArrayList<>();
+        LinearLayout stepList = myView.findViewById(R.id.stepList);
+
+        for (int i = 0; i < stepList.getChildCount(); i++) {
+            View view = stepList.getChildAt(i);
+            if (view instanceof LinearLayout) {
+                LinearLayout horizontalLayout = (LinearLayout) view;
+                EditText editText = (EditText) horizontalLayout.getChildAt(0);
+                String step = editText.getText().toString().trim();
+                if (!step.isEmpty()) {
+                    steps.add(step);
+                }
+            }
+        }
+        return steps;
+    }
+    private ArrayList<String> getIngredients() {
+        ArrayList<String> ingredients = new ArrayList<>();
+        LinearLayout ingredientList = myView.findViewById(R.id.ingredientList);
+
+        for (int i = 0; i < ingredientList.getChildCount(); i++) {
+            View view = ingredientList.getChildAt(i);
+            if (view instanceof LinearLayout) {
+                LinearLayout horizontalLayout = (LinearLayout) view;
+                EditText editText = (EditText) horizontalLayout.getChildAt(0);
+                String ingredient = editText.getText().toString().trim();
+                if (!ingredient.isEmpty()) {
+                    ingredients.add(ingredient);
+                }
+            }
+        }
+        return ingredients;
+    }
     public void create() {
-        
+        boolean continueToCreate = true;
+
+        EditText etTitle = myView.findViewById(R.id.new_recipe_title);
+        EditText etDescription = myView.findViewById(R.id.new_recipe_description);
+        EditText etPreparationTime = myView.findViewById(R.id.new_recipe_et_preparationTime);
+        Spinner sTags = (Spinner) myView.findViewById(R.id.new_recipe_tagSpinner);
+        Spinner sRating =(Spinner)myView.findViewById(R.id.new_recipe_ratingSpinner);
+
+        // Obtain the actual values
+        List<String> ingredients = new ArrayList<>(getIngredients());
+        List<String> steps = new ArrayList<>(getSteps());
+
+        String title = etTitle.getText().toString().trim();
+        String description = etDescription.getText().toString().trim();
+        String preparationTime = etPreparationTime.getText().toString().trim();
+        String tag = sTags.getSelectedItem().toString();
+        String rating = sRating.getSelectedItem().toString();
+
+        // Obtain the current date using Calendar
+        Calendar calendar = Calendar.getInstance();
+
+        Date currentDate = calendar.getTime();
+        String formattedDate = DateUtil.formatDate(currentDate);
+
+        Date creationDate = null;
+
+        try {
+            creationDate = DateUtil.parseDate(formattedDate);
+        }catch (ParseException e) {
+            e.printStackTrace();
+            continueToCreate=false;
+        }
+
+        if(title.isEmpty()){
+            etTitle.setError(getResources().getString(R.string.compulsory_field));
+            continueToCreate=false;
+        }
+        if(description.isEmpty()){
+            etDescription.setError(getResources().getString(R.string.compulsory_field));
+            continueToCreate=false;
+        }
+        if(preparationTime.isEmpty()){
+            etPreparationTime.setError(getResources().getString(R.string.compulsory_field));
+            continueToCreate=false;
+        }
+
+        if (continueToCreate) {
+            Button btCreate= myView.findViewById(R.id.new_recipe_button_create);
+            ProgressBar pbCreate= myView.findViewById(R.id.pb_create_recipe);
+            btCreate.setEnabled(false);
+            btCreate.setClickable(false);
+            pbCreate.setVisibility(View.VISIBLE);
+            if (isNetworkAvailable()) {
+                String url = getResources().getString(R.string.main_url) + "recipeApi/createRecipe";
+                sendTask(url, title, rating, description, preparationTime, tag, ingredients, steps, creationDate);
+            } else {
+                showError("error.IOException");
+            }
+        }
     }
 
 
+
+    private void sendTask(String url, String title, String rating,
+                          String description, String preparationTime,
+                          String tag, List<String> ingredients,
+                          List<String> steps, Date date
+                          ) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ApiOperator apiOperator= ApiOperator.getInstance();
+                HashMap<String, Object> params = new HashMap<>();
+                params.put("name", title);
+                params.put("imagePath", imagePath);
+                params.put("rating", rating);
+                params.put("description", description);
+                params.put("preparationTime", preparationTime);
+                params.put("tag", tag);
+                params.put("ingredients", ingredients);
+                params.put("steps", steps);
+                params.put("userId", user.getId_user());
+                params.put("date", date);
+                String result = apiOperator.postText(url,params);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Button btCreate= myView.findViewById(R.id.new_recipe_button_create);
+                        ProgressBar pbCreate=(ProgressBar) myView.findViewById(R.id.pb_create_recipe);
+                        pbCreate.setVisibility(View.GONE);
+                        btCreate.setEnabled(true);
+                        btCreate.setClickable(true);
+                        long idCreado;
+                        try{
+                            idCreado=Long.parseLong(result);
+                        }catch(NumberFormatException ex){
+                            idCreado=-1;
+                        }
+                        if(idCreado>0){
+                            // getActivity().getSupportFragmentManager().popBackStack(); One way to do it
+                            getActivity().finish();
+                        }
+                        else {
+                            showError("error.desconocido");
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    //endregion
 
     //region Retrieve User
     private void getUser(String id)

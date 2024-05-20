@@ -157,7 +157,7 @@
                     android:id="@+id/new_recipe_label_steps"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/new_recipe_label_ingredients"
+                    android:layout_below="@id/ingredientList"
                     android:layout_marginLeft="10dp"
                     android:padding="5dp"
                     android:text="@string/steps"
@@ -168,7 +168,7 @@
                     android:id="@+id/new_recipe_add_step_button"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:layout_below="@+id/new_recipe_label_ingredients"
+                    android:layout_below="@+id/ingredientList"
                     android:layout_marginTop="5dp"
                     android:layout_marginRight="25dp"
                     android:layout_alignParentRight="true"
@@ -188,7 +188,7 @@
                     android:orientation="vertical"/>
 
                 <Button
-                    android:id="@+id/new_recipe_button_accept"
+                    android:id="@+id/new_recipe_button_create"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:backgroundTint="#84A98C"

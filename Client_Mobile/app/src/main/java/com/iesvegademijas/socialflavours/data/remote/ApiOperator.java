@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -30,7 +31,7 @@ public class ApiOperator {
         return me;
     }
 
-    public String postText(String url, Map<String, String> params){
+    public String postText(String url, Map<String, Object> params){
         int cont=0;
         String res=okPostText(url, params);
         while((cont<5)&&(res.equals("error.PIPE"))){
@@ -40,11 +41,11 @@ public class ApiOperator {
         return res;
     }
 
-    private String okPostText(String url, Map<String, String> params){
+    private String okPostText(String url, Map<String, Object> params){
         try {
             OkHttpClient client = new OkHttpClient();
             JSONObject jsonObject=new JSONObject();
-            for (String pair : params.keySet()) {
+            for (String pair : params.keySet()) { // Map.Entry<String, Object> entry if the String pair doesnt work properly
                 jsonObject.put(pair, params.get(pair));
             }
             RequestBody body = RequestBody.create(jsonObject.toString(),
