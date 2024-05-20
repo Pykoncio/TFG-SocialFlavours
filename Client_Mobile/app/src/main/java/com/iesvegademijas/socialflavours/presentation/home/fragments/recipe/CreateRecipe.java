@@ -2,29 +2,51 @@ package com.iesvegademijas.socialflavours.presentation.home.fragments.recipe;
 
 import static android.app.Activity.RESULT_OK;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
+import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,8 +72,12 @@ public class CreateRecipe extends Fragment {
     private View myView;
     private ImageView recipeImageView;
     private String imagePath;
+
+    private User user;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private static final int PICK_IMAGE_REQUEST = 2;
+
+    private static final int MAX_RETRIES = 5;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -92,7 +118,19 @@ public class CreateRecipe extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        
+        getUser(mParam1);
+
+        // Find the button by its id
+        Button createButton = myView.findViewById(R.id.new_recipe_button_accept);
+
+        // Set OnClickListener for the button
+        createButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call your create method here
+                create();
+            }
+        });
     }
 
     @Override
@@ -223,6 +261,122 @@ public class CreateRecipe extends Fragment {
         return myView;
     }
 
+    public void create() {
+        
+    }
+
+
+
+    //region Retrieve User
+    private void getUser(String id)
+    {
+        ProgressBar pbMain = (ProgressBar) myView.findViewById(R.id.pb_create_recipe);
+        pbMain.setVisibility(View.VISIBLE);
+        Resources res = getResources();
+        String url = res.getString(R.string.main_url) + "userapi/userLogin";
+        if (isNetworkAvailable())
+        {
+            for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
+                try {
+                    getTaskList(url);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (retryCount < MAX_RETRIES) {
+                        showError(e.getMessage());
+                    } else {
+                        showError("error.connection");
+                    }
+                }
+            }
+        }
+        else {
+            showError("error.IOException");
+        }
+    }
+
+    private void getTaskList(String url) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ApiOperator apiOp= ApiOperator.getInstance();
+                String result = apiOp.getString(url);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(result.equalsIgnoreCase("error.IOException")||
+                                result.equals("error.OKHttp")) {
+                            showError(result);
+                        }
+                        else if(result.equalsIgnoreCase("null")){
+                            showError("error.Unknown");
+                        }
+                        else{
+                            // If we obtained the user we should read the JSON received from the server
+                            ProgressBar pbMain = (ProgressBar) myView.findViewById(R.id.pb_create_recipe);
+                            pbMain.setVisibility(View.GONE);
+                            getResultFromJSON(result);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void getResultFromJSON(String result)
+    {
+        try
+        {
+            JSONObject userData = new JSONObject(result);
+            this.user = new User();
+            user.fromJSON(userData);
+        }
+        catch (JSONException | java.text.ParseException e)
+        {
+            showError(e.getMessage());
+        }
+    }
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network nw = connectivityManager.getActiveNetwork();
+            if (nw == null) {
+                return false;
+            } else {
+                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
+                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+            }
+        } else {
+            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
+            return nwInfo != null && nwInfo.isConnected();
+        }
+    }
+
+    private void showError(String error) {
+        String message;
+        Resources res = getResources();
+        int duration;
+        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
+            message = res.getString(R.string.error_connection);
+            duration = Toast.LENGTH_SHORT;
+        }
+        else if(error.equals("error.undelivered")){
+            message = res.getString(R.string.error_undelivered);
+            duration = Toast.LENGTH_LONG;
+        }
+        else {
+            message = res.getString(R.string.error_unknown);
+            duration = Toast.LENGTH_SHORT;
+        }
+        Toast toast = Toast.makeText(myView.getContext(), message, duration);
+        toast.show();
+    }
+    //endregion
+
     //region Image Picker
     private void checkPermissionAndPickImage() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -277,5 +431,6 @@ public class CreateRecipe extends Fragment {
         }
         return null;
     }
+
     //endregion
 }

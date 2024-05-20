@@ -5,6 +5,15 @@
         android:layout_height="match_parent"
         tools:context=".presentation.home.fragments.recipe.CreateRecipe">
 
+        <ProgressBar
+            android:id="@+id/pb_create_recipe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"/>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -177,6 +186,17 @@
                     android:layout_below="@id/new_recipe_label_steps"
                     android:layout_margin="10dp"
                     android:orientation="vertical"/>
+
+                <Button
+                    android:id="@+id/new_recipe_button_accept"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#84A98C"
+                    android:text="@string/create"
+                    android:onClick="create"
+                    android:textColor="@color/white"
+                    android:layout_below="@id/stepList"
+                    android:layout_centerHorizontal="true"/>
                 <!--
                 <TextView
                     android:id="@+id/new_recipe_label_ingredients"
