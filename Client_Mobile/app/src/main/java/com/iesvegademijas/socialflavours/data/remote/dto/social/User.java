@@ -2,7 +2,6 @@ package com.iesvegademijas.socialflavours.data.remote.dto.social;
 
 import android.net.ParseException;
 
-import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Filter;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.mealPlanner.MealPlan;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.ShoppingList;
@@ -22,7 +21,6 @@ public class User {
     private List<FriendShip> receivedFriendshipRequests;
     private List<FriendShip> sentFriendshipsRequests;
     private MealPlan mealPlan;
-    private List<Filter> filters;
     private List<ShoppingList> shoppingLists;
     private List<Recipe> recipes;
     private List<User> friends;
@@ -39,7 +37,7 @@ public class User {
         this.mealPlan = mealPlan;
     }
 
-    public User(long id_user, String username, String password, String email, List<FriendShip> receivedFriendshipRequests, List<FriendShip> sentFriendshipsRequests, MealPlan mealPlan, List<Filter> filters, List<ShoppingList> shoppingLists, List<Recipe> recipes, List<User> friends) {
+    public User(long id_user, String username, String password, String email, List<FriendShip> receivedFriendshipRequests, List<FriendShip> sentFriendshipsRequests, MealPlan mealPlan, List<ShoppingList> shoppingLists, List<Recipe> recipes, List<User> friends) {
         this.id_user = id_user;
         this.username = username;
         this.password = password;
@@ -47,7 +45,6 @@ public class User {
         this.receivedFriendshipRequests = receivedFriendshipRequests;
         this.sentFriendshipsRequests = sentFriendshipsRequests;
         this.mealPlan = mealPlan;
-        this.filters = filters;
         this.shoppingLists = shoppingLists;
         this.recipes = recipes;
         this.friends = friends;
@@ -107,14 +104,6 @@ public class User {
 
     public void setMealPlan(MealPlan mealPlan) {
         this.mealPlan = mealPlan;
-    }
-
-    public List<Filter> getFilters() {
-        return filters;
-    }
-
-    public void setFilters(List<Filter> filters) {
-        this.filters = filters;
     }
 
     public List<ShoppingList> getShoppingLists() {
@@ -189,15 +178,6 @@ public class User {
             this.mealPlan.fromJSON(mealPlanObject);
         } else {
             this.mealPlan = null;
-        }
-
-        this.filters = new ArrayList<>();
-        JSONArray filtersArray = jsonObject.getJSONArray("filters");
-        for (int i = 0; i < filtersArray.length(); i++) {
-            JSONObject filterObject = filtersArray.getJSONObject(i);
-            Filter filter = new Filter();
-            filter.fromJSON(filterObject);
-            this.filters.add(filter);
         }
 
         this.shoppingLists = new ArrayList<>();

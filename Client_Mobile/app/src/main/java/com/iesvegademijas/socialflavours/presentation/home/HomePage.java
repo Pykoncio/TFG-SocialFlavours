@@ -136,8 +136,6 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
             setUpRecipes();
         }
-
-
     }
 
     //region load the recipes

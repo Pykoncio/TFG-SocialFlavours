@@ -32,7 +32,13 @@
     <string name="createRecipe">Create a recipe</string>
     <string name="mealPlanner">Meal Planner</string>
     <string name="shoppingLists">Shopping Lists</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="logOut">Log Out</string>
+    <string name="rating">Rating:</string>
+    <string name="new_recipe_title">Title</string>
+    <string name="new_recipe_description">Description</string>
+    <string name="new_recipe_label_PreparationTime">Preparation Time:</string>
+    <string name="new_recipe_et_preparationTime">(minutes)</string>
+    <string name="tag">Tag:</string>
+    <string name="steps">Steps:</string>
+    <string name="ingredients">Ingredients:</string>
 </resources>

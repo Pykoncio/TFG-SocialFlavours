@@ -37,9 +37,6 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private Set<Step> steps = new HashSet<>();
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
-    private Set<Filter> filters = new HashSet<>();
-
     public Recipe(){}
 
     public Recipe(Long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date creationDate, String tag) {
@@ -142,11 +139,4 @@ public class Recipe {
         this.steps = steps;
     }
 
-    public Set<Filter> getFilters() {
-        return filters;
-    }
-
-    public void setFilters(Set<Filter> filters) {
-        this.filters = filters;
-    }
 }

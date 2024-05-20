@@ -25,8 +25,6 @@ public class Recipe {
     private String tag;
     private List<Ingredient> ingredients;
     private List<Step> steps;
-    private List<Filter> filters;
-
     public Recipe(){}
 
     public Recipe(long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date date, String tag) {
@@ -41,7 +39,7 @@ public class Recipe {
         this.tag = tag;
     }
 
-    public Recipe(long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date date, String tag,  List<Ingredient> ingredients, List<Step> steps, List<Filter> filters) {
+    public Recipe(long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date date, String tag,  List<Ingredient> ingredients, List<Step> steps) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
@@ -53,7 +51,6 @@ public class Recipe {
         this.tag  = tag;
         this.ingredients = ingredients;
         this.steps = steps;
-        this.filters = filters;
     }
 
     public long getId_recipe() {
@@ -144,13 +141,6 @@ public class Recipe {
         this.steps = steps;
     }
 
-    public List<Filter> getFilters() {
-        return filters;
-    }
-
-    public void setFilters(List<Filter> filters) {
-        this.filters = filters;
-    }
 
     public void fromJSON(JSONObject jsonObject) throws JSONException, java.text.ParseException {
         if (!jsonObject.isNull("id_recipe")) {
@@ -228,15 +218,6 @@ public class Recipe {
             Step step = new Step();
             step.fromJSON(stepObject);
             this.steps.add(step);
-        }
-
-        this.filters = new ArrayList<>();
-        JSONArray filtersArray = jsonObject.getJSONArray("filters");
-        for (int i = 0; i < filtersArray.length(); i++) {
-            JSONObject filterObject = filtersArray.getJSONObject(i);
-            Filter filter = new Filter();
-            filter.fromJSON(filterObject);
-            this.filters.add(filter);
         }
     }
 
