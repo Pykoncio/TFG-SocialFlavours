@@ -32,5 +32,9 @@
             android:title="@string/shoppingLists"
             android:icon="@drawable/baseline_add_shopping_cart_24"/>
 
+        <item android:id="@+id/logOut"
+            android:title="@string/logOut"
+            android:icon="@drawable/baseline_backspace_24"/>
+
     </group>
 </menu>

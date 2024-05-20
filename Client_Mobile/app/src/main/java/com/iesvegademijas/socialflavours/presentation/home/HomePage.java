@@ -38,8 +38,15 @@ import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
+import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.ShoppingList;
 import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
+import com.iesvegademijas.socialflavours.presentation.home.fragments.inbox.IncomingFriendshipRequests;
+import com.iesvegademijas.socialflavours.presentation.home.fragments.meal_planner.MealPlanner;
+import com.iesvegademijas.socialflavours.presentation.home.fragments.recipe.CreateRecipe;
+import com.iesvegademijas.socialflavours.presentation.home.fragments.recipe.FriendsRecipes;
+import com.iesvegademijas.socialflavours.presentation.home.fragments.shopping_list.ShoppingLists;
 import com.iesvegademijas.socialflavours.presentation.login.Login;
+import com.iesvegademijas.socialflavours.presentation.modify_recipe.ModifyRecipe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -354,37 +361,75 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
     private int getTitleId(@NonNull MenuItem menuItem) {
         int idMenu = menuItem.getItemId();
-        Resources res = getResources();
 
-        if (idMenu == R.id.nav_ubicacion)
+        if (idMenu == R.id.myRecipes)
         {
             return 1;
         }
-        else if (idMenu == R.id.nav_camara)
+        else if (idMenu == R.id.MyFriendsRecipes)
         {
             return 2;
         }
-        else
+        else if (idMenu == R.id.incomingFriendshipRequests)
         {
             return 3;
+        }
+        else if (idMenu == R.id.sendFriendRequest) {
+            return 4;
+        }
+        else if (idMenu == R.id.createRecipe) {
+            return 5;
+        }
+        else if (idMenu == R.id.mealPlanner){
+            return 6;
+        }
+        else if (idMenu == R.id.shoppingLists){
+            return 7;
+        }
+        //if (idMenu == R.id.logOut)
+        else {
+            return 8;
         }
     }
 
     private void showFragment(int fragmentId)
     {
-        Fragment fragment;
-        String title;
+        Fragment fragment = null;
+        String title = "";
 
         switch (fragmentId)
         {
             case 1:
-                fragment = Fragment.newInstance("", "");
-                title = "Test";
-                break;
+                Intent intent = new Intent(this, HomePage.class);
+                startActivity(intent);
+                return;
             case 2:
+                fragment = FriendsRecipes.newInstance(String.valueOf(user.getId_user()), "");
+                title = "My Friends Recipes";
                 break;
             case 3:
+                fragment = IncomingFriendshipRequests.newInstance("", "");
+                title = "Incoming Friendships Requests";
                 break;
+            case 4:
+                fragment = FriendsRecipes.newInstance("", "");
+                title = "Outgoing Friendships Requests";
+                break;
+            case 5:
+                fragment = CreateRecipe.newInstance("", "");
+                title = "Create a new Recipe";
+                break;
+            case 6:
+                fragment = MealPlanner.newInstance("", "");
+                title = "My Friends Recipes";
+                break;
+            case 7:
+                fragment = ShoppingLists.newInstance("", "");
+                title = "My Friends Recipes";
+                break;
+            case 8:
+                logOut();
+                return;
         }
 
         getSupportFragmentManager()
@@ -393,6 +438,19 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 .commit();
 
         setTitle(title);
+    }
+
+    private void logOut() {
+        // Clear shared preferences
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.clear();
+        editor.apply();
+
+        // Open the log in activity
+        Intent intent = new Intent(this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     //endregion

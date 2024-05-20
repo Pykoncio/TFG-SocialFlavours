@@ -84,7 +84,6 @@ public class RecipeAdapter extends BaseAdapter {
 
         // Load the recipeIcon or set a default image
         if (recipe.getImagePath() != null && !recipe.getImagePath().isEmpty()) {
-            // Example with Picasso:
             Picasso.get().load(recipe.getImagePath()).into(recipeWrapper.recipeIcon);
         } else {
             recipeWrapper.recipeIcon.setImageResource(R.drawable.default_recipe_image);

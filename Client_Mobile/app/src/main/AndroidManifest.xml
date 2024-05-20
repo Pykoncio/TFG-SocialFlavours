@@ -16,6 +16,30 @@
         android:theme="@style/Theme.SocialFlavours"
         tools:targetApi="31">
         <activity
+            android:name=".presentation.home.fragments.outbox.SendFriendshipRequest"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.home.fragments.shopping_list.ShoppingList"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.home.fragments.inbox.IncomingFriendshipRequest"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.home.fragments.meal_planner.MealPlanner"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.home.fragments.recipe.NotEditableRecipe"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.home.fragments.recipe.FriendsRecipes"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.modify_recipe.ModifyRecipe"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.home.fragments.recipe.NewRecipe"
+            android:exported="false" />
+        <activity
             android:name=".presentation.accrecovery.Recovery"
             android:exported="false" />
         <activity
