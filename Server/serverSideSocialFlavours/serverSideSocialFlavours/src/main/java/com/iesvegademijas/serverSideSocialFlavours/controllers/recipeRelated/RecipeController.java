@@ -67,34 +67,63 @@ public class RecipeController {
 
     @PostMapping("/createRecipe")
     public ResponseEntity<Object> createRecipe(@RequestBody RecipeDTO recipeDTO) {
+        Optional<User> user = userRepository.findById(recipeDTO.getUserId());
 
-        // Mapping the DTO to the Recipe entity
-        Recipe recipe = new Recipe();
-        recipe.setName(recipeDTO.getName());
-        recipe.setDescription(recipeDTO.getDescription());
-        recipe.setRating(recipeDTO.getRating());
-        recipe.setImagePath(recipeDTO.getImagePath());
-        recipe.setPreparationTime(recipeDTO.getPreparationTime());
-        recipe.setTag(recipeDTO.getTag());
-        try {
-            recipe.setCreationDate(recipeDTO.getDate());
-        } catch (ParseException e) {
-            recipe.setCreationDate(new Date());
+        if (user.isPresent()) {
+            // Mapping the DTO to the Recipe entity
+            Recipe recipe = new Recipe();
+            recipe.setName(recipeDTO.getName());
+            recipe.setDescription(recipeDTO.getDescription());
+            recipe.setRating(recipeDTO.getRating());
+            recipe.setImagePath(recipeDTO.getImagePath());
+            recipe.setPreparationTime(recipeDTO.getPreparationTime());
+            recipe.setTag(recipeDTO.getTag());
+            try {
+                recipe.setCreationDate(recipeDTO.getDate());
+            } catch (ParseException e) {
+                recipe.setCreationDate(new Date());
+            }
+
+            // Convert ingredients and steps from DTO to Ingredient and Step objects
+            List<Ingredient> ingredients = recipeDTO.getIngredients().stream()
+                    .map(Ingredient::new)
+                    .toList();
+            recipe.setIngredients(new HashSet<>(ingredients));
+
+            List<Step> steps = recipeDTO.getSteps().stream()
+                    .map(Step::new)
+                    .toList();
+            recipe.setSteps(new HashSet<>(steps));
+
+            // Save the recipe
+            Recipe savedRecipe = recipeRepository.save(recipe);
+            return new ResponseEntity<>(savedRecipe, HttpStatus.CREATED);
         }
+        else
+        {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
-        // Convert ingredients and steps from DTO to Ingredient and Step objects
-        List<Ingredient> ingredients = recipeDTO.getIngredients().stream()
-                .map(Ingredient::new)
-                .toList();
-        recipe.setIngredients(new HashSet<>(ingredients));
+    @GetMapping("/getAllRecipesFromUserFriends{idUser}")
+    public ResponseEntity<List<Recipe>> getAllRecipesFromUserFriends(@PathVariable Long idUser) {
+        Optional<User> user = userRepository.findById(idUser);
 
-        List<Step> steps = recipeDTO.getSteps().stream()
-                .map(Step::new)
-                .toList();
-        recipe.setSteps(new HashSet<>(steps));
+        if (user.isPresent())
+        {
+            List<User> friends = new ArrayList<>(user.get().getFriends());
+            List<Recipe> recipes = new ArrayList<>();
 
-        // Save the recipe
-        Recipe savedRecipe = recipeRepository.save(recipe);
-        return new ResponseEntity<>(savedRecipe, HttpStatus.CREATED);
+            for(User friend : friends)
+            {
+                recipes.addAll(friend.getRecipes());
+            }
+
+            return ResponseEntity.ok(recipes);
+        }
+        else
+        {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -197,52 +197,6 @@
                     android:textColor="@color/white"
                     android:layout_below="@id/stepList"
                     android:layout_centerHorizontal="true"/>
-                <!--
-                <TextView
-                    android:id="@+id/new_recipe_label_ingredients"
-                    android:layout_width="match_parent"
-                    android:hint="@string/steps"
-                    android:layout_marginLeft="10dp"
-                    android:textSize="18sp"
-                    android:textColorHint="#354F52"
-                    android:padding="5dp"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/new_recipe_tag"/>
-
-                <ImageButton
-                    android:id="@+id/ib_li_eliminar"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_below="@+id/new_recipe_tag"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="25dp"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/ic_add_white"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:scaleType="fitCenter"
-                    android:background="#354F52"
-                    android:adjustViewBounds="true"
-                    android:onClick="newIngredient"/>
-
-                <ScrollView
-                    android:id="@+id/scroll_list_ingredients"
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:layout_below="@+id/new_recipe_label_ingredients">
-
-                    <ListView
-                        android:id="@+id/ingredientList"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:layout_below="@+id/new_recipe_label_ingredients"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"/>
-
-                </ScrollView>
-                -->
-
-
 
             </RelativeLayout>
 

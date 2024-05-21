@@ -84,11 +84,8 @@ public class CreateRecipe extends Fragment {
     private ImageView recipeImageView;
     private String imagePath;
 
-    private User user;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private static final int PICK_IMAGE_REQUEST = 2;
-
-    private static final int MAX_RETRIES = 5;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -96,7 +93,7 @@ public class CreateRecipe extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String mParam1; // Long id of the user
     private String mParam2;
 
     public CreateRecipe() {
@@ -133,10 +130,9 @@ public class CreateRecipe extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         myView = inflater.inflate(R.layout.fragment_create_recipe, container, false);
 
-        // Find the button by its id
         Button createButton = myView.findViewById(R.id.new_recipe_button_create);
 
         // Set OnClickListener for the button
@@ -156,10 +152,7 @@ public class CreateRecipe extends Fragment {
             }
         });
 
-        getUser(mParam1);
-
         populateSpinners();
-
 
         //region Ingredient List
         LinearLayout ingredientList = myView.findViewById(R.id.ingredientList);
@@ -270,6 +263,7 @@ public class CreateRecipe extends Fragment {
             }
         });
         //endregion
+
         return myView;
     }
 
@@ -427,7 +421,7 @@ public class CreateRecipe extends Fragment {
                 params.put("tag", tag);
                 params.put("ingredients", ingredients);
                 params.put("steps", steps);
-                params.put("userId", user.getId_user());
+                params.put("userId", mParam1);
                 params.put("date", date);
                 String result = apiOperator.postText(url,params);
                 handler.post(new Runnable() {
@@ -457,116 +451,6 @@ public class CreateRecipe extends Fragment {
         });
     }
 
-    //endregion
-
-    //region Retrieve User
-    private void getUser(String id)
-    {
-        ProgressBar pbMain = (ProgressBar) myView.findViewById(R.id.pb_create_recipe);
-        pbMain.setVisibility(View.VISIBLE);
-        Resources res = getResources();
-        String url = res.getString(R.string.main_url) + "userapi/userLogin";
-        if (isNetworkAvailable())
-        {
-            for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
-                try {
-                    getTaskList(url);
-                    break;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (retryCount < MAX_RETRIES) {
-                        showError(e.getMessage());
-                    } else {
-                        showError("error.connection");
-                    }
-                }
-            }
-        }
-        else {
-            showError("error.IOException");
-        }
-    }
-
-    private void getTaskList(String url) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                ApiOperator apiOp= ApiOperator.getInstance();
-                String result = apiOp.getString(url);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(result.equalsIgnoreCase("error.IOException")||
-                                result.equals("error.OKHttp")) {
-                            showError(result);
-                        }
-                        else if(result.equalsIgnoreCase("null")){
-                            showError("error.Unknown");
-                        }
-                        else{
-                            // If we obtained the user we should read the JSON received from the server
-                            ProgressBar pbMain = (ProgressBar) myView.findViewById(R.id.pb_create_recipe);
-                            pbMain.setVisibility(View.GONE);
-                            getResultFromJSON(result);
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    private void getResultFromJSON(String result)
-    {
-        try
-        {
-            JSONObject userData = new JSONObject(result);
-            this.user = new User();
-            user.fromJSON(userData);
-        }
-        catch (JSONException | java.text.ParseException e)
-        {
-            showError(e.getMessage());
-        }
-    }
-    private Boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Network nw = connectivityManager.getActiveNetwork();
-            if (nw == null) {
-                return false;
-            } else {
-                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
-                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-            }
-        } else {
-            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
-            return nwInfo != null && nwInfo.isConnected();
-        }
-    }
-
-    private void showError(String error) {
-        String message;
-        Resources res = getResources();
-        int duration;
-        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
-            message = res.getString(R.string.error_connection);
-            duration = Toast.LENGTH_SHORT;
-        }
-        else if(error.equals("error.undelivered")){
-            message = res.getString(R.string.error_undelivered);
-            duration = Toast.LENGTH_LONG;
-        }
-        else {
-            message = res.getString(R.string.error_unknown);
-            duration = Toast.LENGTH_SHORT;
-        }
-        Toast toast = Toast.makeText(myView.getContext(), message, duration);
-        toast.show();
-    }
     //endregion
 
     //region Image Picker
@@ -625,4 +509,45 @@ public class CreateRecipe extends Fragment {
     }
 
     //endregion
+
+    //region Network utils
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network nw = connectivityManager.getActiveNetwork();
+            if (nw == null) {
+                return false;
+            } else {
+                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
+                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+            }
+        } else {
+            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
+            return nwInfo != null && nwInfo.isConnected();
+        }
+    }
+
+    private void showError(String error) {
+        String message;
+        Resources res = getResources();
+        int duration;
+        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
+            message = res.getString(R.string.error_connection);
+            duration = Toast.LENGTH_SHORT;
+        }
+        else if(error.equals("error.undelivered")){
+            message = res.getString(R.string.error_undelivered);
+            duration = Toast.LENGTH_LONG;
+        }
+        else {
+            message = res.getString(R.string.error_unknown);
+            duration = Toast.LENGTH_SHORT;
+        }
+        Toast toast = Toast.makeText(myView.getContext(), message, duration);
+        toast.show();
+    }
+    //endregion
+
 }

@@ -1,21 +1,53 @@
 package com.iesvegademijas.socialflavours.presentation.home.fragments.recipe;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
+import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
+import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
+import com.iesvegademijas.socialflavours.presentation.modify_recipe.ModifyRecipe;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link FriendsRecipes#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FriendsRecipes extends Fragment {
+public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAdapterCallBack {
+
+    private View myView;
+    private static final int MAX_RETRIES = 5;
+    private ListView listView;
+    private ArrayList<Recipe> recipeModels;
+    private RecipeAdapter recipesAdapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,7 +92,167 @@ public class FriendsRecipes extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_friends_recipes, container, false);
+        myView = inflater.inflate(R.layout.fragment_create_recipe, container, false);
+
+        setUpFriendsRecipes();
+
+        return myView;
+    }
+
+    private void setUpFriendsRecipes()
+    {
+        String url = R.string.main_url + "recipeapi/getAllRecipesFromUserFriends" + mParam1;
+        if (isNetworkAvailable()) {
+            for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
+                try {
+                    getListTask(url);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (retryCount < MAX_RETRIES) {
+                        showError(e.getMessage());
+                    } else {
+                        showError("error.connection");
+                    }
+                }
+            }
+        } else {
+            showError("error.IOException");
+        }
+    }
+
+    private void getListTask(String url) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ApiOperator apiOperator= ApiOperator.getInstance();
+                    String result = apiOperator.getString(url);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(result.equalsIgnoreCase("error.IOException")||
+                                    result.equals("error.OKHttp")) {
+                                showError(result);
+                            }
+                            else if(result.equalsIgnoreCase("null")){
+                                showError("error.desconocido");
+                            } else{
+                                resetList(result);
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            showError(e.getMessage());
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void resetList(String result)
+    {
+        try
+        {
+            JSONArray recipeList = new JSONArray(result);
+
+            if (recipeModels == null)
+            {
+                recipeModels = new ArrayList<>();
+            }
+            else
+            {
+                recipeModels.clear();
+            }
+
+            for (int i = 0; i < recipeList.length(); i++)
+            {
+                JSONObject recipeObject = recipeList.getJSONObject(i);
+                Recipe recipe = new Recipe();
+                recipe.fromJSON(recipeObject);
+                recipeModels.add(recipe);
+            }
+
+            if (recipesAdapter==null)
+            {
+                recipesAdapter = new RecipeAdapter(getContext(), recipeModels);
+                recipesAdapter.setCallback(this);
+                listView.setAdapter(recipesAdapter);
+            }
+            else
+            {
+                recipesAdapter.notifyDataSetChanged();
+            }
+
+            ProgressBar pbFriendRecipes = myView.findViewById(R.id.pb_friends_recipes);
+            pbFriendRecipes.setVisibility(View.GONE);
+        }
+        catch (JSONException | ParseException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void editPressed(int position) {
+        if (recipeModels!=null)
+        {
+            if (recipeModels.size() > position)
+            {
+                Recipe recipe = recipeModels.get(position);
+                Intent myIntent = new Intent().setClass(getContext(), NotEditableRecipe.class);
+                myIntent.putExtra("id_recipe", recipe.getId_recipe());
+                startActivity(myIntent);
+            }
+        }
+    }
+
+    @Override
+    public void deletePressed(int position) {}
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network nw = connectivityManager.getActiveNetwork();
+            if (nw == null) {
+                return false;
+            } else {
+                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
+                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+            }
+        } else {
+            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
+            return nwInfo != null && nwInfo.isConnected();
+        }
+    }
+
+    private void showError(String error) {
+        String message;
+        Resources res = getResources();
+        int duration;
+        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
+            message = res.getString(R.string.error_connection);
+            duration = Toast.LENGTH_SHORT;
+        }
+        else if(error.equals("error.undelivered")){
+            message = res.getString(R.string.error_undelivered);
+            duration = Toast.LENGTH_LONG;
+        }
+        else {
+            message = res.getString(R.string.error_unknown);
+            duration = Toast.LENGTH_SHORT;
+        }
+        Toast toast = Toast.makeText(getContext(), message, duration);
+        toast.show();
     }
 }

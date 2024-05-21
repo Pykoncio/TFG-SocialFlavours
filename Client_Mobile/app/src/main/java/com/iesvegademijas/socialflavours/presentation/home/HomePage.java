@@ -395,7 +395,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         Fragment fragment = null;
         String title = "";
 
-        switch (fragmentId)
+        switch (fragmentId) // All the fragments will have the id of the user in the param1
         {
             case 1:
                 Intent intent = new Intent(this, HomePage.class);
@@ -406,23 +406,23 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 title = "My Friends Recipes";
                 break;
             case 3:
-                fragment = IncomingFriendshipRequests.newInstance("", "");
+                fragment = IncomingFriendshipRequests.newInstance(String.valueOf(user.getId_user()), "");
                 title = "Incoming Friendships Requests";
                 break;
             case 4:
-                fragment = FriendsRecipes.newInstance("", "");
+                fragment = FriendsRecipes.newInstance(String.valueOf(user.getId_user()), "");
                 title = "Outgoing Friendships Requests";
                 break;
             case 5:
-                fragment = CreateRecipe.newInstance("", "");
+                fragment = CreateRecipe.newInstance(String.valueOf(user.getId_user()), "");
                 title = "Create a new Recipe";
                 break;
             case 6:
-                fragment = MealPlanner.newInstance("", "");
+                fragment = MealPlanner.newInstance(String.valueOf(user.getId_user()), "");
                 title = "My Friends Recipes";
                 break;
             case 7:
-                fragment = ShoppingLists.newInstance("", "");
+                fragment = ShoppingLists.newInstance(String.valueOf(user.getId_user()), "");
                 title = "My Friends Recipes";
                 break;
             case 8:

@@ -1,5 +1,6 @@
 package com.iesvegademijas.serverSideSocialFlavours.controllers.social;
 
+import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.Recipe;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.FriendshipRequest;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
 import com.iesvegademijas.serverSideSocialFlavours.repository.social.FriendshipRequestRepository;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,4 +90,5 @@ public class FriendshipRequestController {
             return ResponseEntity.notFound().build();
         }
     }
+
 }
