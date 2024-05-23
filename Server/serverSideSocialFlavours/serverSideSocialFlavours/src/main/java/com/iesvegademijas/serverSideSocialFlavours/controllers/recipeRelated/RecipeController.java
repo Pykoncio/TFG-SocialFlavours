@@ -73,6 +73,7 @@ public class RecipeController {
             // Mapping the DTO to the Recipe entity
             Recipe recipe = new Recipe();
             recipe.setName(recipeDTO.getName());
+            recipe.setUser(user.get());
             recipe.setDescription(recipeDTO.getDescription());
             recipe.setRating(recipeDTO.getRating());
             recipe.setImagePath(recipeDTO.getImagePath());
@@ -120,6 +121,61 @@ public class RecipeController {
             }
 
             return ResponseEntity.ok(recipes);
+        }
+        else
+        {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/getRecipe{id}")
+    public ResponseEntity<Object> getRecipe(@PathVariable Long id) {
+        Optional<Recipe> recipe = recipeRepository.findById(id);
+
+        if (recipe.isPresent()) {
+            return ResponseEntity.ok(recipe.get());
+        }
+        else
+        {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping(path = "/recipeUpdate")
+    public ResponseEntity<Long> recipeUpdate(@RequestBody RecipeDTO recipeDTO) {
+
+        Optional<User> user = userRepository.findById(recipeDTO.getUserId());
+
+        if (user.isPresent())
+        {
+            // Mapping the DTO to the Recipe entity
+            Recipe recipe = new Recipe();
+            recipe.setId_recipe(recipeDTO.getId_recipe());
+            recipe.setName(recipeDTO.getName());
+            recipe.setUser(user.get());
+            recipe.setDescription(recipeDTO.getDescription());
+            recipe.setRating(recipeDTO.getRating());
+            recipe.setImagePath(recipeDTO.getImagePath());
+            recipe.setPreparationTime(recipeDTO.getPreparationTime());
+            recipe.setTag(recipeDTO.getTag());
+            try {
+                recipe.setCreationDate(recipeDTO.getDate());
+            } catch (ParseException e) {
+                recipe.setCreationDate(new Date());
+            }
+
+            // Convert ingredients and steps from DTO to Ingredient and Step objects
+            List<Ingredient> ingredients = recipeDTO.getIngredients().stream()
+                    .map(Ingredient::new)
+                    .toList();
+            recipe.setIngredients(new HashSet<>(ingredients));
+
+            List<Step> steps = recipeDTO.getSteps().stream()
+                    .map(Step::new)
+                    .toList();
+            recipe.setSteps(new HashSet<>(steps));
+
+            return ResponseEntity.ok(recipeRepository.save(recipe).getId_recipe());
         }
         else
         {

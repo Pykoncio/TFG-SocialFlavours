@@ -213,7 +213,7 @@ public class CreateRecipe extends Fragment {
             LinearLayout stepList = myView.findViewById(R.id.stepList);
             ImageButton addStepButton = myView.findViewById(R.id.new_recipe_add_step_button);
 
-        addStepButton.setOnClickListener(new View.OnClickListener() {
+            addStepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Create a horizontal layout to contain the String of the list and the Button to eliminate it
@@ -344,7 +344,7 @@ public class CreateRecipe extends Fragment {
         EditText etDescription = myView.findViewById(R.id.new_recipe_description);
         EditText etPreparationTime = myView.findViewById(R.id.new_recipe_et_preparationTime);
         Spinner sTags = (Spinner) myView.findViewById(R.id.new_recipe_tagSpinner);
-        Spinner sRating =(Spinner)myView.findViewById(R.id.new_recipe_ratingSpinner);
+        Spinner sRating =(Spinner) myView.findViewById(R.id.new_recipe_ratingSpinner);
 
         // Obtain the actual values
         List<String> ingredients = new ArrayList<>(getIngredients());
@@ -391,7 +391,7 @@ public class CreateRecipe extends Fragment {
             btCreate.setClickable(false);
             pbCreate.setVisibility(View.VISIBLE);
             if (isNetworkAvailable()) {
-                String url = getResources().getString(R.string.main_url) + "recipeApi/createRecipe";
+                String url = getResources().getString(R.string.main_url) + "recipeapi/createRecipe";
                 sendTask(url, title, rating, description, preparationTime, tag, ingredients, steps, creationDate);
             } else {
                 showError("error.IOException");

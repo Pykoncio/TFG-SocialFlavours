@@ -18,7 +18,7 @@ public class Recipe {
     private User user;
     private String name;
     private String description;
-    private int rating;
+    private String rating;
     private String imagePath;
     private int preparationTime;
     private Date date;
@@ -27,7 +27,7 @@ public class Recipe {
     private List<Step> steps;
     public Recipe(){}
 
-    public Recipe(long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date date, String tag) {
+    public Recipe(long id_recipe, User user, String name, String description, String rating, String imagePath, int preparationTime, Date date, String tag) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
@@ -39,7 +39,7 @@ public class Recipe {
         this.tag = tag;
     }
 
-    public Recipe(long id_recipe, User user, String name, String description, int rating, String imagePath, int preparationTime, Date date, String tag,  List<Ingredient> ingredients, List<Step> steps) {
+    public Recipe(long id_recipe, User user, String name, String description, String rating, String imagePath, int preparationTime, Date date, String tag,  List<Ingredient> ingredients, List<Step> steps) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
@@ -93,11 +93,11 @@ public class Recipe {
         this.description = description;
     }
 
-    public int getRating() {
+    public String getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 
@@ -170,9 +170,9 @@ public class Recipe {
         }
 
         if (!jsonObject.isNull("rating")) {
-            this.rating = jsonObject.getInt("rating");
+            this.rating = jsonObject.getString("rating");
         } else {
-            this.rating = 0;
+            this.rating = "";
         }
 
         if (!jsonObject.isNull("imagePath")) {

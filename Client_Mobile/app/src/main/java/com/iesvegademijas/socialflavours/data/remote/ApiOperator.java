@@ -69,7 +69,7 @@ public class ApiOperator {
         }
     }
 
-    public String putText(String url, Map<String, String> params){
+    public String putText(String url, Map<String, Object> params){
         int cont=0;
         String res=okPutText(url, params);
         while((cont<5)&&(res.equals("error.PIPE"))){
@@ -79,7 +79,7 @@ public class ApiOperator {
         return res;
     }
 
-    private String okPutText(String url, Map<String, String> params){
+    private String okPutText(String url, Map<String, Object> params){
         try {
             OkHttpClient client = new OkHttpClient();
             JSONObject jsonObject=new JSONObject();

@@ -101,7 +101,7 @@
                 android:padding="5dp"/>
 
             <TextView
-                android:id="@+id/modify_recipe_tag"
+                android:id="@+id/modify_recipe_label_tag"
                 android:layout_width="match_parent"
                 android:hint="@string/tag"
                 android:layout_margin="10dp"
@@ -125,7 +125,7 @@
                 android:id="@+id/modify_recipe_label_ingredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/modify_recipe_tag"
+                android:layout_below="@id/modify_recipe_label_tag"
                 android:layout_marginLeft="10dp"
                 android:padding="5dp"
                 android:text="@string/ingredients"
@@ -136,7 +136,7 @@
                 android:id="@+id/modify_recipe_add_ingredient_button"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:layout_below="@+id/modify_recipe_tag"
+                android:layout_below="@+id/modify_recipe_label_tag"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="25dp"
                 android:layout_alignParentRight="true"
@@ -148,7 +148,7 @@
                 android:adjustViewBounds="true"/>
 
             <LinearLayout
-                android:id="@+id/ingredientList"
+                android:id="@+id/modify_ingredientList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/modify_recipe_label_ingredients"
@@ -159,7 +159,7 @@
                 android:id="@+id/modify_recipe_label_steps"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/ingredientList"
+                android:layout_below="@id/modify_ingredientList"
                 android:layout_marginLeft="10dp"
                 android:padding="5dp"
                 android:text="@string/steps"
@@ -170,7 +170,7 @@
                 android:id="@+id/modify_recipe_add_step_button"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:layout_below="@+id/ingredientList"
+                android:layout_below="@+id/modify_ingredientList"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="25dp"
                 android:layout_alignParentRight="true"
@@ -182,7 +182,7 @@
                 android:adjustViewBounds="true"/>
 
             <LinearLayout
-                android:id="@+id/stepList"
+                android:id="@+id/modify_stepList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/modify_recipe_label_steps"
@@ -190,14 +190,14 @@
                 android:orientation="vertical"/>
 
             <Button
-                android:id="@+id/modify_recipe_button_create"
+                android:id="@+id/modify_recipe_button_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#84A98C"
                 android:text="@string/save"
                 android:onClick="Save"
                 android:textColor="@color/white"
-                android:layout_below="@id/stepList"
+                android:layout_below="@id/modify_stepList"
                 android:layout_centerHorizontal="true"/>
 
         </RelativeLayout>

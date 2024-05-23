@@ -9,6 +9,7 @@ public class RecipeDTO {
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    private long id_recipe;
     private String name;
     private String description;
     private String imagePath;
@@ -24,8 +25,9 @@ public class RecipeDTO {
 
     public RecipeDTO() {}
 
-    public RecipeDTO(String name, String imagePath, String rating, String description,  String preparationTime, String tag,
+    public RecipeDTO(Long id_recipe, String name, String imagePath, String rating, String description,  String preparationTime, String tag,
                      List<String> ingredients, List<String> steps, String userId, String date) {
+        this.id_recipe = id_recipe;
         this.name = name;
         this.description = description;
         this.imagePath = imagePath;
@@ -39,6 +41,15 @@ public class RecipeDTO {
     }
 
     // Getters and Setters
+
+
+    public long getId_recipe() {
+        return id_recipe;
+    }
+
+    public void setId_recipe(long id_recipe) {
+        this.id_recipe = id_recipe;
+    }
 
     public Date getDate() throws ParseException {
         return dateFormat.parse(this.date);
