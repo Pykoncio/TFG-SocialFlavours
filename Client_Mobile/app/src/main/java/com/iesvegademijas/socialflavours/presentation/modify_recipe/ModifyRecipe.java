@@ -184,12 +184,6 @@ public class ModifyRecipe extends AppCompatActivity {
             ratings.add(getResources().getString(R.string.fourStars));
             ratings.add(getResources().getString(R.string.fiveStars));
 
-            ArrayAdapter<String> adRating = new ArrayAdapter<>(this ,android.R.layout.simple_spinner_item,
-                    ratings);
-
-            adRating.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            sRating.setAdapter(adRating);
-
             switch (recipe.getRating())
             {
                 case "Two Stars":
@@ -208,6 +202,12 @@ public class ModifyRecipe extends AppCompatActivity {
                     sRating.setSelection(0);
                     break;
             }
+            ArrayAdapter<String> adRating = new ArrayAdapter<>(this ,android.R.layout.simple_spinner_item,
+                    ratings);
+
+            adRating.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            sRating.setAdapter(adRating);
+
 
             ArrayList<String> tags = new ArrayList<>();
 
@@ -238,100 +238,77 @@ public class ModifyRecipe extends AppCompatActivity {
             adTag.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             sTag.setAdapter(adTag);
 
-            addIngredientButton.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   LinearLayout horizontalLayout = new LinearLayout(getBaseContext());
-                   horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
-                   LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                           LinearLayout.LayoutParams.MATCH_PARENT,
-                           LinearLayout.LayoutParams.WRAP_CONTENT
-                   );
-                   horizontalLayout.setLayoutParams(layoutParams);
 
-                   for (int i = 0; i < recipe.getIngredients().size(); i++) {
-                       EditText editText = new EditText(getBaseContext());
-                       LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
-                               0,
-                               LinearLayout.LayoutParams.WRAP_CONTENT,
-                               1
-                       );
-                       editText.setLayoutParams(editTextParams);
-                       editText.setHint(recipe.getIngredients().get(i).getName());
-                       editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-                       editText.setTextColor(Color.parseColor("#808080"));
-                       editText.setPadding(5, 5, 5, 5);
+            LinearLayout horizontalLayout = new LinearLayout(getBaseContext());
+            horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            horizontalLayout.setLayoutParams(layoutParams);
 
-                       ImageButton deleteButton = new ImageButton(getBaseContext());
-                       LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
-                               LinearLayout.LayoutParams.WRAP_CONTENT,
-                               LinearLayout.LayoutParams.WRAP_CONTENT
-                       );
-                       deleteButton.setLayoutParams(deleteButtonParams);
-                       deleteButton.setImageResource(R.drawable.eliminate_blue);
-                       deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
-                       deleteButton.setOnClickListener(new View.OnClickListener() {
-                           @Override
-                           public void onClick(View v) {
-                               layoutIngredients.removeView(horizontalLayout);
-                           }
-                       });
+            for (int i = 0; i < recipe.getIngredients().size(); i++) {
+                EditText editText = new EditText(getBaseContext());
+                LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1
+                );
+                editText.setLayoutParams(editTextParams);
+                editText.setHint(recipe.getIngredients().get(i).getName());
+                editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
+                editText.setTextColor(Color.parseColor("#808080"));
+                editText.setPadding(5, 5, 5, 5);
 
-                       horizontalLayout.addView(editText);
-                       horizontalLayout.addView(deleteButton);
-                   }
+                horizontalLayout.addView(editText);
+            }
 
-                   layoutIngredients.addView(horizontalLayout);
-               }
-            });
+            layoutIngredients.addView(horizontalLayout);
 
-            addStepButton.setOnClickListener(new View.OnClickListener() {
-                 @Override
-                 public void onClick(View v) {
-                     LinearLayout horizontalLayout2 = new LinearLayout(getBaseContext());
-                     horizontalLayout2.setOrientation(LinearLayout.HORIZONTAL);
-                     LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(
-                             LinearLayout.LayoutParams.MATCH_PARENT,
-                             LinearLayout.LayoutParams.WRAP_CONTENT
-                     );
-                     horizontalLayout2.setLayoutParams(layoutParams2);
 
-                     for (int i = 0; i < recipe.getSteps().size(); i++) {
-                         EditText editText = new EditText(getBaseContext());
-                         LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
-                                 0,
-                                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                                 1
-                         );
-                         editText.setLayoutParams(editTextParams);
-                         editText.setHint(recipe.getIngredients().get(i).getName());
-                         editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-                         editText.setTextColor(Color.parseColor("#808080"));
-                         editText.setPadding(5, 5, 5, 5);
+            LinearLayout horizontalLayout2 = new LinearLayout(getBaseContext());
+            horizontalLayout2.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            horizontalLayout2.setLayoutParams(layoutParams2);
 
-                         ImageButton deleteButton = new ImageButton(getBaseContext());
-                         LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
-                                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                                 LinearLayout.LayoutParams.WRAP_CONTENT
-                         );
-                         deleteButton.setLayoutParams(deleteButtonParams);
-                         deleteButton.setImageResource(R.drawable.eliminate_blue);
-                         deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
-                         deleteButton.setOnClickListener(new View.OnClickListener() {
-                             @Override
-                             public void onClick(View v) {
-                                 layoutSteps.removeView(horizontalLayout2);
-                             }
-                         });
+            for (int i = 0; i < recipe.getSteps().size(); i++) {
+                EditText editText = new EditText(getBaseContext());
+                LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1
+                );
+                editText.setLayoutParams(editTextParams);
+                editText.setHint(recipe.getIngredients().get(i).getName());
+                editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
+                editText.setTextColor(Color.parseColor("#808080"));
+                editText.setPadding(5, 5, 5, 5);
 
-                         horizontalLayout2.addView(editText);
-                         horizontalLayout2.addView(deleteButton);
-                     }
+                ImageButton deleteButton = new ImageButton(getBaseContext());
+                LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                deleteButton.setLayoutParams(deleteButtonParams);
+                deleteButton.setImageResource(R.drawable.eliminate_blue);
+                deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        layoutSteps.removeView(horizontalLayout2);
+                    }
+                });
 
-                     layoutSteps.addView(horizontalLayout2);
+                horizontalLayout2.addView(editText);
+                horizontalLayout2.addView(deleteButton);
+            }
 
-                 }
-            });
+            layoutSteps.addView(horizontalLayout2);
+
+
 
             ProgressBar pbMain = (ProgressBar) findViewById(R.id.pb_modify_recipe);
             pbMain.setVisibility(View.GONE);

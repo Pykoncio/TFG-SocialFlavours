@@ -155,7 +155,7 @@
                 android:adjustViewBounds="true"/>
 
             <LinearLayout
-                android:id="@+id/ingredientList"
+                android:id="@+id/not_editable_ingredientList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/not_editable_recipe_label_ingredients"
@@ -166,7 +166,7 @@
                 android:id="@+id/not_editable_recipe_label_steps"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/ingredientList"
+                android:layout_below="@id/not_editable_ingredientList"
                 android:layout_marginLeft="10dp"
                 android:padding="5dp"
                 android:text="@string/steps"
@@ -177,7 +177,7 @@
                 android:id="@+id/not_editable_recipe_add_step_button"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:layout_below="@+id/ingredientList"
+                android:layout_below="@+id/not_editable_ingredientList"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="25dp"
                 android:clickable="false"
@@ -190,7 +190,7 @@
                 android:adjustViewBounds="true"/>
 
             <LinearLayout
-                android:id="@+id/stepList"
+                android:id="@+id/not_editable_stepList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/not_editable_recipe_label_steps"
@@ -205,7 +205,7 @@
                 android:text="@string/accept"
                 android:onClick="Accept"
                 android:textColor="@color/white"
-                android:layout_below="@id/stepList"
+                android:layout_below="@id/not_editable_stepList"
                 android:layout_centerHorizontal="true"/>
 
         </RelativeLayout>
