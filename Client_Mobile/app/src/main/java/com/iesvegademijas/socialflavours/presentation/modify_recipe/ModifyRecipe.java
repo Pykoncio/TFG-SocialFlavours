@@ -260,7 +260,23 @@ public class ModifyRecipe extends AppCompatActivity {
                 editText.setTextColor(Color.parseColor("#808080"));
                 editText.setPadding(5, 5, 5, 5);
 
+                ImageButton deleteButton = new ImageButton(getBaseContext());
+                LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                deleteButton.setLayoutParams(deleteButtonParams);
+                deleteButton.setImageResource(R.drawable.eliminate_blue);
+                deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        layoutSteps.removeView(horizontalLayout);
+                    }
+                });
+
                 horizontalLayout.addView(editText);
+                horizontalLayout.addView(deleteButton);
             }
 
             layoutIngredients.addView(horizontalLayout);

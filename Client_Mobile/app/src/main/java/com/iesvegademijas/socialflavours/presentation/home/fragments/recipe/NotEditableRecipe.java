@@ -30,6 +30,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+import com.iesvegademijas.socialflavours.data.remote.dto.entities.Ingredient;
+import com.iesvegademijas.socialflavours.data.remote.dto.entities.Step;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 import com.squareup.picasso.Picasso;
 
@@ -130,30 +132,31 @@ public class NotEditableRecipe extends AppCompatActivity {
             Recipe recipe = new Recipe();
             recipe.fromJSON(jsonShop);
 
-            EditText etTitle = findViewById(R.id.modify_recipe_title);
-            EditText etDescription = findViewById(R.id.modify_recipe_description);
-            EditText etPreparationTime = findViewById(R.id.modify_recipe_et_preparationTime);
+            EditText etTitle = findViewById(R.id.not_editable_recipe_title);
+            EditText etDescription = findViewById(R.id.not_editable_recipe_description);
+            EditText etPreparationTime = findViewById(R.id.not_editable_recipe_et_preparationTime);
 
-            Spinner sRating = findViewById(R.id.modify_recipe_ratingSpinner);
-            Spinner sTag = findViewById(R.id.modify_recipe_tagSpinner);
+            Spinner sRating = findViewById(R.id.not_editable_recipe_ratingSpinner);
+            Spinner sTag = findViewById(R.id.not_editable_recipe_tagSpinner);
 
-            ImageView imageView = findViewById(R.id.modify_recipe_image);
+            ImageView imageView = findViewById(R.id.not_editable_recipe_image);
 
-            LinearLayout layoutIngredients = findViewById(R.id.modify_ingredientList);
-            ImageButton addIngredientButton = findViewById(R.id.modify_recipe_add_ingredient_button);
+            LinearLayout layoutIngredients = findViewById(R.id.not_editable_ingredientList);
+            ImageButton addIngredientButton = findViewById(R.id.not_editable_recipe_add_ingredient_button);
 
-            LinearLayout layoutSteps = findViewById(R.id.modify_stepList);
-            ImageButton addStepButton = findViewById(R.id.modify_recipe_add_step_button);
+            LinearLayout layoutSteps = findViewById(R.id.not_editable_stepList);
+            ImageButton addStepButton = findViewById(R.id.not_editable_recipe_add_step_button);
 
             // Load data
-            if (recipe.getImagePath() == "")
-            {
+            try {
                 Picasso.get().load(recipe.getImagePath()).into(imageView);
             }
-            else
+            catch (IllegalArgumentException e)
             {
+                e.printStackTrace();
                 Picasso.get().load(R.drawable.default_recipe_image).into(imageView);
             }
+
 
             etTitle.setText(recipe.getName());
             etDescription.setText(recipe.getDescription());
@@ -222,100 +225,55 @@ public class NotEditableRecipe extends AppCompatActivity {
             adTag.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             sTag.setAdapter(adTag);
 
-            addIngredientButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    LinearLayout horizontalLayout = new LinearLayout(getBaseContext());
-                    horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
-                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                    );
-                    horizontalLayout.setLayoutParams(layoutParams);
+            LinearLayout horizontalLayout = new LinearLayout(getBaseContext());
+            horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            horizontalLayout.setLayoutParams(layoutParams);
 
-                    for (int i = 0; i < recipe.getIngredients().size(); i++) {
-                        EditText editText = new EditText(getBaseContext());
-                        LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
-                                0,
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                1
-                        );
-                        editText.setLayoutParams(editTextParams);
-                        editText.setHint(recipe.getIngredients().get(i).getName());
-                        editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-                        editText.setTextColor(Color.parseColor("#808080"));
-                        editText.setPadding(5, 5, 5, 5);
+            for (Ingredient ingredient: recipe.getIngredients())
+            {
+                EditText editText = new EditText(getBaseContext());
+                LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1
+                );
+                editText.setLayoutParams(editTextParams);
+                editText.setHint(ingredient.getName());
+                editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
+                editText.setTextColor(Color.parseColor("#808080"));
+                editText.setPadding(5, 5, 5, 5);
 
-                        ImageButton deleteButton = new ImageButton(getBaseContext());
-                        LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        );
-                        deleteButton.setLayoutParams(deleteButtonParams);
-                        deleteButton.setImageResource(R.drawable.eliminate_blue);
-                        deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
-                        deleteButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                layoutIngredients.removeView(horizontalLayout);
-                            }
-                        });
+                horizontalLayout.addView(editText);
+            }
 
-                        horizontalLayout.addView(editText);
-                        horizontalLayout.addView(deleteButton);
-                    }
+            LinearLayout horizontalLayout2 = new LinearLayout(getBaseContext());
+            horizontalLayout2.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            horizontalLayout2.setLayoutParams(layoutParams2);
 
-                    layoutIngredients.addView(horizontalLayout);
-                }
-            });
+            for (Step step: recipe.getSteps())
+            {
+                EditText editText = new EditText(getBaseContext());
+                LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1
+                );
+                editText.setLayoutParams(editTextParams);
+                editText.setHint(step.getStep());
+                editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
+                editText.setTextColor(Color.parseColor("#808080"));
+                editText.setPadding(5, 5, 5, 5);
 
-            addStepButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    LinearLayout horizontalLayout2 = new LinearLayout(getBaseContext());
-                    horizontalLayout2.setOrientation(LinearLayout.HORIZONTAL);
-                    LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                    );
-                    horizontalLayout2.setLayoutParams(layoutParams2);
-
-                    for (int i = 0; i < recipe.getSteps().size(); i++) {
-                        EditText editText = new EditText(getBaseContext());
-                        LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
-                                0,
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                1
-                        );
-                        editText.setLayoutParams(editTextParams);
-                        editText.setHint(recipe.getIngredients().get(i).getName());
-                        editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-                        editText.setTextColor(Color.parseColor("#808080"));
-                        editText.setPadding(5, 5, 5, 5);
-
-                        ImageButton deleteButton = new ImageButton(getBaseContext());
-                        LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        );
-                        deleteButton.setLayoutParams(deleteButtonParams);
-                        deleteButton.setImageResource(R.drawable.eliminate_blue);
-                        deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
-                        deleteButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                layoutSteps.removeView(horizontalLayout2);
-                            }
-                        });
-
-                        horizontalLayout2.addView(editText);
-                        horizontalLayout2.addView(deleteButton);
-                    }
-
-                    layoutSteps.addView(horizontalLayout2);
-
-                }
-            });
+                horizontalLayout2.addView(editText);
+            }
 
             ProgressBar pbMain = (ProgressBar) findViewById(R.id.pb_modify_recipe);
             pbMain.setVisibility(View.GONE);

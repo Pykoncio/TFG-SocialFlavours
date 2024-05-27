@@ -141,7 +141,7 @@ public class RecipeController {
         }
     }
 
-    @PutMapping(path = "/recipeUpdate")
+    @PutMapping(path = "/updateRecipe")
     public ResponseEntity<Long> recipeUpdate(@RequestBody RecipeDTO recipeDTO) {
 
         Optional<User> user = userRepository.findById(recipeDTO.getUserId());
