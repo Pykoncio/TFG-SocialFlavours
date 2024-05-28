@@ -107,6 +107,25 @@ public class ApiOperator {
         }
     }
 
+    public String postText(String url) {
+        try {
+            OkHttpClient client = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                return "error.OKHttp";
+            } else {
+                return response.body().string();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "error.PIPE";
+        }
+    }
+
     public String okGetString(String myurl, Map<String, String> params){
         try {
             OkHttpClient client = new OkHttpClient();
@@ -201,5 +220,6 @@ public class ApiOperator {
             return "error.IOException";
         }
     }
+
 
 }

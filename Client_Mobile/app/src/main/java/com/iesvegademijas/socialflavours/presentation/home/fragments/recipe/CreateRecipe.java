@@ -443,7 +443,7 @@ public class CreateRecipe extends Fragment {
                             getActivity().finish();
                         }
                         else {
-                            showError("error.desconocido");
+                            showError("error.Unknown");
                         }
                     }
                 });

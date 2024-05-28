@@ -6,6 +6,15 @@
     android:background="@drawable/login_background"
     tools:context=".presentation.home.fragments.outbox.SendFriendshipRequest">
 
+    <ProgressBar
+        android:id="@+id/pb_send_friendship_request"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,7 +47,7 @@
             android:layout_marginTop="10dp"/>
 
         <EditText
-            android:id="@+id/recovery_username_input"
+            android:id="@+id/send_request_to_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username"
@@ -51,7 +60,7 @@
             android:inputType="text"/>
 
         <Button
-            android:id="@+id/recovery_button"
+            android:id="@+id/send_friendship_request"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/send_friendship_request"

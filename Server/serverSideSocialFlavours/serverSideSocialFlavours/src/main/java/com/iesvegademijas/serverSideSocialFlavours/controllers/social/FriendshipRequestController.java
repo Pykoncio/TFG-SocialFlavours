@@ -39,10 +39,10 @@ public class FriendshipRequestController {
 
 
     @PostMapping(path = "/newRequest{sender}To{receiver}")
-    public ResponseEntity<Long> createFriendshipRequest(@PathVariable("sender") Long idSender, @PathVariable("receiver") Long idReceiver) {
+    public ResponseEntity<Long> createFriendshipRequest(@PathVariable("sender") Long idSender, @PathVariable("receiver") String usernameReceiver) {
 
         Optional<User> sender = userRepository.findById(idSender);
-        Optional<User> receiver = userRepository.findById(idReceiver);
+        Optional<User> receiver = Optional.ofNullable(userRepository.findByUsername(usernameReceiver));
         Optional<FriendshipRequest> existingRequest = friendshipRequestRepository.findExistingRequest(sender.orElse(null), receiver.orElse(null));
 
         if (sender.isPresent() && receiver.isPresent() && existingRequest.isEmpty()) {

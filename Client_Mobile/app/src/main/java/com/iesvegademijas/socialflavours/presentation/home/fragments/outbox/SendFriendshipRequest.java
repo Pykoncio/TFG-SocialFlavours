@@ -1,14 +1,34 @@
 package com.iesvegademijas.socialflavours.presentation.home.fragments.outbox;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
+import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,13 +37,15 @@ import com.iesvegademijas.socialflavours.R;
  */
 public class SendFriendshipRequest extends Fragment {
 
+    private View myView;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String mParam1; // Long id of the current user
     private String mParam2;
 
     public SendFriendshipRequest() {
@@ -60,7 +82,118 @@ public class SendFriendshipRequest extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_send_friendship_request, container, false);
+
+        myView = inflater.inflate(R.layout.fragment_send_friendship_request, container, false);
+
+        Button sendRequest = myView.findViewById(R.id.send_friendship_request);
+
+        sendRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call your create method here
+                sendFriendshipRequest();
+            }
+        });
+
+        return myView;
+    }
+
+    private void sendFriendshipRequest()
+    {
+        EditText etUsername = myView.findViewById(R.id.send_request_to_user);
+        String username = etUsername.getText().toString().trim();
+
+        if (username.isEmpty())
+        {
+            etUsername.setError(getResources().getString(R.string.compulsory_field));
+        }
+        else
+        {
+            Button btSendRequest = myView.findViewById(R.id.send_friendship_request);
+            ProgressBar pbSendRequest = myView.findViewById(R.id.pb_send_friendship_request);
+            btSendRequest.setClickable(false);
+            btSendRequest.setEnabled(false);
+            pbSendRequest.setVisibility(View.VISIBLE);
+
+            if (isNetworkAvailable()) {
+                String url = getResources().getString(R.string.main_url) + "friendshipapi/newRequest" + mParam1 + "To"+ username;
+                sendTask(url, username);
+            } else {
+                showError("error.IOException");
+            }
+        }
+    }
+
+    private void sendTask(String url, String username) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ApiOperator apiOperator= ApiOperator.getInstance();
+                String result = apiOperator.postText(url);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Button btCreate= myView.findViewById(R.id.send_friendship_request);
+                        ProgressBar pbCreate=(ProgressBar) myView.findViewById(R.id.pb_send_friendship_request);
+                        pbCreate.setVisibility(View.GONE);
+                        btCreate.setEnabled(true);
+                        btCreate.setClickable(true);
+                        long idCreated;
+                        try{
+                            idCreated=Long.parseLong(result);
+                        }catch(NumberFormatException ex){
+                            idCreated=-1;
+                        }
+                        if(idCreated>0){
+                            // getActivity().getSupportFragmentManager().popBackStack(); One way to do it
+                            getActivity().finish();
+                        }
+                        else {
+                            showError("error.Unknown");
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network nw = connectivityManager.getActiveNetwork();
+            if (nw == null) {
+                return false;
+            } else {
+                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
+                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+            }
+        } else {
+            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
+            return nwInfo != null && nwInfo.isConnected();
+        }
+    }
+
+    private void showError(String error) {
+        String message;
+        Resources res = getResources();
+        int duration;
+        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
+            message = res.getString(R.string.error_connection);
+            duration = Toast.LENGTH_SHORT;
+        }
+        else if(error.equals("error.undelivered")){
+            message = res.getString(R.string.error_undelivered);
+            duration = Toast.LENGTH_LONG;
+        }
+        else {
+            message = res.getString(R.string.error_unknown);
+            duration = Toast.LENGTH_SHORT;
+        }
+        Toast toast = Toast.makeText(myView.getContext(), message, duration);
+        toast.show();
     }
 }
