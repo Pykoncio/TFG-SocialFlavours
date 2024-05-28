@@ -1,21 +1,60 @@
 package com.iesvegademijas.socialflavours.presentation.home.fragments.inbox;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
+import com.iesvegademijas.socialflavours.data.adapter.FriendshipRequestAdapter;
+import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
+import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
+import com.iesvegademijas.socialflavours.data.remote.dto.social.FriendShip;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link IncomingFriendshipRequests#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class IncomingFriendshipRequests extends Fragment {
+public class IncomingFriendshipRequests extends Fragment implements FriendshipRequestAdapter.FriendshipRequestAdapterCallBack {
+
+    private View myView;
+    private static final int MAX_RETRIES = 5;
+
+    private ListView listView;
+    private ArrayList<FriendShip> friendshipRequestsModels;
+    private FriendshipRequestAdapter friendshipRequestsAdapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,7 +99,271 @@ public class IncomingFriendshipRequests extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_incoming_friendship_requests, container, false);
+        myView = inflater.inflate(R.layout.fragment_create_recipe, container, false);
+
+        setUpFriendshipRequests();
+
+        return myView;
+    }
+
+    private void setUpFriendshipRequests()
+    {
+        ProgressBar pbIncomingRequests = myView.findViewById(R.id.pb_incoming_friendship_request);
+        pbIncomingRequests.setVisibility(View.VISIBLE);
+        String url = R.string.main_url + "friendshipapi/pending" + mParam1;
+        if (isNetworkAvailable()) {
+            for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
+                try {
+                    getListTask(url);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (retryCount < MAX_RETRIES) {
+                        showError(e.getMessage());
+                    } else {
+                        showError("error.connection");
+                    }
+                }
+            }
+        } else {
+            showError("error.IOException");
+        }
+    }
+
+    private void getListTask(String url) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ApiOperator apiOperator= ApiOperator.getInstance();
+                    String result = apiOperator.getString(url);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(result.equalsIgnoreCase("error.IOException")||
+                                    result.equals("error.OKHttp")) {
+                                showError(result);
+                            }
+                            else if(result.equalsIgnoreCase("null")){
+                                showError("error.Unknown");
+                            } else{
+                                resetList(result);
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            showError(e.getMessage());
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void resetList(String result)
+    {
+        try
+        {
+            JSONArray friendshipRequests = new JSONArray(result);
+
+            if (friendshipRequestsModels == null)
+            {
+                friendshipRequestsModels = new ArrayList<>();
+            }
+            else
+            {
+                friendshipRequestsModels.clear();
+            }
+
+            for (int i = 0; i < friendshipRequests.length(); i++)
+            {
+                JSONObject friendshipRequestObject = friendshipRequests.getJSONObject(i);
+                FriendShip friendShip = new FriendShip();
+                friendShip.fromJSON(friendshipRequestObject);
+                friendshipRequestsModels.add(friendShip);
+            }
+
+            if (friendshipRequestsAdapter==null)
+            {
+                friendshipRequestsAdapter = new FriendshipRequestAdapter(getContext(), friendshipRequestsModels);
+                friendshipRequestsAdapter.setCallback(this);
+                listView.setAdapter(friendshipRequestsAdapter);
+            }
+            else
+            {
+                friendshipRequestsAdapter.notifyDataSetChanged();
+            }
+
+            ProgressBar pbIncomingFriendshipRequests = myView.findViewById(R.id.pb_incoming_friendship_request);
+            pbIncomingFriendshipRequests.setVisibility(View.GONE);
+        }
+        catch (JSONException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network nw = connectivityManager.getActiveNetwork();
+            if (nw == null) {
+                return false;
+            } else {
+                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
+                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+            }
+        } else {
+            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
+            return nwInfo != null && nwInfo.isConnected();
+        }
+    }
+
+    private void showError(String error) {
+        String message;
+        Resources res = getResources();
+        int duration;
+        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
+            message = res.getString(R.string.error_connection);
+            duration = Toast.LENGTH_SHORT;
+        }
+        else if(error.equals("error.undelivered")){
+            message = res.getString(R.string.error_undelivered);
+            duration = Toast.LENGTH_LONG;
+        }
+        else {
+            message = res.getString(R.string.error_unknown);
+            duration = Toast.LENGTH_SHORT;
+        }
+        Toast toast = Toast.makeText(getContext(), message, duration);
+        toast.show();
+    }
+
+    @Override
+    public void acceptFriendship(int position) {
+        if (friendshipRequestsModels!=null)
+        {
+            if (friendshipRequestsModels.size() > 0)
+            {
+                FriendShip friendShip = friendshipRequestsModels.get(position);
+
+                if (isNetworkAvailable()) {
+                    String url = getResources().getString(R.string.main_url) + friendShip.getId_friendship() + "/accept";
+                    sendTask(url);
+                } else {
+                    showError("error.IOException");
+                }
+            }
+        }
+    }
+
+    private void sendTask(String url) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ApiOperator apiOperator=ApiOperator.getInstance();
+                String result = apiOperator.putText(url);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        long createdId;
+                        try{
+                            createdId=Long.parseLong(result);
+                        }catch(NumberFormatException ex){
+                            createdId=-1;
+                        }
+                        if(createdId>0){
+                            setUpFriendshipRequests();
+                        }
+                        else {
+                            showError("error.Unknown");
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void declineFriendship(int position) {
+
+        androidx.appcompat.app.AlertDialog diaBox = AskOption(position);
+        diaBox.show();
+    }
+
+    private androidx.appcompat.app.AlertDialog AskOption(final int position)
+    {
+        androidx.appcompat.app.AlertDialog myQuittingDialogBox =new AlertDialog.Builder(myView.getContext())
+                .setTitle(R.string.decline_friendship_request)
+                .setMessage(R.string.are_you_sure)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        deleteRequest(position);//Si confirmamos eliminamos el usuario
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+    }
+
+    private void deleteRequest(int position)
+    {
+        if (friendshipRequestsModels!=null)
+        {
+            if (friendshipRequestsModels.size() > 0)
+            {
+                FriendShip friendShip = friendshipRequestsModels.get(position);
+
+                if (isNetworkAvailable()) {
+                    String url = getResources().getString(R.string.main_url) + friendShip.getId_friendship() + "/decline";
+                    deleteTask(url);
+                } else {
+                    showError("error.IOException");
+                }
+            }
+        }
+    }
+
+    private void deleteTask(String url){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ApiOperator apiOperator= ApiOperator.getInstance();
+                String result = apiOperator.deleteTask(url);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(result.equalsIgnoreCase("error.IOException")||
+                                result.equals("error.OKHttp")) {
+                            showError(result);
+                        }
+                        else if(result.equalsIgnoreCase("null")){
+                            showError("error.Unknown");
+                        }
+                        else{
+                            setUpFriendshipRequests();
+                        }
+                    }
+                });
+            }
+        });
     }
 }

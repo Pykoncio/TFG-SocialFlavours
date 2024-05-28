@@ -138,7 +138,7 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
                                 showError(result);
                             }
                             else if(result.equalsIgnoreCase("null")){
-                                showError("error.desconocido");
+                                showError("error.Unknown");
                             } else{
                                 resetList(result);
                             }

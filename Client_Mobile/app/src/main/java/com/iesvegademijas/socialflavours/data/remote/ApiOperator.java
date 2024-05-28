@@ -107,6 +107,34 @@ public class ApiOperator {
         }
     }
 
+    public String putText(String url) {
+        int cont=0;
+        String res=okPutText(url);
+        while((cont<5)&&(res.equals("error.PIPE"))){
+            ++cont;
+            res=okPutText(url);
+        }
+        return res;
+    }
+
+    private String okPutText(String url){
+        try {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                return "error.OKHttp";
+            } else {
+                return response.body().string();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "error.PIPE";
+        }
+    }
+
     public String postText(String url) {
         try {
             OkHttpClient client = new OkHttpClient();
@@ -220,6 +248,7 @@ public class ApiOperator {
             return "error.IOException";
         }
     }
+
 
 
 }
