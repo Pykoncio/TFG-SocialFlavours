@@ -46,7 +46,7 @@ public class FriendshipRequestController {
         Optional<FriendshipRequest> existingRequest = friendshipRequestRepository.findExistingRequest(sender.orElse(null), receiver.orElse(null));
 
         if (sender.isPresent() && receiver.isPresent() && existingRequest.isEmpty()) {
-            FriendshipRequest newFriendshipRequest = new FriendshipRequest(sender.get(), receiver.get());
+            FriendshipRequest newFriendshipRequest = new FriendshipRequest(sender.get(), receiver.get(), sender.get().getUsername());
             FriendshipRequest friendshipRequestCreated = friendshipRequestRepository.save(newFriendshipRequest);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(friendshipRequestCreated.getId_friendship());

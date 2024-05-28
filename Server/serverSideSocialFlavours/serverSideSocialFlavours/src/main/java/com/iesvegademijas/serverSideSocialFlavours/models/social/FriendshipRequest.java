@@ -16,6 +16,9 @@ public class FriendshipRequest {
     @ManyToOne
     @JoinColumn(name = "id_userSender")
     private User sender;
+
+    private String usernameSender;
+
     @ManyToOne
     @JoinColumn(name = "id_userReceiver")
     private User receiver;
@@ -25,14 +28,23 @@ public class FriendshipRequest {
         this.status = Status.PENDING.toString();
     }
 
-    public FriendshipRequest(User userSender, User userReceiver) {
+    public FriendshipRequest(User userSender, User userReceiver, String usernameSender) {
         this.sender = userSender;
         this.receiver = userReceiver;
+        this.usernameSender = usernameSender;
         this.status = Status.PENDING.toString();
     }
 
     public Long getId_friendship() {
         return id_friendship;
+    }
+
+    public String getUsernameSender() {
+        return usernameSender;
+    }
+
+    public void setUsernameSender(String usernameSender) {
+        this.usernameSender = usernameSender;
     }
 
     public void setId_friendship(Long id_Friendship) {

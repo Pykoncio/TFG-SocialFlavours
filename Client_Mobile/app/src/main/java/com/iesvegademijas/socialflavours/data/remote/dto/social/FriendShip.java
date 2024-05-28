@@ -9,14 +9,17 @@ public class FriendShip {
     private long id_friendship;
     private long idSender;
     private long idReceiver;
+
+    private String usernameSender;
     private String status;
 
     public FriendShip(){}
 
-    public FriendShip(long idFriendship, long idSender, long idReceiver, String status) {
+    public FriendShip(long idFriendship, long idSender, long idReceiver, String usernameSender,String status) {
         this.id_friendship = idFriendship;
         this.idSender = idSender;
         this.idReceiver = idReceiver;
+        this.usernameSender = usernameSender;
         this.status = status;
     }
 
@@ -38,6 +41,14 @@ public class FriendShip {
 
     public long getIdReceiver() {
         return idReceiver;
+    }
+
+    public String getUsernameSender() {
+        return usernameSender;
+    }
+
+    public void setUsernameSender(String usernameSender) {
+        this.usernameSender = usernameSender;
     }
 
     public void setIdReceiver(long idReceiver) {
@@ -68,6 +79,14 @@ public class FriendShip {
         else
         {
             this.idSender = -1;
+        }
+
+        if (!jsonObject.isNull("usernameSender")) {
+            this.usernameSender = jsonObject.getString("usernameSender");
+        }
+        else
+        {
+            this.usernameSender = "";
         }
 
         if (!jsonObject.isNull("id_userReceiver")) {

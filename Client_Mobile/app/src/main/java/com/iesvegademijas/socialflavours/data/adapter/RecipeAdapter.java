@@ -120,8 +120,8 @@ public class RecipeAdapter extends BaseAdapter {
     }
 
     public interface RecipesAdapterCallBack {
-        public void editPressed(int position);
-        public void deletePressed(int position);
+        void editPressed(int position);
+        void deletePressed(int position);
     }
 
     public void setCallback(RecipesAdapterCallBack callback) {this.callback = callback;}

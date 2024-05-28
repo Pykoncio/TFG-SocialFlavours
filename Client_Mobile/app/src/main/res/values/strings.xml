@@ -52,4 +52,8 @@
     <string name="dinner">Dinner</string>
     <string name="snack">Snack</string>
     <string name="save">Save</string>
+    <string name="add_friend_sentence">Connect to share delicious recipes!</string>
+    <string name="send_friendship_request_title">Send friendship request:</string>
+    <string name="sending_friendship_request">If the user provided matches an existing user, we will notify them.</string>
+    <string name="send_friendship_request">Send Friendship Request</string>
 </resources>

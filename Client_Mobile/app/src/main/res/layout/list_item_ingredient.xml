@@ -13,7 +13,7 @@
         android:padding="5dp"/>
 
     <ImageButton
-        android:id="@+id/ib_li_eliminar"
+        android:id="@+id/ib_li_delete"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginTop="10dp"
