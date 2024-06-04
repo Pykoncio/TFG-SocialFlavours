@@ -3,8 +3,7 @@ package com.iesvegademijas.serverSideSocialFlavours.controllers.recipeRelated;
 import com.iesvegademijas.serverSideSocialFlavours.models.entities.Ingredient;
 import com.iesvegademijas.serverSideSocialFlavours.models.entities.Step;
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.Recipe;
-import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.RecipeDTO;
-import com.iesvegademijas.serverSideSocialFlavours.models.social.FriendshipRequest;
+import com.iesvegademijas.serverSideSocialFlavours.dto.RecipeDTO;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
 import com.iesvegademijas.serverSideSocialFlavours.repository.recipeRelated.RecipeRepository;
 import com.iesvegademijas.serverSideSocialFlavours.repository.social.UserRepository;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/recipeapi")

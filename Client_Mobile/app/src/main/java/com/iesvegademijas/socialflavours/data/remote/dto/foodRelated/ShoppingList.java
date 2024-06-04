@@ -4,6 +4,7 @@ import android.net.ParseException;
 
 import com.iesvegademijas.socialflavours.data.remote.dto.entities.Ingredient;
 import com.iesvegademijas.socialflavours.data.remote.dto.entities.Item;
+import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,6 +15,8 @@ import java.util.List;
 
 public class ShoppingList {
     private long id_shoppingList;
+    private User user;
+    private String listName;
     private List<Item> itemList;
 
     public ShoppingList(){}
@@ -23,9 +26,18 @@ public class ShoppingList {
         this.itemList = new ArrayList<>();
     }
 
-    public ShoppingList(long id_shoppingList, List<Item> itemList) {
-        this.id_shoppingList = id_shoppingList;
+    public ShoppingList(String name, List<Item> itemList, User user) {
+        this.listName = name;
         this.itemList = itemList;
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public long getId_shoppingList() {
@@ -44,14 +56,37 @@ public class ShoppingList {
         this.itemList = itemList;
     }
 
-    public void fromJSON(JSONObject jsonObject) throws JSONException, ParseException
-    {
+    public String getListName() {
+        return listName;
+    }
+
+    public void setListName(String listName) {
+        this.listName = listName;
+    }
+
+    public void fromJSON(JSONObject jsonObject) throws JSONException, ParseException, java.text.ParseException {
         if (!jsonObject.isNull("id_shoppingList")) {
             this.id_shoppingList = jsonObject.getLong("id_shoppingList");
         }
         else
         {
             this.id_shoppingList = -1;
+        }
+
+        if (!jsonObject.isNull("user")) {
+            JSONObject userObject = jsonObject.getJSONObject("user");
+            this.user = new User();
+            this.user.fromJSON(userObject);
+        } else {
+            this.user = null;
+        }
+
+        if(!jsonObject.isNull("shoppingListName")) {
+            this.listName = jsonObject.getString("shoppingListName");
+        }
+        else
+        {
+            this.listName = "";
         }
 
         this.itemList = new ArrayList<>();

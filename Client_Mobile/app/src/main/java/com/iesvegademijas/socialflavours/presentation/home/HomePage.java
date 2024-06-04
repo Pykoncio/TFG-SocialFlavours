@@ -178,7 +178,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                                 showError(result);
                             }
                             else if(result.equalsIgnoreCase("null")){
-                                showError("error.desconocido");
+                                showError("error.Unknown");
                             } else{
                                 resetList(result);
                             }

@@ -41,6 +41,7 @@
                 android:layout_below="@id/modify_recipe_title"
                 android:layout_margin="10dp"
                 android:src="@drawable/default_recipe_image"
+                android:onClick="checkPermissionAndPickImage"
                 android:contentDescription="Recipe Image"/>
 
             <TextView

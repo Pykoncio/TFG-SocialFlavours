@@ -92,7 +92,7 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.fragment_create_recipe, container, false);
+        myView = inflater.inflate(R.layout.fragment_friends_recipes, container, false);
 
         setUpFriendsRecipes();
 

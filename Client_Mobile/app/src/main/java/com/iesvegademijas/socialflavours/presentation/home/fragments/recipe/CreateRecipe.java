@@ -432,13 +432,13 @@ public class CreateRecipe extends Fragment {
                         pbCreate.setVisibility(View.GONE);
                         btCreate.setEnabled(true);
                         btCreate.setClickable(true);
-                        long idCreado;
+                        long idCreated;
                         try{
-                            idCreado=Long.parseLong(result);
+                            idCreated=Long.parseLong(result);
                         }catch(NumberFormatException ex){
-                            idCreado=-1;
+                            idCreated=-1;
                         }
-                        if(idCreado>0){
+                        if(idCreated>0){
                             // getActivity().getSupportFragmentManager().popBackStack(); One way to do it
                             getActivity().finish();
                         }

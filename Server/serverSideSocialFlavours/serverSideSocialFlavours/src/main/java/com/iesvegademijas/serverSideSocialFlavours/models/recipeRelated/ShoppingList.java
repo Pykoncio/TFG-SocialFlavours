@@ -14,14 +14,17 @@ public class ShoppingList {
     private Long id_shoppingList;
     @ManyToOne
     private User user;
+    @Column(unique = true)
+    private String shoppingListName;
     @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL)
     private Set<Item> itemList = new HashSet<>();
 
     public ShoppingList(){}
 
-    public ShoppingList(Long id_ShoppingList, User user, Set<Item> itemList) {
+    public ShoppingList(Long id_ShoppingList, User user, String shoppingListName,Set<Item> itemList) {
         this.id_shoppingList = id_ShoppingList;
         this.user = user;
+        this.shoppingListName = shoppingListName;
         this.itemList = itemList;
     }
 
@@ -35,6 +38,14 @@ public class ShoppingList {
 
     public User getUser() {
         return user;
+    }
+
+    public String getShoppingListName() {
+        return shoppingListName;
+    }
+
+    public void setShoppingListName(String shoppingListName) {
+        this.shoppingListName = shoppingListName;
     }
 
     public void setUser(User user) {

@@ -1,4 +1,4 @@
-package com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated;
+package com.iesvegademijas.serverSideSocialFlavours.dto;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

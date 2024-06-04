@@ -4,11 +4,10 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tv_li_ingrediente"
+        android:id="@+id/tv_shopping_list_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tomatoes"
-        android:background="@drawable/edit_text_border"
+        android:text="Groceries"
         android:layout_margin="10dp"
         android:padding="5dp"/>
 

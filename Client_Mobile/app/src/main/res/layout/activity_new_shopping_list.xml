@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.home.fragments.shopping_list.NewShoppingList">
+
+    <ProgressBar
+        android:id="@+id/pb_new_shopping_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+
+    <EditText
+        android:id="@+id/new_shopping_list_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="65dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/edit_text_border"
+        android:textColor="#808080"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/new_item_name"
+        android:padding="5dp"/>
+
+    <Button
+        android:id="@+id/new_shopping_list_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/new_shopping_list_name"
+        android:backgroundTint="#84A98C"
+        android:layout_centerHorizontal="true"
+        android:onClick="createShoppingList"
+        android:text="@string/create"
+        android:textColor="@color/white"/>
+
+</RelativeLayout>
