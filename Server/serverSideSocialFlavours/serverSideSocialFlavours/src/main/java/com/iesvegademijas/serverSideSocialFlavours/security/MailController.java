@@ -19,19 +19,25 @@ public class MailController {
 
     private final PasswordEncoder passwordEncoder = new PasswordEncoder();
 
-    @PostMapping("/send/{username}")
+    @GetMapping("/send/{username}")
     public ResponseEntity<String> sendMail(@PathVariable String username) {
 
         User user = userRepository.findByUsername(username);
 
         if (user != null) // This means the user provided exists
         {
-            emailSenderService.SendEmail(user.getEmail(), "Password Recovery", passwordEncoder.decode(user.getPassword()));
-            return ResponseEntity.status(HttpStatus.OK).build();
+            emailSenderService.SendEmail(
+                    user.getEmail(),
+                    "Social Flavours - Password Recovery",
+                    "We received a request to retrieve the password for your Social Flavours account. " +
+                            "Below is your current password: \n\n" +
+                            passwordEncoder.decode(user.getPassword())
+            );
+            return ResponseEntity.status(HttpStatus.OK).body("Sent!");
         }
         else
         {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 

@@ -25,8 +25,10 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -56,6 +58,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RecipeAdapter.RecipesAdapterCallBack {
@@ -76,72 +79,60 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     private RecipeAdapter recipesAdapter;
 
     // We create the instance of the login activity, either to retrieve user data or to send the user to log in
-    final Intent loginIntent = new Intent(this, Login.class);
+    Intent loginIntent;
     private User user;
     private SharedPreferences sharedPref;
 
     // Tries to make the connection
     private static final int MAX_RETRIES = 5;
 
-    ActivityResultLauncher<Intent> newResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        retrieveUser();
-                    }
-                }
-            });
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
-        user = new User();
-        retrieveUser();
-    }
 
-    private void retrieveUser()
-    {
-        sharedPref = getSharedPreferences("MyUserPrefs", Context.MODE_PRIVATE);
-
-        // If we have logged or registered successfully, we write in our shared preferences
-        user.setUsername(loginIntent.getStringExtra("username"));
-        user.setPassword(loginIntent.getStringExtra("password"));
-
-        if(user.getUsername() == null || user.getPassword() == null)
+        if (!isUserLoggedIn())
         {
-            // Use these shared preferences to retrieve the user, if its null, then the user will be redirected to the login form
-            user.setUsername(sharedPref.getString("username", ""));
-            user.setUsername(sharedPref.getString("password", ""));
-
-            getUser(user.getUsername(), user.getPassword());
-
-            if (user.getUsername() == "" || user.getPassword() == "")
-            {
-                newResultLauncher.launch(loginIntent);
-            }
-            else
-            {
-                setUpRecipes();
-            }
+            loginIntent = new Intent(this, Login.class);
+            startActivity(loginIntent);
+            finish();
         }
-        else // We write the new Login values into the shared preferences
+        else
         {
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("username", user.getUsername());
-            editor.putString("password", user.getPassword());
-            editor.commit();
-
             setUpRecipes();
         }
     }
 
+    private boolean isUserLoggedIn()
+    {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyUserPrefs", MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", "");
+        String password = sharedPreferences.getString("password", "");
+        Long idUser = sharedPreferences.getLong("id_user", -1);
+
+        user = new User();
+        if (username.isEmpty() || password.isEmpty())
+        {
+            user.setUsername(username);
+            user.setPassword(password);
+            user.setId_user(idUser);
+            return false;
+        }
+        else
+        {
+            user.setUsername(username);
+            user.setPassword(password);
+            user.setId_user(idUser);
+            return true;
+        }
+    }
+
+
+
     //region load the recipes
     private void setUpRecipes()
     {
-        String url = R.string.main_url + "recipeapi/getAllRecipesFromUser" + user.getId_user();
+        String url = getResources().getString(R.string.main_url) + "recipeapi/getAllRecipesFromUser" + user.getId_user();
         if (isNetworkAvailable()) {
             for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
                 try {
@@ -162,6 +153,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     }
 
     private void getListTask(String url) {
+
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(new Runnable() {
@@ -250,7 +242,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 Recipe recipe = recipeModels.get(position);
                 Intent myIntent = new Intent().setClass(this, ModifyRecipe.class);
                 myIntent.putExtra("id_recipe", recipe.getId_recipe());
-                newResultLauncher.launch(myIntent);
+                startActivity(myIntent);
             }
         }
     }
@@ -448,7 +440,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         Intent intent = new Intent(this, Login.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        finish();
+        // finish();
     }
 
     //endregion

@@ -46,14 +46,14 @@ public class UserController {
         }
     }
 
-    @GetMapping(path = "/userLogin")
-    public ResponseEntity<User> userLogin(@RequestBody UserDTO userDTO)
+    @GetMapping(path = "/userLogin/{username}_{password}")
+    public ResponseEntity<User> userLogin(@PathVariable String username, @PathVariable String password)
     {
-        User userSearched = userRepository.findByUsername(userDTO.getUsername());
+        User userSearched = userRepository.findByUsername(username);
 
         if (userSearched != null)
         {
-            String password = userDTO.getPassword();
+
             String encodedPassword = userSearched.getPassword();
 
             boolean isPasswordRight = passwordEncoder.matches(password, encodedPassword);

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+import com.iesvegademijas.socialflavours.presentation.home.HomePage;
+import com.iesvegademijas.socialflavours.presentation.login.Login;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +39,14 @@ public class Register extends AppCompatActivity {
         setContentView(R.layout.activity_register);
     }
 
-    public void returnToLoginScreen()
+    public void returnToLoginScreen(View view)
     {
+        Intent intent = new Intent().setClass(this, Login.class);
+        startActivity(intent);
         finish();
     }
 
-    public void register()
+    public void register(View view)
     {
         EditText editTextUsername = findViewById(R.id.register_user_input);
         EditText editTextEmail = findViewById(R.id.register_email_input);
@@ -72,15 +77,16 @@ public class Register extends AppCompatActivity {
 
         if (correctCredentialsFormat)
         {
-            Button btLogin = findViewById(R.id.register_button);
-            ProgressBar pbLogin = findViewById(R.id.pb_register);
+            Button btRegister = findViewById(R.id.register_button);
+            ProgressBar pbRegister = findViewById(R.id.pb_register);
 
-            btLogin.setEnabled(false);
-            pbLogin.setVisibility(View.VISIBLE);
+            btRegister.setEnabled(false);
+            btRegister.setClickable(false);
+            pbRegister.setVisibility(View.VISIBLE);
 
             if (isNetworkAvailable())
             {
-                String url = R.string.main_url + "/userapi/register";
+                String url = getResources().getString(R.string.main_url) + "userapi/register";
                 sendTask(url, username, email, password);
             }
             else {
@@ -105,11 +111,11 @@ public class Register extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Button btLogin = findViewById(R.id.login_button);
-                        ProgressBar pbLogin = findViewById(R.id.pb_login);
-                        pbLogin.setVisibility(View.GONE);
-                        btLogin.setEnabled(true);
-                        btLogin.setClickable(true);
+                        Button btRegister = findViewById(R.id.register_button);
+                        ProgressBar pbRegister = findViewById(R.id.pb_register);
+                        btRegister.setVisibility(View.GONE);
+                        btRegister.setEnabled(true);
+                        pbRegister.setClickable(true);
                         long idCreated;
                         try{
                             idCreated=Long.parseLong(result);
@@ -117,11 +123,14 @@ public class Register extends AppCompatActivity {
                             idCreated=-1;
                         }
                         if(idCreated>0){
-                            final Intent data = new Intent();
-                            data.putExtra("username", username);
-                            data.putExtra("password", password);
-                            setResult(RESULT_OK, data);
-                            finish();
+                            SharedPreferences sharedPref = getSharedPreferences("MyUserPrefs", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putString("username", username);
+                            editor.putString("password", password);
+                            editor.putLong("id_user", idCreated);
+                            editor.apply();
+
+                            sendUserToHomePage();
                         }
                         else {
                             showError("error.Unknown");
@@ -130,6 +139,13 @@ public class Register extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void sendUserToHomePage()
+    {
+        Intent intent = new Intent().setClass(this, HomePage.class);
+        startActivity(intent);
+        finish();
     }
 
     private Boolean isNetworkAvailable() {

@@ -14,6 +14,15 @@
         android:orientation="vertical"
         android:gravity="center">
 
+        <ProgressBar
+            android:id="@+id/pb_recovery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"/>
+
         <ImageView
             android:layout_width="160dp"
             android:layout_height="160dp"
@@ -72,7 +81,17 @@
             android:textColorHint="#CAD2C5"
             android:backgroundTint="#2F3E46"
             android:padding="30dp"
+            android:onClick="rememberPassword"
             android:layout_margin="30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/continueWithLogin"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:onClick="returnToLoginScreenFromRecovery"/>
 
     </LinearLayout>
 

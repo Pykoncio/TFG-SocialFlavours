@@ -1,10 +1,11 @@
 package com.iesvegademijas.socialflavours.data.remote;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,35 +18,35 @@ import okhttp3.Response;
 public class ApiOperator {
 
     private static ApiOperator me = null;
+    private static final String TAG = "ApiOperatorTag"; // Log tag
 
     private ApiOperator(){}
 
-    public static ApiOperator getInstance()
-    {
+    public static ApiOperator getInstance() {
         synchronized (ApiOperator.class) {
-            if (me == null)
-            {
+            if (me == null) {
                 me = new ApiOperator();
             }
         }
         return me;
     }
 
-    public String postText(String url, Map<String, Object> params){
-        int cont=0;
-        String res=okPostText(url, params);
-        while((cont<5)&&(res.equals("error.PIPE"))){
+    public String postText(String url, Map<String, Object> params) {
+        int cont = 0;
+        String res = okPostText(url, params);
+        while ((cont < 5) && res.equals("error.PIPE")) {
             ++cont;
-            res=okPostText(url,params);
+            res = okPostText(url, params);
         }
+        Log.d(TAG, "postText response: " + res);
         return res;
     }
 
-    private String okPostText(String url, Map<String, Object> params){
+    private String okPostText(String url, Map<String, Object> params) {
         try {
             OkHttpClient client = new OkHttpClient();
-            JSONObject jsonObject=new JSONObject();
-            for (String pair : params.keySet()) { // Map.Entry<String, Object> entry if the String pair doesnt work properly
+            JSONObject jsonObject = new JSONObject();
+            for (String pair : params.keySet()) {
                 jsonObject.put(pair, params.get(pair));
             }
             RequestBody body = RequestBody.create(jsonObject.toString(),
@@ -56,33 +57,37 @@ public class ApiOperator {
                     .build();
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
+                Log.e(TAG, "okPostText error: " + response.code());
                 return "error.OKHttp";
             } else {
-                return response.body().string();
+                String result = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG, "okPostText result: " + result);
+                return result;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "IOException in okPostText", e);
             return "error.PIPE";
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "JSONException in okPostText", e);
             return "error.JSONException";
         }
     }
 
-    public String putText(String url, Map<String, Object> params){
-        int cont=0;
-        String res=okPutText(url, params);
-        while((cont<5)&&(res.equals("error.PIPE"))){
+    public String putText(String url, Map<String, Object> params) {
+        int cont = 0;
+        String res = okPutText(url, params);
+        while ((cont < 5) && res.equals("error.PIPE")) {
             ++cont;
-            res=okPutText(url,params);
+            res = okPutText(url, params);
         }
+        Log.d(TAG, "putText response: " + res);
         return res;
     }
 
-    private String okPutText(String url, Map<String, Object> params){
+    private String okPutText(String url, Map<String, Object> params) {
         try {
             OkHttpClient client = new OkHttpClient();
-            JSONObject jsonObject=new JSONObject();
+            JSONObject jsonObject = new JSONObject();
             for (String pair : params.keySet()) {
                 jsonObject.put(pair, params.get(pair));
             }
@@ -94,30 +99,34 @@ public class ApiOperator {
                     .build();
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
+                Log.e(TAG, "okPutText error: " + response.code());
                 return "error.OKHttp";
             } else {
-                return response.body().string();
+                String result = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG, "okPutText result: " + result);
+                return result;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "IOException in okPutText", e);
             return "error.PIPE";
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "JSONException in okPutText", e);
             return "error.JSONException";
         }
     }
 
     public String putText(String url) {
-        int cont=0;
-        String res=okPutText(url);
-        while((cont<5)&&(res.equals("error.PIPE"))){
+        int cont = 0;
+        String res = okPutText(url);
+        while ((cont < 5) && res.equals("error.PIPE")) {
             ++cont;
-            res=okPutText(url);
+            res = okPutText(url);
         }
+        Log.d(TAG, "putText response: " + res);
         return res;
     }
 
-    private String okPutText(String url){
+    private String okPutText(String url) {
         try {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
@@ -125,12 +134,15 @@ public class ApiOperator {
                     .build();
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
+                Log.e(TAG, "okPutText error: " + response.code());
                 return "error.OKHttp";
             } else {
-                return response.body().string();
+                String result = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG, "okPutText result: " + result);
+                return result;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "IOException in okPutText", e);
             return "error.PIPE";
         }
     }
@@ -138,97 +150,67 @@ public class ApiOperator {
     public String postText(String url) {
         try {
             OkHttpClient client = new OkHttpClient();
-
             Request request = new Request.Builder()
                     .url(url)
                     .build();
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
+                Log.e(TAG, "postText error: " + response.code());
                 return "error.OKHttp";
             } else {
-                return response.body().string();
+                String result = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG, "postText result: " + result);
+                return result;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "IOException in postText", e);
             return "error.PIPE";
         }
     }
-
-    public String okGetString(String myurl, Map<String, String> params){
-        try {
-            OkHttpClient client = new OkHttpClient();
-            JSONObject jsonObject = new JSONObject();
-            for (String pair: params.keySet()) {
-                jsonObject.put(pair, params.get(pair));
-            }
-
-            RequestBody body = RequestBody.create(jsonObject.toString(),
-                    MediaType.parse("application/json"));
-
-            Request request = new Request.Builder()
-                    .url(myurl)
-                    .put(body)
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()){
-                return "error.OKHttp";
-            }
-            else{
-                return response.body().string();
-            }
-        }
-        catch(IOException e){
-            e.printStackTrace();
-            return "error.IOException";
-        }
-        catch(JSONException e){
-            e.printStackTrace();
-            return "error.JSONException";
-        }
-    }
-
-    public String getString(String myurl){
-        int cont=0;
-        String res=okGetString(myurl);
-        while((cont<5)&&(res.equals("error.IOException"))){
+    public String getString(String myurl) {
+        int cont = 0;
+        String res = okGetString(myurl);
+        while ((cont < 5) && res.equals("error.IOException")) {
             ++cont;
-            res=okGetString(myurl);
+            res = okGetString(myurl);
         }
+        Log.d(TAG, "getString response: " + res);
         return res;
     }
 
-    public String okGetString(String myurl){
+    public String okGetString(String myurl) {
         try {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url(myurl)
                     .build();
             Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()){
+            if (!response.isSuccessful()) {
+                Log.e(TAG, "okGetString error: " + response.code());
                 return "error.OKHttp";
+            } else {
+                String result = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG, "okGetString result: " + result);
+                return result;
             }
-            else{
-                return response.body().string();
-            }
-        }
-        catch(IOException e){
-            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e(TAG, "IOException in okGetString", e);
             return "error.IOException";
         }
     }
 
-
-    public String deleteTask(String myurl){
-        int cont=0;
-        String res=okDeleteTask(myurl);
-        while((cont<5)&&(res.equals("error.IOException"))){
+    public String deleteTask(String myurl) {
+        int cont = 0;
+        String res = okDeleteTask(myurl);
+        while ((cont < 5) && res.equals("error.IOException")) {
             ++cont;
-            res=okDeleteTask(myurl);
+            res = okDeleteTask(myurl);
         }
+        Log.d(TAG, "deleteTask response: " + res);
         return res;
     }
 
-    public String okDeleteTask(String myurl){
+    public String okDeleteTask(String myurl) {
         try {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
@@ -236,19 +218,17 @@ public class ApiOperator {
                     .url(myurl)
                     .build();
             Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()){
+            if (!response.isSuccessful()) {
+                Log.e(TAG, "okDeleteTask error: " + response.code());
                 return "error.OKHttp";
+            } else {
+                String result = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG, "okDeleteTask result: " + result);
+                return result;
             }
-            else{
-                return response.body().string();
-            }
-        }
-        catch(IOException e){
-            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e(TAG, "IOException in okDeleteTask", e);
             return "error.IOException";
         }
     }
-
-
-
 }

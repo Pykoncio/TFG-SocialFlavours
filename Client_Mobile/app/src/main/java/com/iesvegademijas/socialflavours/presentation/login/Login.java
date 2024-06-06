@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -27,54 +28,57 @@ import android.widget.Toast;
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
+import com.iesvegademijas.socialflavours.presentation.accrecovery.Recovery;
+import com.iesvegademijas.socialflavours.presentation.home.HomePage;
 import com.iesvegademijas.socialflavours.presentation.register.Register;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Login extends AppCompatActivity {
 
-    final Intent registerIntent = new Intent(this, Register.class);
-
-    ActivityResultLauncher<Intent> newResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        EditText editTextUsername = findViewById(R.id.login_username_input);
-                        EditText editTextPassword = findViewById(R.id.login_password_input);
-
-                        editTextUsername.setText("");
-                        editTextPassword.setText("");
-
-                        String username = registerIntent.getStringExtra("username");
-                        String password = registerIntent.getStringExtra("password");
-
-                        if (username != null && password != null)
-                        {
-                            returnToHomeScreen(username, password);
-                        }
-                    }
-                }
-            });
-
+    private long idUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        if (isUserLoggedIn())
+        {
+            Intent intent = new Intent().setClass(this, HomePage.class);
+            startActivity(intent);
+            finish();
+        }
+
     }
-    public void goToRegisterPage()
+
+    private boolean isUserLoggedIn()
     {
-        Intent intent = new Intent(this, Register.class);
-        startActivity(intent);
+        SharedPreferences sharedPreferences = getSharedPreferences("MyUserPrefs", MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", "");
+        String password = sharedPreferences.getString("password", "");
+
+        if (username.isEmpty() || password.isEmpty())
+        {
+            return false;
+        }
+        else {return true;}
+    }
+    public void goToRegisterPage(View view)
+    {
+        Intent registerIntent = new Intent(this, Register.class);
+        startActivity(registerIntent);
+        finish();
+    }
+
+    public void goToRecoverPasswordActivity(View view)
+    {
+        Intent recoveryIntent = new Intent(this, Recovery.class);
+        startActivity(recoveryIntent);
+        finish();
     }
 
     public void login(View view) {
@@ -104,12 +108,13 @@ public class Login extends AppCompatActivity {
             ProgressBar pbLogin = findViewById(R.id.pb_login);
 
             btLogin.setEnabled(false);
+            btLogin.setClickable(false);
             pbLogin.setVisibility(View.VISIBLE);
 
             if (isNetworkAvailable())
             {
-                String url = R.string.main_url + "/userapi/userLogin";
-                getListaTask(url, username, password);
+                String url = getResources().getString(R.string.main_url) + "userapi/userLogin/" + username + "_" + password;
+                getListTask(url);
             }
             else {
                 showError("error.IOException");
@@ -118,22 +123,38 @@ public class Login extends AppCompatActivity {
     }
 
     private void returnToHomeScreen(String username, String password) {
-        final Intent data = new Intent();
-        data.putExtra("username", username);
-        data.putExtra("password", password);
+
+        if (!username.isEmpty() && !password.isEmpty())
+        {
+            SharedPreferences sharedPreferences = getSharedPreferences("MyUserPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("username", username);
+            editor.putString("password", password);
+            editor.putLong("id_user", idUser);
+            editor.apply();
+
+            Button btLogin = findViewById(R.id.login_button);
+            ProgressBar pbLogin = findViewById(R.id.pb_login);
+
+            btLogin.setEnabled(true);
+            btLogin.setClickable(true);
+            pbLogin.setVisibility(View.GONE);
+
+            Intent myIntent = new Intent().setClass(this, HomePage.class);
+            startActivity(myIntent);
+            finish();
+        }
 
         Button btLogin = findViewById(R.id.login_button);
         ProgressBar pbLogin = findViewById(R.id.pb_login);
 
         btLogin.setEnabled(true);
+        btLogin.setClickable(true);
         pbLogin.setVisibility(View.GONE);
-
-        setResult(RESULT_OK, data);
-        finish();
     }
 
     //region server request
-    private void getListaTask(String url, String username, String password) {
+    private void getListTask(String url) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(new Runnable() {
@@ -141,10 +162,7 @@ public class Login extends AppCompatActivity {
             public void run() {
                 try {
                     ApiOperator apiOperator = ApiOperator.getInstance();
-                    Map<String, String> params = new HashMap<>();
-                    params.put("username", username);
-                    params.put("password", password);
-                    String result = apiOperator.okGetString(url, params);
+                    String result = apiOperator.okGetString(url);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -165,6 +183,12 @@ public class Login extends AppCompatActivity {
                         @Override
                         public void run() {
                             showError(e.getMessage());
+                            Button btLogin = findViewById(R.id.login_button);
+                            ProgressBar pbLogin = findViewById(R.id.pb_login);
+
+                            btLogin.setEnabled(true);
+                            btLogin.setClickable(true);
+                            pbLogin.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -180,6 +204,8 @@ public class Login extends AppCompatActivity {
             JSONObject userData = new JSONObject(result);
             User user = new User();
             user.fromJSON(userData);
+
+            idUser = user.getId_user();
 
             returnToHomeScreen(user.getUsername(), user.getPassword());
         }
