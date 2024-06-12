@@ -7,8 +7,10 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -28,11 +30,13 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
@@ -44,6 +48,7 @@ import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.ShoppingLis
 import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.inbox.IncomingFriendshipRequests;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.meal_planner.MealPlanner;
+import com.iesvegademijas.socialflavours.presentation.home.fragments.outbox.SendFriendshipRequest;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.recipe.CreateRecipe;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.recipe.FriendsRecipes;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.shopping_list.ShoppingLists;
@@ -64,7 +69,9 @@ import java.util.concurrent.Future;
 public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RecipeAdapter.RecipesAdapterCallBack {
 
     // Launch the fragments
-    private DrawerLayout drawerLayout;
+    public DrawerLayout drawerLayout;
+
+    private Toolbar toolbar;
 
     private OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
@@ -81,7 +88,6 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     // We create the instance of the login activity, either to retrieve user data or to send the user to log in
     Intent loginIntent;
     private User user;
-    private SharedPreferences sharedPref;
 
     // Tries to make the connection
     private static final int MAX_RETRIES = 5;
@@ -90,6 +96,30 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+
+        listView = findViewById(R.id.recipeList);
+
+        // Fragment Navigation
+        drawerLayout = findViewById(R.id.drawerLayout);
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawerLayout = findViewById(R.id.drawerLayout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.open, R.string.closed);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // Set hamburger icon for the toolbar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_hamburguer_24);
+        }
+
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         if (!isUserLoggedIn())
         {
@@ -226,6 +256,18 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
             ProgressBar pbMain = findViewById(R.id.pb_home);
             pbMain.setVisibility(View.GONE);
+
+            TextView tvEmptyList = findViewById(R.id.tv_empty_list_home);
+
+            if (recipeModels.isEmpty())
+            {
+                tvEmptyList.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                tvEmptyList.setVisibility(View.GONE);
+            }
+
         }
         catch (JSONException | ParseException e)
         {
@@ -402,7 +444,7 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 title = "Incoming Friendships Requests";
                 break;
             case 4:
-                fragment = FriendsRecipes.newInstance(String.valueOf(user.getId_user()), "");
+                fragment = SendFriendshipRequest.newInstance(String.valueOf(user.getId_user()), "");
                 title = "Outgoing Friendships Requests";
                 break;
             case 5:
@@ -411,28 +453,38 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 break;
             case 6:
                 fragment = MealPlanner.newInstance(String.valueOf(user.getId_user()), "");
-                title = "My Friends Recipes";
+                title = "Meal Planner";
                 break;
             case 7:
                 fragment = ShoppingLists.newInstance(String.valueOf(user.getId_user()), "");
-                title = "My Friends Recipes";
+                title = "Shopping Lists";
                 break;
             case 8:
                 logOut();
                 return;
         }
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.home_content, fragment)
-                .commit();
+        if (fragment!=null)
+        {
+            Log.d("HomePage", "Replacing fragment with ID: " + fragmentId);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.home_content, fragment)
+                    .commit();
 
-        setTitle(title);
+            setTitle(title);
+        }
+        else
+        {
+            Log.d("HomePage", "Fragment is null for ID: " + fragmentId);
+        }
     }
+
 
     private void logOut() {
         // Clear shared preferences
-        SharedPreferences.Editor editor = sharedPref.edit();
+        SharedPreferences sharedPreferences = getSharedPreferences("MyUserPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();
 

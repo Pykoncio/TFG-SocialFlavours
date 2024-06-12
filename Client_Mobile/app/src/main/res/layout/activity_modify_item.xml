@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F0F4ED"
     tools:context=".presentation.home.fragments.shopping_list.item.ModifyItem">
 
     <ProgressBar
@@ -20,7 +21,7 @@
         android:id="@+id/modify_item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="65dp"
+        android:layout_marginTop="45dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/edit_text_border"
@@ -72,17 +73,15 @@
         android:layout_alignParentRight="true"
         android:textAlignment="center"
         android:layout_height="wrap_content"
-        android:inputType="number"
         android:layout_margin="10dp"
         android:layout_below="@+id/modify_item_quantity"
-        android:textColor="#808080"
-        android:hint="@string/quantity_hint"
         android:padding="5dp"/>
 
     <Button
         android:id="@+id/modify_item_button_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="75dp"
+        android:textSize="20dp"
         android:layout_marginTop="20dp"
         android:layout_below="@id/modify_item_check"
         android:backgroundTint="#84A98C"

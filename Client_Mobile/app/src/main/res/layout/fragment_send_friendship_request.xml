@@ -2,29 +2,30 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="#E8F0E5"
     android:layout_height="match_parent"
-    android:background="@drawable/login_background"
     tools:context=".presentation.home.fragments.outbox.SendFriendshipRequest">
 
-    <ProgressBar
-        android:id="@+id/pb_send_friendship_request"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="gone"/>
-
     <LinearLayout
+        android:layout_marginTop="64dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center">
 
+        <ProgressBar
+            android:id="@+id/pb_send_friendship_request"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"/>
+
         <ImageView
             android:layout_width="160dp"
+            android:layout_marginTop="-60dp"
             android:layout_height="160dp"
-            android:layout_marginTop="50dp"
             android:src="@drawable/icon_account"
             android:layout_marginBottom="25dp"/>
 
@@ -32,19 +33,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/send_friendship_request_title"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textColor="#2F3E46"
             android:textStyle="bold"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginBottom="10dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sending_friendship_request"
-            android:textSize="16sp"
-            android:layout_margin="15dp"
-            android:textColor="#354F52"
-            android:layout_marginTop="10dp"/>
+            android:textSize="18sp"
+            android:layout_margin="25dp"
+            android:textColor="#354F52" />
 
         <EditText
             android:id="@+id/send_request_to_user"
@@ -54,7 +54,7 @@
             android:textColor="@color/black"
             android:textColorHint="#5A5A5A"
             android:padding="20dp"
-            android:layout_margin="15dp"
+            android:layout_margin="20dp"
             android:textSize="18sp"
             android:background="@drawable/rounded_field"
             android:inputType="text"/>
@@ -63,12 +63,12 @@
             android:id="@+id/send_friendship_request"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/send_friendship_request"
+            android:text="@string/send_friendship_request"
             android:textSize="20dp"
             android:textColorHint="#CAD2C5"
             android:backgroundTint="#2F3E46"
-            android:padding="30dp"
-            android:layout_margin="30dp"/>
+            android:padding="25dp"
+            android:layout_margin="25dp"/>
 
     </LinearLayout>
 

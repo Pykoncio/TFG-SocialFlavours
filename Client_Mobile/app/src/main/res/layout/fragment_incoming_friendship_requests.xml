@@ -2,12 +2,18 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="#E8F0E5"
     android:layout_height="match_parent"
     tools:context=".presentation.home.fragments.inbox.IncomingFriendshipRequests">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_shoppingLists"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"/>
 
         <ProgressBar
             android:id="@+id/pb_incoming_friendship_request"
@@ -18,8 +24,17 @@
             android:layout_centerVertical="true"
             android:visibility="gone"/>
 
+        <TextView
+            android:id="@+id/tv_empty_list_incoming_friendship_requests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/no_friendship_requests"
+            android:visibility="gone"/>
+
         <ListView
-            android:id="@+id/friends_recipes_list"
+            android:id="@+id/incoming_friendship_requests_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="65dp"/>

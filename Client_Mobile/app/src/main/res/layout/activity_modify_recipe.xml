@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F0F4ED"
     tools:context=".presentation.modify_recipe.ModifyRecipe">
 
     <ScrollView
@@ -13,7 +14,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
 
             <ProgressBar
                 android:id="@+id/pb_modify_recipe"
@@ -128,6 +130,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/modify_recipe_label_tag"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
                 android:padding="5dp"
                 android:text="@string/ingredients"
                 android:textColorHint="#354F52"
@@ -138,7 +141,7 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_below="@+id/modify_recipe_label_tag"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginRight="25dp"
                 android:layout_alignParentRight="true"
                 android:src="@drawable/ic_add_white"
@@ -192,8 +195,9 @@
 
             <Button
                 android:id="@+id/modify_recipe_button_save"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="150dp"
+                android:layout_height="75dp"
+                android:textSize="20dp"
                 android:backgroundTint="#84A98C"
                 android:text="@string/save"
                 android:onClick="Save"

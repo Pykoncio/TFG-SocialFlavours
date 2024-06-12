@@ -2,10 +2,9 @@ package com.iesvegademijas.socialflavours.presentation.home.fragments.recipe;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.Manifest;
+
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -17,13 +16,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,22 +45,12 @@ import android.widget.Toast;
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.common.DateUtil;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
-import com.iesvegademijas.socialflavours.data.remote.dto.entities.Ingredient;
-import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -82,10 +77,8 @@ public class CreateRecipe extends Fragment {
 
     private View myView;
     private ImageView recipeImageView;
-    private String imagePath;
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
-    private static final int PICK_IMAGE_REQUEST = 2;
+    private String imagePath;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -95,6 +88,21 @@ public class CreateRecipe extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1; // Long id of the user
     private String mParam2;
+
+    private ActivityResultLauncher<Intent> takeImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null)
+                {
+                    Uri uri = result.getData().getData();
+
+                    imagePath = getRealPathFromURI(uri);
+
+                    ImageView imageView = myView.findViewById(R.id.new_recipe_image);
+                    imageView.setImageURI(uri);
+                }
+            }
+    );
 
     public CreateRecipe() {
         // Required empty public constructor
@@ -145,11 +153,10 @@ public class CreateRecipe extends Fragment {
         });
 
         recipeImageView = myView.findViewById(R.id.new_recipe_image);
-        recipeImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkPermissionAndPickImage();
-            }
+
+        recipeImageView.setOnClickListener( v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            takeImageLauncher.launch(intent);
         });
 
         populateSpinners();
@@ -186,12 +193,12 @@ public class CreateRecipe extends Fragment {
                    // Create the imageButton to eliminate this String
                    ImageButton deleteButton = new ImageButton(getContext());
                    LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
-                           LinearLayout.LayoutParams.WRAP_CONTENT,
-                           LinearLayout.LayoutParams.WRAP_CONTENT
+                           25,
+                           25
                    );
                    deleteButton.setLayoutParams(deleteButtonParams);
                    deleteButton.setImageResource(R.drawable.eliminate_blue);
-                   deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
+                   deleteButton.setBackgroundColor(Color.parseColor("#F0F4ED"));
                    deleteButton.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View v) {
@@ -241,12 +248,12 @@ public class CreateRecipe extends Fragment {
                 // Create the imageButton to eliminate this String
                 ImageButton deleteButton = new ImageButton(getContext());
                 LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
+                        25,
+                        25
                 );
                 deleteButton.setLayoutParams(deleteButtonParams);
                 deleteButton.setImageResource(R.drawable.eliminate_blue);
-                deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
+                deleteButton.setBackgroundColor(Color.parseColor("#F0F4ED"));
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -453,64 +460,7 @@ public class CreateRecipe extends Fragment {
 
     //endregion
 
-    //region Image Picker
-    private void checkPermissionAndPickImage() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            // If we dont have the permissions, ask the user
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-        } else {
-            // If we have the permissions, pick the image
-            pickImageFromGallery();
-        }
-    }
-
-    private void pickImageFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso concedido, proceder con la acción
-                pickImageFromGallery();
-            }
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri imageUri = data.getData();
-            // Using Picasso to load the Image View
-            Picasso.get().load(imageUri).into(recipeImageView);
-            // Obtain the path for the image
-            imagePath = getRealPathFromURI(imageUri);
-        }
-    }
-
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContext().getContentResolver().query(contentUri, proj, null, null, null);
-        if (cursor != null) {
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String path = cursor.getString(column_index);
-            cursor.close();
-            return path;
-        }
-        return null;
-    }
-
-    //endregion
-
-    //region Network utils
+    //region Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -547,6 +497,19 @@ public class CreateRecipe extends Fragment {
         }
         Toast toast = Toast.makeText(myView.getContext(), message, duration);
         toast.show();
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContext().getContentResolver().query(contentUri, proj, null, null, null);
+        if (cursor != null) {
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String path = cursor.getString(column_index);
+            cursor.close();
+            return path;
+        }
+        return null;
     }
     //endregion
 

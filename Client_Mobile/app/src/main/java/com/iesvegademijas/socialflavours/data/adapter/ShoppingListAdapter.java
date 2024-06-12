@@ -18,7 +18,7 @@ public class ShoppingListAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<ShoppingList> shoppingLists;
-    private ShoppingListAdapterCallBack callBack;
+    private ShoppingListsAdapterCallBack callBack;
 
     public ShoppingListAdapter(Context context, ArrayList<ShoppingList> shoppingLists)
     {
@@ -95,11 +95,11 @@ public class ShoppingListAdapter extends BaseAdapter {
         ImageButton deleteButton;
     }
 
-    public interface ShoppingListAdapterCallBack
+    public interface ShoppingListsAdapterCallBack
     {
         void goToList(int position);
         void deleteShoppingList(int position);
     }
 
-    public void setCallback(ShoppingListAdapterCallBack callBack) {this.callBack = callBack;}
+    public void setCallback(ShoppingListsAdapterCallBack callBack) {this.callBack = callBack;}
 }

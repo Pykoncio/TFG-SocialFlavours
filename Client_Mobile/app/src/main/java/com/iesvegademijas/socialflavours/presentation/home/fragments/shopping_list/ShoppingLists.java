@@ -19,8 +19,11 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -46,7 +49,7 @@ import java.util.concurrent.Executors;
  * Use the {@link ShoppingLists#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ShoppingLists extends Fragment implements ShoppingListAdapter.ShoppingListAdapterCallBack {
+public class ShoppingLists extends Fragment implements ShoppingListAdapter.ShoppingListsAdapterCallBack {
 
     private View myView;
     private static final int MAX_RETRIES = 5;
@@ -99,7 +102,9 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
                              Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_shopping_lists, container, false);
 
-        FloatingActionButton fab = myView.findViewById(R.id.fab_add_shopping_list);
+        listView = myView.findViewById(R.id.shopping_lists_shoppingList);
+
+        ImageButton fab = myView.findViewById(R.id.fab_add_shopping_list);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,7 +158,7 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
     {
         ProgressBar pbShoppingLists = (ProgressBar) myView.findViewById(R.id.pb_shopping_lists);
         pbShoppingLists.setVisibility(View.VISIBLE);
-        String url = R.string.main_url + "shoppinglistapi/getAllShoppingListsFromUser" + mParam1;
+        String url = getResources().getString(R.string.main_url) + "shoppinglistapi/getAllShoppingListsFromUser" + mParam1;
         if (isNetworkAvailable()) {
             for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
                 try {
@@ -246,6 +251,17 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
 
             ProgressBar pbShoppingLists = myView.findViewById(R.id.pb_shopping_lists);
             pbShoppingLists.setVisibility(View.GONE);
+
+            TextView tvEmptyShoppingList = myView.findViewById(R.id.tv_empty_list_shopping_lists);
+
+            if (shoppingListsModels.isEmpty())
+            {
+                tvEmptyShoppingList.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                tvEmptyShoppingList.setVisibility(View.GONE);
+            }
         }
         catch (JSONException | ParseException e)
         {

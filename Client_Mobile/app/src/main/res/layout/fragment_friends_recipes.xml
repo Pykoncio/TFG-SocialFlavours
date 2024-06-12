@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="#E8F0E5"
     android:layout_height="match_parent"
     tools:context=".presentation.home.fragments.recipe.FriendsRecipes">
 
@@ -16,6 +17,15 @@
             android:indeterminate="true"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_empty_list_friends_recipes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/no_recipes_friends"
             android:visibility="gone"/>
 
         <ListView

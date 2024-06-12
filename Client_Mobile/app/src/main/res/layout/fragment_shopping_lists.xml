@@ -3,30 +3,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F0F4ED"
     tools:context=".presentation.home.fragments.shopping_list.ShoppingLists">
 
-    <ProgressBar
-        android:id="@+id/pb_shopping_lists"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="gone"/>
-
-    <ListView
-        android:id="@+id/shopping_lists_list"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="65dp"/>
+        android:layout_height="match_parent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_shopping_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="#84A98C"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add_white" />
+        <ProgressBar
+            android:id="@+id/pb_shopping_lists"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"/>
+
+        <ListView
+            android:id="@+id/shopping_lists_shoppingList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="50dp"/>
+
+        <TextView
+            android:id="@+id/tv_empty_list_shopping_lists"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/no_shopping_lists_created"
+            android:visibility="gone"/>
+
+        <ImageButton
+            android:id="@+id/fab_add_shopping_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#84A98C"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_add_white" />
+
+    </RelativeLayout>
 
 </FrameLayout>

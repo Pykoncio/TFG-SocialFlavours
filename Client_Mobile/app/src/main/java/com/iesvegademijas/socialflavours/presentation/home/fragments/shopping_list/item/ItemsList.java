@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -70,7 +71,7 @@ public class ItemsList extends AppCompatActivity implements ShoppingListItemAdap
     {
         ProgressBar pbItemList = findViewById(R.id.pb_shopping_list_items);
         pbItemList.setVisibility(View.VISIBLE);
-        String url = R.string.main_url + "itemapi/getAllItemsFromShoppingList" + id_shoppingList;
+        String url = getResources().getString(R.string.main_url) + "itemapi/getAllItemsFromShoppingList" + id_shoppingList;
         if (isNetworkAvailable()) {
             for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
                 try {
@@ -163,6 +164,17 @@ public class ItemsList extends AppCompatActivity implements ShoppingListItemAdap
 
             ProgressBar pbItems = findViewById(R.id.pb_shopping_list_items);
             pbItems.setVisibility(View.GONE);
+
+            TextView tvEmptyItemList = findViewById(R.id.tv_empty_list_items);
+
+            if (itemModels.isEmpty())
+            {
+                tvEmptyItemList.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                tvEmptyItemList.setVisibility(View.GONE);
+            }
         }
         catch (JSONException e)
         {

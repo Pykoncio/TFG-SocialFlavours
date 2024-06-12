@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
@@ -94,6 +95,7 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
                              Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_friends_recipes, container, false);
 
+        listView = myView.findViewById(R.id.friends_recipes_list);
         setUpFriendsRecipes();
 
         return myView;
@@ -101,7 +103,7 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
 
     private void setUpFriendsRecipes()
     {
-        String url = R.string.main_url + "recipeapi/getAllRecipesFromUserFriends" + mParam1;
+        String url = getResources().getString(R.string.main_url) + "recipeapi/getAllRecipesFromUserFriends" + mParam1;
         if (isNetworkAvailable()) {
             for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
                 try {
@@ -192,8 +194,16 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
                 recipesAdapter.notifyDataSetChanged();
             }
 
-            ProgressBar pbFriendRecipes = myView.findViewById(R.id.pb_friends_recipes);
-            pbFriendRecipes.setVisibility(View.GONE);
+            TextView tvFriendsRecipes = myView.findViewById(R.id.tv_empty_list_friends_recipes);
+
+            if (recipeModels.isEmpty())
+            {
+                tvFriendsRecipes.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                tvFriendsRecipes.setVisibility(View.GONE);
+            }
         }
         catch (JSONException | ParseException e)
         {

@@ -2,6 +2,7 @@
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
+        android:background="#F0F4ED"
         android:layout_height="match_parent"
         tools:context=".presentation.home.fragments.recipe.CreateRecipe">
 
@@ -10,14 +11,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminate="true"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
+            android:layout_gravity="center"
             android:visibility="gone"/>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="50dp">
+            android:layout_marginTop="45dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -50,7 +50,7 @@
                     android:textSize="18sp"
                     android:textColorHint="#354F52"
                     android:padding="5dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/new_recipe_image"/>
                 <Spinner
                     android:id="@+id/new_recipe_ratingSpinner"
@@ -82,7 +82,7 @@
                     android:textSize="18sp"
                     android:textColorHint="#354F52"
                     android:padding="5dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/new_recipe_description"/>
 
                 <EditText
@@ -107,7 +107,7 @@
                     android:textSize="18sp"
                     android:textColorHint="#354F52"
                     android:padding="5dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/new_recipe_label_preparationTime"/>
 
                 <Spinner
@@ -115,7 +115,7 @@
                     android:layout_width="150dp"
                     android:layout_margin="10dp"
                     android:padding="5dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_below="@+id/new_recipe_label_preparationTime"/>
 
@@ -126,6 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/new_recipe_tag"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
                     android:padding="5dp"
                     android:text="@string/ingredients"
                     android:textColorHint="#354F52"
@@ -136,7 +137,7 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_below="@+id/new_recipe_tag"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="15dp"
                     android:layout_marginRight="25dp"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/ic_add_white"
@@ -190,8 +191,9 @@
 
                 <Button
                     android:id="@+id/new_recipe_button_create"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="150dp"
+                    android:layout_height="75dp"
+                    android:textSize="20dp"
                     android:backgroundTint="#84A98C"
                     android:text="@string/create"
                     android:onClick="create"

@@ -5,11 +5,13 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F0F4ED"
     tools:context=".presentation.home.fragments.recipe.NotEditableRecipe">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="45dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -133,6 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/not_editable_recipe_tag"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
                 android:padding="5dp"
                 android:text="@string/ingredients"
                 android:textColorHint="#354F52"
@@ -143,7 +146,7 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_below="@+id/not_editable_recipe_tag"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginRight="25dp"
                 android:layout_alignParentRight="true"
                 android:src="@drawable/ic_add_white"

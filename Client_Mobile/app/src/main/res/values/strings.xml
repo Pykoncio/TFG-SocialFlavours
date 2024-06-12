@@ -67,4 +67,11 @@
     <string name="deleteShoppingListMessage">Are you sure you want to delete this Shopping List?</string>
     <string name="emailSent">Email Sent Successfully!</string>
     <string name="continueWithLogin">Proceed to Login</string>
+    <string name="open">Open</string>
+    <string name="closed">Closed</string>
+    <string name="no_recipes">No recipes created yet.</string>
+    <string name="no_recipes_friends">Your friends have not created any recipes yet.</string>
+    <string name="no_friendship_requests">You do not have any pending friend requests.</string>
+    <string name="no_shopping_lists_created">No shopping lists created yet.</string>
+    <string name="no_items_created">No items created yet.</string>
 </resources>

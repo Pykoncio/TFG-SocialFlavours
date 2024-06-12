@@ -27,14 +27,36 @@ public class FriendshipRequestController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping(path = "/pending") // Obtain all the pending request so the user can see them in the inbox
-    public List<FriendshipRequest> getPendingFriendRequestsFromUser(@RequestParam Long idUser) {
-        return friendshipRequestRepository.findAllFriendshipRequestByReceiverAndStatus(idUser, FriendshipRequest.Status.PENDING.name());
+    @GetMapping(path = "/pending{id}") // Obtain all the pending request so the user can see them in the inbox
+    public ResponseEntity<List<FriendshipRequest>> getPendingFriendRequestsFromUser(@PathVariable Long id) {
+
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<FriendshipRequest> friendshipRequests = friendshipRequestRepository.findAllFriendshipRequestByReceiverAndStatus(optionalUser.get(), FriendshipRequest.Status.PENDING.name());
+        return ResponseEntity.ok(friendshipRequests);
+
+
     }
 
-    @GetMapping(path = "/approved") // Obtain all the friends from the user
-    public List<FriendshipRequest> getApprovedFriendRequestsFromUser(@RequestParam Long idUser) {
-        return friendshipRequestRepository.findAllApprovedRequestsFromUser(idUser, FriendshipRequest.Status.APPROVED.name());
+    @GetMapping(path = "/approved{id}") // Obtain all the friends from the user
+    public ResponseEntity<List<FriendshipRequest>> getApprovedFriendRequestsFromUser(@PathVariable Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (optionalUser.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<FriendshipRequest> friendshipRequests = friendshipRequestRepository.findAllFriendshipRequestByReceiverAndStatus(optionalUser.get(), FriendshipRequest.Status.APPROVED.name());
+
+        if (friendshipRequests.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return ResponseEntity.ok(friendshipRequests);
+        }
     }
 
 

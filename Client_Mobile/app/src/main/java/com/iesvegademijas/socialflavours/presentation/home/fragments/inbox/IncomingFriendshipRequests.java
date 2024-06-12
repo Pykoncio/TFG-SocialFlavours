@@ -11,16 +11,21 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
@@ -29,11 +34,13 @@ import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 import com.iesvegademijas.socialflavours.data.remote.dto.social.FriendShip;
+import com.iesvegademijas.socialflavours.presentation.home.HomePage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -99,7 +106,31 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.fragment_create_recipe, container, false);
+        myView = inflater.inflate(R.layout.fragment_incoming_friendship_requests, container, false);
+
+        listView = myView.findViewById(R.id.incoming_friendship_requests_list);
+
+        // Find the toolbar from the inflated layout
+        Toolbar toolbar = myView.findViewById(R.id.toolbar_shoppingLists);
+
+        // Set the toolbar as the SupportActionBar
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            activity.getSupportActionBar().setTitle("Incoming Friendship Requests");
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_hamburguer_24);
+        }
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof HomePage) {
+                    ((HomePage) getActivity()).drawerLayout.openDrawer(GravityCompat.START);
+                }
+            }
+        });
 
         setUpFriendshipRequests();
 
@@ -108,9 +139,7 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
 
     private void setUpFriendshipRequests()
     {
-        ProgressBar pbIncomingRequests = myView.findViewById(R.id.pb_incoming_friendship_request);
-        pbIncomingRequests.setVisibility(View.VISIBLE);
-        String url = R.string.main_url + "friendshipapi/pending" + mParam1;
+        String url = getResources().getString(R.string.main_url) + "friendshipapi/pending" + mParam1;
         if (isNetworkAvailable()) {
             for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
                 try {
@@ -201,8 +230,16 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
                 friendshipRequestsAdapter.notifyDataSetChanged();
             }
 
-            ProgressBar pbIncomingFriendshipRequests = myView.findViewById(R.id.pb_incoming_friendship_request);
-            pbIncomingFriendshipRequests.setVisibility(View.GONE);
+            TextView tvIncomingFriendshipRequests = myView.findViewById(R.id.tv_empty_list_incoming_friendship_requests);
+
+            if (friendshipRequestsModels.isEmpty())
+            {
+                tvIncomingFriendshipRequests.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                tvIncomingFriendshipRequests.setVisibility(View.GONE);
+            }
         }
         catch (JSONException e)
         {
