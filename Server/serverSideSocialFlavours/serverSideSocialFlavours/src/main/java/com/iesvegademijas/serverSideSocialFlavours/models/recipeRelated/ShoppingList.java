@@ -1,5 +1,6 @@
 package com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iesvegademijas.serverSideSocialFlavours.models.entities.Item;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
 import jakarta.persistence.*;
@@ -13,6 +14,7 @@ public class ShoppingList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_shoppingList;
     @ManyToOne
+    @JsonIgnore
     private User user;
     @Column(unique = true)
     private String shoppingListName;

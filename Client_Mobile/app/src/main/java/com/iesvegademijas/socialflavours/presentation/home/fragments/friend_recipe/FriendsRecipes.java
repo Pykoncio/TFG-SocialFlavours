@@ -1,4 +1,4 @@
-package com.iesvegademijas.socialflavours.presentation.home.fragments.recipe;
+package com.iesvegademijas.socialflavours.presentation.home.fragments.friend_recipe;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,9 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -18,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +28,7 @@ import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
-import com.iesvegademijas.socialflavours.presentation.modify_recipe.ModifyRecipe;
+import com.iesvegademijas.socialflavours.presentation.home.HomePage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -94,6 +96,28 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_friends_recipes, container, false);
+
+        // Find the toolbar from the inflated layout
+        Toolbar toolbar = myView.findViewById(R.id.toolbar_friends_recipes);
+
+        // Set the toolbar as the SupportActionBar
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            activity.getSupportActionBar().setTitle("Outgoing Friendships Requests");
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_hamburguer_24);
+        }
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof HomePage) {
+                    ((HomePage) getActivity()).drawerLayout.openDrawer(GravityCompat.START);
+                }
+            }
+        });
 
         listView = myView.findViewById(R.id.friends_recipes_list);
         setUpFriendsRecipes();

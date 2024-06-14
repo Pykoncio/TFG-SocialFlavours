@@ -43,10 +43,10 @@
             android:name=".presentation.home.fragments.meal_planner.MealPlanner"
             android:exported="false" />
         <activity
-            android:name=".presentation.home.fragments.recipe.NotEditableRecipe"
+            android:name=".presentation.home.fragments.friend_recipe.NotEditableRecipe"
             android:exported="false" />
         <activity
-            android:name=".presentation.home.fragments.recipe.FriendsRecipes"
+            android:name=".presentation.home.fragments.friend_recipe.FriendsRecipes"
             android:exported="false" />
         <activity
             android:name=".presentation.modify_recipe.ModifyRecipe"

@@ -43,8 +43,7 @@ public class NewItem extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("id_shoppingList")) {
-            String value = intent.getStringExtra("id_shoppingList");
-            id_shoppingList = Long.parseLong(value);
+            id_shoppingList = intent.getLongExtra("id_shoppingList", -1);
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -54,13 +53,12 @@ public class NewItem extends AppCompatActivity {
         });
     }
 
-    public void addItem()
+    public void addItem(View view)
     {
         boolean addItem = true;
 
         EditText etName = findViewById(R.id.new_item_name);
         EditText etQuantity = findViewById(R.id.new_item_quantity);
-        CheckBox cbOwned = findViewById(R.id.new_item_check);
 
         String name = etName.getText().toString();
         if (name.isEmpty())
@@ -76,7 +74,6 @@ public class NewItem extends AppCompatActivity {
             etQuantity.setError(getResources().getString(R.string.compulsory_field));
         }
 
-        boolean owned = cbOwned.isChecked();
 
         if (addItem)
         {
@@ -88,14 +85,14 @@ public class NewItem extends AppCompatActivity {
 
             if (isNetworkAvailable()) {
                 String url = getResources().getString(R.string.main_url) + "itemapi/createItem";
-                sendTask(url, name, quantity, owned);
+                sendTask(url, name, quantity);
             } else {
                 showError("error.IOException");
             }
         }
     }
 
-    private void sendTask(String url, String name, String quantity, Boolean owned) {
+    private void sendTask(String url, String name, String quantity) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(new Runnable() {
@@ -105,7 +102,6 @@ public class NewItem extends AppCompatActivity {
                 HashMap<String, Object> params = new HashMap<>();
                 params.put("name", name);
                 params.put("quantity", Long.parseLong(quantity));
-                params.put("isChecked", owned);
                 params.put("id_shoppingList", id_shoppingList);
                 String result = apiOperator.postText(url,params);
                 handler.post(new Runnable() {

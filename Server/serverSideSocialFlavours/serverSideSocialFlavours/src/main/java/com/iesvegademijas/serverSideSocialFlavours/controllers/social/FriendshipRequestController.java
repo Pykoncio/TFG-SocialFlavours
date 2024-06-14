@@ -59,6 +59,23 @@ public class FriendshipRequestController {
         }
     }
 
+    @GetMapping(path = "/incomingFriendshipRequests/{idUser}")
+    public ResponseEntity<List<FriendshipRequest>> getIncomingFriendRequestsFromUser(@PathVariable Long idUser) {
+        Optional<User> optionalUser = userRepository.findById(idUser);
+
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        else
+        {
+            List<FriendshipRequest> friendshipRequests;
+
+            friendshipRequests = friendshipRequestRepository.findAllFriendshipRequestByReceiverAndStatus(optionalUser.get(), FriendshipRequest.Status.PENDING.name());
+
+            return ResponseEntity.ok(friendshipRequests);
+        }
+    }
+
 
     @PostMapping(path = "/newRequest{sender}To{receiver}")
     public ResponseEntity<Long> createFriendshipRequest(@PathVariable("sender") Long idSender, @PathVariable("receiver") String usernameReceiver) {

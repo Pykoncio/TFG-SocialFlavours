@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:text="Groceries"
         android:layout_margin="10dp"
+        android:background="#F0F4ED"
         android:padding="5dp"/>
 
     <ImageButton
@@ -23,7 +24,7 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:scaleType="fitCenter"
-        android:background="@color/white"
+        android:background="#F0F4ED"
         android:adjustViewBounds="true"/>
 
 </RelativeLayout>

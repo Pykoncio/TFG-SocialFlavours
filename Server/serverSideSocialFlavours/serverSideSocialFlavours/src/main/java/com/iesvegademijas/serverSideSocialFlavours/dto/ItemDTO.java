@@ -4,14 +4,12 @@ public class ItemDTO {
     private long id_item;
     private String name;
     private int quantity;
-    private boolean isChecked;
     private long id_shoppingList;
 
-    public ItemDTO(long id_item, String name, int quantity, boolean isChecked, long id_shoppingList) {
+    public ItemDTO(long id_item, String name, int quantity, long id_shoppingList) {
         this.id_item = id_item;
         this.name = name;
         this.quantity = quantity;
-        this.isChecked = isChecked;
         this.id_shoppingList = id_shoppingList;
     }
 
@@ -37,14 +35,6 @@ public class ItemDTO {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public boolean isChecked() {
-        return isChecked;
-    }
-
-    public void setChecked(boolean checked) {
-        isChecked = checked;
     }
 
     public long getId_shoppingList() {

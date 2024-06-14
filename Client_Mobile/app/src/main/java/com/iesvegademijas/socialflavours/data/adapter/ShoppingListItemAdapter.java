@@ -76,7 +76,7 @@ public class ShoppingListItemAdapter extends BaseAdapter {
         Item itemList = itemsList.get(position);
 
         shoppingListItemWrapper.tvItemName.setText(itemList.getName());
-        shoppingListItemWrapper.tvItemUnits.setText(itemList.getQuantity());
+        shoppingListItemWrapper.tvItemUnits.setText(String.valueOf(itemList.getQuantity()));
 
         shoppingListItemWrapper.editButton.setOnClickListener(new View.OnClickListener() {
             @Override

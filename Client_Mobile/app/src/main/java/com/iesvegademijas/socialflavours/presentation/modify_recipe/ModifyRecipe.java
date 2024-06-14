@@ -30,6 +30,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -66,6 +68,23 @@ public class ModifyRecipe extends AppCompatActivity {
     private long idUser;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private static final int PICK_IMAGE_REQUEST = 2;
+
+    private ImageView recipeImageView;
+
+    private ActivityResultLauncher<Intent> takeImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null)
+                {
+                    Uri uri = result.getData().getData();
+
+                    imagePath = getRealPathFromURI(uri);
+
+                    ImageView imageView = findViewById(R.id.modify_recipe_image);
+                    imageView.setImageURI(uri);
+                }
+            }
+    );
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -87,6 +106,13 @@ public class ModifyRecipe extends AppCompatActivity {
         }
 
         loadRecipe();
+
+        recipeImageView = findViewById(R.id.new_recipe_image);
+
+        recipeImageView.setOnClickListener( v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            takeImageLauncher.launch(intent);
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -276,6 +302,17 @@ public class ModifyRecipe extends AppCompatActivity {
                 deleteButton.setLayoutParams(deleteButtonParams);
                 deleteButton.setImageResource(R.drawable.eliminate_blue);
                 deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
+                deleteButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                deleteButton.setPadding(16, 16, 16, 16);
+
+                editText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                               int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                        deleteButton.getLayoutParams().height = bottom - top;
+                        deleteButton.requestLayout();
+                    }
+                });
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -319,6 +356,17 @@ public class ModifyRecipe extends AppCompatActivity {
                 deleteButton.setLayoutParams(deleteButtonParams);
                 deleteButton.setImageResource(R.drawable.eliminate_blue);
                 deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
+                deleteButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                deleteButton.setPadding(16, 16, 16, 16);
+
+                editText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                               int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                        deleteButton.getLayoutParams().height = bottom - top;
+                        deleteButton.requestLayout();
+                    }
+                });
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

@@ -1,5 +1,6 @@
 package com.iesvegademijas.serverSideSocialFlavours.models.social;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,12 +16,14 @@ public class FriendshipRequest {
     private Long id_friendship;
     @ManyToOne
     @JoinColumn(name = "id_userSender")
+    @JsonIgnore
     private User sender;
 
     private String usernameSender;
 
     @ManyToOne
     @JoinColumn(name = "id_userReceiver")
+    @JsonIgnore
     private User receiver;
     private String status;
 

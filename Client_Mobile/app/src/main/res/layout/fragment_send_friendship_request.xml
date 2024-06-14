@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".presentation.home.fragments.outbox.SendFriendshipRequest">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar_send_friendship_request"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"/>
+
     <LinearLayout
         android:layout_marginTop="64dp"
         android:layout_width="match_parent"

@@ -2,10 +2,6 @@ package com.iesvegademijas.socialflavours.presentation.home;
 
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -15,7 +11,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,10 +22,8 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,13 +37,12 @@ import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
-import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.ShoppingList;
 import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.inbox.IncomingFriendshipRequests;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.meal_planner.MealPlanner;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.outbox.SendFriendshipRequest;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.recipe.CreateRecipe;
-import com.iesvegademijas.socialflavours.presentation.home.fragments.recipe.FriendsRecipes;
+import com.iesvegademijas.socialflavours.presentation.home.fragments.friend_recipe.FriendsRecipes;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.shopping_list.ShoppingLists;
 import com.iesvegademijas.socialflavours.presentation.login.Login;
 import com.iesvegademijas.socialflavours.presentation.modify_recipe.ModifyRecipe;
@@ -63,7 +55,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 
 public class HomePage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RecipeAdapter.RecipesAdapterCallBack {

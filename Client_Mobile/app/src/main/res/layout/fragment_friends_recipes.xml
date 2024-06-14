@@ -4,11 +4,16 @@
     android:layout_width="match_parent"
     android:background="#E8F0E5"
     android:layout_height="match_parent"
-    tools:context=".presentation.home.fragments.recipe.FriendsRecipes">
+    tools:context=".presentation.home.fragments.friend_recipe.FriendsRecipes">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_friends_recipes"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"/>
 
         <ProgressBar
             android:id="@+id/pb_friends_recipes"

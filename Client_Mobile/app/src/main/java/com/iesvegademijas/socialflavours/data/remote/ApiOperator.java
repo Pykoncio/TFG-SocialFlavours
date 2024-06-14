@@ -150,8 +150,12 @@ public class ApiOperator {
     public String postText(String url) {
         try {
             OkHttpClient client = new OkHttpClient();
+            RequestBody body = RequestBody.create("",
+                    MediaType.parse("application/json"));
+
             Request request = new Request.Builder()
                     .url(url)
+                    .post(body)
                     .build();
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {

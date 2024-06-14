@@ -1,4 +1,4 @@
-package com.iesvegademijas.socialflavours.presentation.home.fragments.recipe;
+package com.iesvegademijas.socialflavours.presentation.home.fragments.friend_recipe;
 
 import android.content.Context;
 import android.content.Intent;

@@ -9,15 +9,13 @@ public class Item {
     private long id_item;
     private String name;
     private int quantity;
-    private boolean isChecked;
 
     public Item(){}
 
-    public Item(long id_item, String name, int quantity, boolean isChecked) {
+    public Item(long id_item, String name, int quantity) {
         this.id_item = id_item;
         this.name = name;
         this.quantity = quantity;
-        this.isChecked = isChecked;
     }
 
     public long getId_item() {
@@ -44,14 +42,6 @@ public class Item {
         this.quantity = quantity;
     }
 
-    public boolean isChecked() {
-        return isChecked;
-    }
-
-    public void setChecked(boolean checked) {
-        isChecked = checked;
-    }
-
     public void fromJSON(JSONObject jsonObject) throws JSONException, ParseException
     {
         if(!jsonObject.isNull("id_item")) {
@@ -76,14 +66,6 @@ public class Item {
         else
         {
             this.quantity = -1;
-        }
-
-        if (!jsonObject.isNull("isChecked")) {
-            this.isChecked = jsonObject.getBoolean("isChecked");
-        }
-        else
-        {
-            this.isChecked = false;
         }
     }
 }

@@ -45,6 +45,8 @@ import android.widget.Toast;
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.common.DateUtil;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+import com.iesvegademijas.socialflavours.presentation.home.HomePage;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -141,6 +143,28 @@ public class CreateRecipe extends Fragment {
 
         myView = inflater.inflate(R.layout.fragment_create_recipe, container, false);
 
+        // Find the toolbar from the inflated layout
+        Toolbar toolbar = myView.findViewById(R.id.toolbar_createRecipe);
+
+        // Set the toolbar as the SupportActionBar
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            activity.getSupportActionBar().setTitle("Create a new Recipe");
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_hamburguer_24);
+        }
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof HomePage) {
+                    ((HomePage) getActivity()).drawerLayout.openDrawer(GravityCompat.START);
+                }
+            }
+        });
+
         Button createButton = myView.findViewById(R.id.new_recipe_button_create);
 
         // Set OnClickListener for the button
@@ -175,6 +199,7 @@ public class CreateRecipe extends Fragment {
                            LinearLayout.LayoutParams.MATCH_PARENT,
                            LinearLayout.LayoutParams.WRAP_CONTENT
                    );
+                   layoutParams.setMargins(0, 0, 0, 16);
                    horizontalLayout.setLayoutParams(layoutParams);
 
                    // Create the editText
@@ -193,12 +218,23 @@ public class CreateRecipe extends Fragment {
                    // Create the imageButton to eliminate this String
                    ImageButton deleteButton = new ImageButton(getContext());
                    LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
-                           25,
-                           25
+                           LinearLayout.LayoutParams.WRAP_CONTENT,
+                           LinearLayout.LayoutParams.MATCH_PARENT
                    );
                    deleteButton.setLayoutParams(deleteButtonParams);
                    deleteButton.setImageResource(R.drawable.eliminate_blue);
-                   deleteButton.setBackgroundColor(Color.parseColor("#F0F4ED"));
+                   deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
+                   deleteButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                   deleteButton.setPadding(16, 16, 16, 16);
+
+                   editText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                       @Override
+                       public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                                  int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                           deleteButton.getLayoutParams().height = bottom - top;
+                           deleteButton.requestLayout();
+                       }
+                   });
                    deleteButton.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View v) {
@@ -230,6 +266,7 @@ public class CreateRecipe extends Fragment {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
+                layoutParams.setMargins(0, 0, 0, 16);
                 horizontalLayout.setLayoutParams(layoutParams);
 
                 // Create the editText
@@ -240,7 +277,7 @@ public class CreateRecipe extends Fragment {
                         1
                 );
                 editText.setLayoutParams(editTextParams);
-                editText.setHint("Ingredient");
+                editText.setHint("Step");
                 editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
                 editText.setTextColor(Color.parseColor("#808080"));
                 editText.setPadding(5, 5, 5, 5);
@@ -248,12 +285,23 @@ public class CreateRecipe extends Fragment {
                 // Create the imageButton to eliminate this String
                 ImageButton deleteButton = new ImageButton(getContext());
                 LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
-                        25,
-                        25
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT
                 );
                 deleteButton.setLayoutParams(deleteButtonParams);
                 deleteButton.setImageResource(R.drawable.eliminate_blue);
-                deleteButton.setBackgroundColor(Color.parseColor("#F0F4ED"));
+                deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
+                deleteButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                deleteButton.setPadding(16, 16, 16, 16);
+
+                editText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                               int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                        deleteButton.getLayoutParams().height = bottom - top;
+                        deleteButton.requestLayout();
+                    }
+                });
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -365,7 +413,6 @@ public class CreateRecipe extends Fragment {
 
         // Obtain the current date using Calendar
         Calendar calendar = Calendar.getInstance();
-
         Date currentDate = calendar.getTime();
         String formattedDate = DateUtil.formatDate(currentDate);
 
@@ -373,9 +420,9 @@ public class CreateRecipe extends Fragment {
 
         try {
             creationDate = DateUtil.parseDate(formattedDate);
-        }catch (ParseException e) {
+            System.out.println(creationDate);
+        } catch (ParseException e) {
             e.printStackTrace();
-            continueToCreate=false;
         }
 
         if(title.isEmpty()){

@@ -15,7 +15,6 @@ import java.util.List;
 
 public class ShoppingList {
     private long id_shoppingList;
-    private User user;
     private String listName;
     private List<Item> itemList;
 
@@ -26,18 +25,9 @@ public class ShoppingList {
         this.itemList = new ArrayList<>();
     }
 
-    public ShoppingList(String name, List<Item> itemList, User user) {
+    public ShoppingList(String name, List<Item> itemList) {
         this.listName = name;
         this.itemList = itemList;
-        this.user = user;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public long getId_shoppingList() {
@@ -73,14 +63,6 @@ public class ShoppingList {
             this.id_shoppingList = -1;
         }
 
-        if (!jsonObject.isNull("user")) {
-            JSONObject userObject = jsonObject.getJSONObject("user");
-            this.user = new User();
-            this.user.fromJSON(userObject);
-        } else {
-            this.user = null;
-        }
-
         if(!jsonObject.isNull("shoppingListName")) {
             this.listName = jsonObject.getString("shoppingListName");
         }
@@ -89,13 +71,18 @@ public class ShoppingList {
             this.listName = "";
         }
 
-        this.itemList = new ArrayList<>();
-        JSONArray itemsArray = jsonObject.getJSONArray("itemList");
-        for (int i = 0; i < itemsArray.length(); i++) {
-            JSONObject itemObject = itemsArray.getJSONObject(i);
-            Item item = new Item();
-            item.fromJSON(itemObject);
-            this.itemList.add(item);
+        if (!jsonObject.isNull("itemList")) {
+            this.itemList = new ArrayList<>();
+
+            JSONArray itemsArray = jsonObject.getJSONArray("itemList");
+            for (int i = 0; i < itemsArray.length(); i++) {
+                JSONObject itemObject = itemsArray.getJSONObject(i);
+                Item item = new Item();
+                item.fromJSON(itemObject);
+                this.itemList.add(item);
+            }
+        } else {
+            this.itemList = new ArrayList<>();
         }
     }
 }

@@ -111,7 +111,7 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
         listView = myView.findViewById(R.id.incoming_friendship_requests_list);
 
         // Find the toolbar from the inflated layout
-        Toolbar toolbar = myView.findViewById(R.id.toolbar_shoppingLists);
+        Toolbar toolbar = myView.findViewById(R.id.toolbar_incoming_friendships_request);
 
         // Set the toolbar as the SupportActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -139,7 +139,7 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
 
     private void setUpFriendshipRequests()
     {
-        String url = getResources().getString(R.string.main_url) + "friendshipapi/pending" + mParam1;
+        String url = getResources().getString(R.string.main_url) + "friendshipapi/incomingFriendshipRequests/" + mParam1;
         if (isNetworkAvailable()) {
             for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
                 try {

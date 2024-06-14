@@ -1,5 +1,6 @@
 package com.iesvegademijas.serverSideSocialFlavours.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.ShoppingList;
 import jakarta.persistence.*;
 
@@ -11,18 +12,17 @@ public class Item {
     private Long id_item;
     private String name;
     private int quantity;
-    private boolean isChecked;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "id_shoppingList")
     private ShoppingList shoppingList;
 
     public Item(){}
 
-    public Item(Long id_item, String name, int quantity, boolean isChecked, ShoppingList shoppingList) {
+    public Item(Long id_item, String name, int quantity, ShoppingList shoppingList) {
         this.id_item = id_item;
         this.name = name;
         this.quantity = quantity;
-        this.isChecked = isChecked;
         this.shoppingList = shoppingList;
     }
 
@@ -48,14 +48,6 @@ public class Item {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public boolean isChecked() {
-        return isChecked;
-    }
-
-    public void setChecked(boolean checked) {
-        isChecked = checked;
     }
 
     public ShoppingList getShoppingList() {

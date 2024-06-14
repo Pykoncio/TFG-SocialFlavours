@@ -1,5 +1,6 @@
 package com.iesvegademijas.socialflavours.presentation.home.fragments.shopping_list;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,7 +12,14 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -33,6 +41,7 @@ import com.iesvegademijas.socialflavours.data.adapter.ShoppingListAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.ShoppingList;
+import com.iesvegademijas.socialflavours.presentation.home.HomePage;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.shopping_list.item.ItemsList;
 
 import org.json.JSONArray;
@@ -65,6 +74,20 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        setUpShoppingLists();
+                    }
+                }
+            }
+    );
+
+
 
     public ShoppingLists() {
         // Required empty public constructor
@@ -104,56 +127,51 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
 
         listView = myView.findViewById(R.id.shopping_lists_shoppingList);
 
+        // Find the toolbar from the inflated layout
+        Toolbar toolbar = myView.findViewById(R.id.toolbar_shoppingLists);
+
+        // Set the toolbar as the SupportActionBar
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            activity.getSupportActionBar().setTitle("Shopping Lists");
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_hamburguer_24);
+        }
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof HomePage) {
+                    ((HomePage) getActivity()).drawerLayout.openDrawer(GravityCompat.START);
+                }
+            }
+        });
+
         ImageButton fab = myView.findViewById(R.id.fab_add_shopping_list);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goNewShoppingList(v);
+                createShoppingList(v);
             }
         });
 
         setUpShoppingLists();
 
-        return inflater.inflate(R.layout.fragment_shopping_lists, container, false);
+        return myView;
     }
 
-    private Boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Network nw = connectivityManager.getActiveNetwork();
-            if (nw == null) {
-                return false;
-            } else {
-                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
-                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-            }
-        } else {
-            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
-            return nwInfo != null && nwInfo.isConnected();
-        }
+    //region Create Shopping List
+    private void createShoppingList(View view)
+    {
+        Intent intent = new Intent().setClass(getContext(), NewShoppingList.class);
+        intent.putExtra("id_user", mParam1);
+        startActivity(intent);
     }
+    //endregion
 
-    private void showError(String error) {
-        String message;
-        Resources res = getResources();
-        int duration;
-        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
-            message = res.getString(R.string.error_connection);
-            duration = Toast.LENGTH_SHORT;
-        }
-        else if(error.equals("error.undelivered")){
-            message = res.getString(R.string.error_undelivered);
-            duration = Toast.LENGTH_LONG;
-        }
-        else {
-            message = res.getString(R.string.error_unknown);
-            duration = Toast.LENGTH_SHORT;
-        }
-        Toast toast = Toast.makeText(getContext(), message, duration);
-        toast.show();
-    }
+    //region Set Up Shopping Lists
     private void setUpShoppingLists()
     {
         ProgressBar pbShoppingLists = (ProgressBar) myView.findViewById(R.id.pb_shopping_lists);
@@ -268,7 +286,7 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
             throw new RuntimeException(e);
         }
     }
-
+    //endregion
     @Override
     public void goToList(int position) {
         if (shoppingListsModels!=null)
@@ -278,11 +296,13 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
                 ShoppingList shoppingList = shoppingListsModels.get(position);
                 Intent myIntent = new Intent().setClass(getContext(), ItemsList.class);
                 myIntent.putExtra("id_shoppingList", shoppingList.getId_shoppingList());
-                startActivity(myIntent);
+                activityResultLauncher.launch(myIntent);
+                setUpShoppingLists();
             }
         }
     }
 
+    //region Delete Shopping Lists
     @Override
     public void deleteShoppingList(int position) {
         androidx.appcompat.app.AlertDialog diaBox = AskOption(position);
@@ -361,11 +381,45 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
             }
         });
     }
+    //endregion
 
-    public void goNewShoppingList(View view)
-    {
-        Intent intent = new Intent().setClass(getContext(), NewShoppingList.class);
-        intent.putExtra("id_user", mParam1);
-        startActivity(intent);
+    //region Network Utils
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network nw = connectivityManager.getActiveNetwork();
+            if (nw == null) {
+                return false;
+            } else {
+                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
+                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+            }
+        } else {
+            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
+            return nwInfo != null && nwInfo.isConnected();
+        }
     }
+
+    private void showError(String error) {
+        String message;
+        Resources res = getResources();
+        int duration;
+        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
+            message = res.getString(R.string.error_connection);
+            duration = Toast.LENGTH_SHORT;
+        }
+        else if(error.equals("error.undelivered")){
+            message = res.getString(R.string.error_undelivered);
+            duration = Toast.LENGTH_LONG;
+        }
+        else {
+            message = res.getString(R.string.error_unknown);
+            duration = Toast.LENGTH_SHORT;
+        }
+        Toast toast = Toast.makeText(getContext(), message, duration);
+        toast.show();
+    }
+    //endregion
 }

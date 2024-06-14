@@ -33,8 +33,7 @@
         <ListView
             android:id="@+id/shopping_lists_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="45dp"/>
+            android:layout_height="match_parent"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_shopping_list_item"

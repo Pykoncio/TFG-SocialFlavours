@@ -53,10 +53,8 @@ public class ModifyItem extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("id_item") && intent.hasExtra("id_shoppingList"))
         {
-            String value = intent.getStringExtra("id_item");
-            String value2 = intent.getStringExtra("id_shoppingList");
-            idItem = Long.parseLong(value);
-            idShoppingList = Long.parseLong(value2);
+            idItem = intent.getLongExtra("id_item", -1);
+            idShoppingList = intent.getLongExtra("id_shoppingList", -1);
         }
 
         loadItem();
@@ -72,7 +70,7 @@ public class ModifyItem extends AppCompatActivity {
     {
         ProgressBar pbEdit = (ProgressBar) findViewById(R.id.pb_modify_item);
         pbEdit.setVisibility(View.VISIBLE);
-        String url = R.string.main_url + "itemapi/getItem" + idItem;
+        String url = getResources().getString(R.string.main_url) + "itemapi/getItem" + idItem;
         if (isNetworkAvailable()) {
             for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
                 try {
@@ -128,11 +126,9 @@ public class ModifyItem extends AppCompatActivity {
 
             EditText etName = findViewById(R.id.modify_item_name);
             EditText etQuantity = findViewById(R.id.modify_item_quantity);
-            CheckBox cbOwned = findViewById(R.id.modify_item_check);
 
             etName.setText(item.getName());
-            etQuantity.setText(item.getQuantity());
-            cbOwned.setChecked(item.isChecked());
+            etQuantity.setText(String.valueOf(item.getQuantity()));
 
             ProgressBar pbEdit = (ProgressBar) findViewById(R.id.pb_modify_item);
             pbEdit.setVisibility(View.GONE);
@@ -142,12 +138,11 @@ public class ModifyItem extends AppCompatActivity {
         }
     }
 
-    public void modifyItem(){
+    public void modifyItem(View view){
         boolean continueToModify = true;
 
         EditText etName = findViewById(R.id.modify_item_name);
         EditText etQuantity = findViewById(R.id.modify_item_quantity);
-        CheckBox cbOwned = findViewById(R.id.modify_item_check);
 
         String name = etName.getText().toString();
         if(name.isEmpty())
@@ -161,7 +156,6 @@ public class ModifyItem extends AppCompatActivity {
             continueToModify = false;
             etQuantity.setError(getResources().getString(R.string.compulsory_field));
         }
-        boolean owned = cbOwned.isChecked();
 
         if (continueToModify){
             Button btEdit= findViewById(R.id.modify_item_button_add);
@@ -171,14 +165,14 @@ public class ModifyItem extends AppCompatActivity {
             pbEdit.setVisibility(View.VISIBLE);
             if (isNetworkAvailable()) {
                 String url = getResources().getString(R.string.main_url) + "itemapi/itemUpdate";
-                sendTask(url, idItem+"",name, quantity, owned, idShoppingList+"");
+                sendTask(url, idItem+"",name, quantity, idShoppingList+"");
             } else {
                 showError("error.IOException");
             }
         }
     }
 
-    private void sendTask(String url, String idItem,String name, String quantity, boolean owned, String idShoppingList) {
+    private void sendTask(String url, String idItem,String name, String quantity, String idShoppingList) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(new Runnable() {
@@ -189,7 +183,6 @@ public class ModifyItem extends AppCompatActivity {
                 params.put("id_item", idItem);
                 params.put("name", name);
                 params.put("quantity", quantity);
-                params.put("isChecked", owned);
                 params.put("id_shoppingList", idShoppingList);
                 String result = apiOperator.putText(url,params);
                 handler.post(new Runnable() {

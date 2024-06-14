@@ -92,7 +92,7 @@ public class NewShoppingList extends AppCompatActivity {
         Toast toast = Toast.makeText(this, message, duration);
         toast.show();
     }
-    public void createShoppingList()
+    public void createShoppingList(View view)
     {
         EditText etName = findViewById(R.id.new_shopping_list_name);
         String name = etName.getText().toString();

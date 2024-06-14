@@ -55,10 +55,9 @@ public class ItemController {
             item.setShoppingList(shoppingList.get());
             item.setName(itemDTO.getName());
             item.setQuantity(itemDTO.getQuantity());
-            item.setChecked(itemDTO.isChecked());
 
             Item savedItem = itemRepository.save(item);
-            return new ResponseEntity<>(item.getId_item(), HttpStatus.CREATED);
+            return new ResponseEntity<>(savedItem.getId_item(), HttpStatus.CREATED);
         }
         else
         {
@@ -97,7 +96,6 @@ public class ItemController {
             item.setId_item(itemDTO.getId_item());
             item.setName(itemDTO.getName());
             item.setQuantity(itemDTO.getQuantity());
-            item.setChecked(itemDTO.isChecked());
             item.setShoppingList(shoppingList.get());
 
             Item savedItem = itemRepository.save(item);

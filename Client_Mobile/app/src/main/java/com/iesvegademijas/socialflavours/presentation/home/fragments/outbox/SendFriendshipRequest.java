@@ -9,6 +9,9 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -23,6 +26,7 @@ import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+import com.iesvegademijas.socialflavours.presentation.home.HomePage;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -85,6 +89,28 @@ public class SendFriendshipRequest extends Fragment {
 
         myView = inflater.inflate(R.layout.fragment_send_friendship_request, container, false);
 
+        // Find the toolbar from the inflated layout
+        Toolbar toolbar = myView.findViewById(R.id.toolbar_send_friendship_request);
+
+        // Set the toolbar as the SupportActionBar
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            activity.getSupportActionBar().setTitle("Outgoing Friendships Requests");
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_hamburguer_24);
+        }
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof HomePage) {
+                    ((HomePage) getActivity()).drawerLayout.openDrawer(GravityCompat.START);
+                }
+            }
+        });
+
         Button sendRequest = myView.findViewById(R.id.send_friendship_request);
 
         sendRequest.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +127,7 @@ public class SendFriendshipRequest extends Fragment {
     private void sendFriendshipRequest()
     {
         EditText etUsername = myView.findViewById(R.id.send_request_to_user);
-        String username = etUsername.getText().toString().trim();
+        String username = etUsername.getText().toString();
 
         if (username.isEmpty())
         {
@@ -117,45 +143,40 @@ public class SendFriendshipRequest extends Fragment {
 
             if (isNetworkAvailable()) {
                 String url = getResources().getString(R.string.main_url) + "friendshipapi/newRequest" + mParam1 + "To"+ username;
-                sendTask(url, username);
+                sendTask(url);
             } else {
                 showError("error.IOException");
             }
         }
     }
 
-    private void sendTask(String url, String username) {
+    private void sendTask(String url) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                ApiOperator apiOperator= ApiOperator.getInstance();
-                String result = apiOperator.postText(url);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Button btCreate= myView.findViewById(R.id.send_friendship_request);
-                        ProgressBar pbCreate=(ProgressBar) myView.findViewById(R.id.pb_send_friendship_request);
-                        pbCreate.setVisibility(View.GONE);
-                        btCreate.setEnabled(true);
-                        btCreate.setClickable(true);
-                        long idCreated;
-                        try{
-                            idCreated=Long.parseLong(result);
-                        }catch(NumberFormatException ex){
-                            idCreated=-1;
-                        }
-                        if(idCreated>0){
-                            // getActivity().getSupportFragmentManager().popBackStack(); One way to do it
-                            getActivity().finish();
-                        }
-                        else {
-                            showError("error.Unknown");
-                        }
-                    }
-                });
-            }
+
+        executor.execute(() -> {
+            ApiOperator apiOperator= ApiOperator.getInstance();
+            String result = apiOperator.postText(url);
+
+            handler.post(() -> {
+                Button btCreate= myView.findViewById(R.id.send_friendship_request);
+                ProgressBar pbCreate=(ProgressBar) myView.findViewById(R.id.pb_send_friendship_request);
+                pbCreate.setVisibility(View.GONE);
+                btCreate.setEnabled(true);
+                btCreate.setClickable(true);
+                long idCreated;
+                try{
+                    idCreated=Long.parseLong(result);
+                }catch(NumberFormatException ex){
+                    idCreated=-1;
+                }
+                if(idCreated>0){
+                    showError("Friendship Request Sent Successfully!");
+                }
+                else {
+                    showError("error.Unknown");
+                }
+            });
         });
     }
 
@@ -187,6 +208,11 @@ public class SendFriendshipRequest extends Fragment {
         }
         else if(error.equals("error.undelivered")){
             message = res.getString(R.string.error_undelivered);
+            duration = Toast.LENGTH_LONG;
+        }
+        else if (error.equals("Friendship Request Sent Successfully!"))
+        {
+            message = res.getString(R.string.friendshipRequest);
             duration = Toast.LENGTH_LONG;
         }
         else {
