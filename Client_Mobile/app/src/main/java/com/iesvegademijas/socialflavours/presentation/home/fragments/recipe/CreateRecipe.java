@@ -202,7 +202,8 @@ public class CreateRecipe extends Fragment {
                    editText.setLayoutParams(editTextParams);
                    editText.setHint("Ingredient");
                    editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-                   editText.setTextColor(Color.parseColor("#808080"));
+                   editText.setHintTextColor(Color.parseColor("#808080"));
+                   editText.setTextColor(Color.parseColor("#000000"));
                    editText.setPadding(5, 5, 5, 5);
 
                    ImageButton deleteButton = new ImageButton(getContext());
@@ -265,8 +266,9 @@ public class CreateRecipe extends Fragment {
                 );
                 editText.setLayoutParams(editTextParams);
                 editText.setHint("Step");
+                editText.setHintTextColor(Color.parseColor("#808080"));
+                editText.setTextColor(Color.parseColor("#000000"));
                 editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-                editText.setTextColor(Color.parseColor("#808080"));
                 editText.setPadding(5, 5, 5, 5);
 
                 // Create the imageButton to eliminate this String
@@ -307,6 +309,31 @@ public class CreateRecipe extends Fragment {
         //endregion
 
         return myView;
+    }
+
+    private void resetForm() {
+        EditText titleEditText = myView.findViewById(R.id.new_recipe_title);
+        titleEditText.setText("");
+
+        EditText descriptionEditText = myView.findViewById(R.id.new_recipe_description);
+        descriptionEditText.setText("");
+
+        EditText preparationTimeEditText = myView.findViewById(R.id.new_recipe_et_preparationTime);
+        preparationTimeEditText.setText("");
+
+        Spinner tagSpinner = myView.findViewById(R.id.new_recipe_tagSpinner);
+        tagSpinner.setSelection(0);
+
+        Spinner ratingSpinner = myView.findViewById(R.id.new_recipe_ratingSpinner);
+        ratingSpinner.setSelection(0);
+
+        LinearLayout ingredientList = myView.findViewById(R.id.ingredientList);
+        ingredientList.removeAllViews();
+
+        LinearLayout stepList = myView.findViewById(R.id.stepList);
+        stepList.removeAllViews();
+
+        recipeImageView.setImageResource(R.drawable.default_recipe_image);
     }
 
     //region Populate Spinners and Create Recipe
@@ -460,7 +487,7 @@ public class CreateRecipe extends Fragment {
                             idCreated=-1;
                         }
                         if(idCreated>0){
-                            launchFirstMenuItem();
+                            resetForm();
                         }
                         else {
                             showError("error.Unknown");
@@ -470,15 +497,6 @@ public class CreateRecipe extends Fragment {
             }
         });
     }
-
-    private void launchFirstMenuItem() {
-        if (getActivity() instanceof HomePage) {
-            NavigationView navigationView = getActivity().findViewById(R.id.navigation_view);
-            MenuItem menuItem = navigationView.getMenu().findItem(R.id.myRecipes);
-            menuItem.setChecked(true);
-        }
-    }
-
     //endregion
 
     //region Network Utils
