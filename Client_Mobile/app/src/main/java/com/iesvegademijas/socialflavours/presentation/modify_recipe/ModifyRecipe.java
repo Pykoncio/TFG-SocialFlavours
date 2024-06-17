@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -33,6 +36,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -42,15 +46,20 @@ import androidx.core.view.WindowInsetsCompat;
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.common.DateUtil;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
+import com.iesvegademijas.socialflavours.data.remote.dto.entities.Ingredient;
+import com.iesvegademijas.socialflavours.data.remote.dto.entities.Step;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +73,6 @@ public class ModifyRecipe extends AppCompatActivity {
     private static final int MAX_RETRIES = 5;
 
     private String imagePath;
-
     private long idUser;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private static final int PICK_IMAGE_REQUEST = 2;
@@ -86,28 +94,17 @@ public class ModifyRecipe extends AppCompatActivity {
             }
     );
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong("id_recipe", idRecipe);
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_modify_recipe);
 
-        if(savedInstanceState!=null){
-            idRecipe = savedInstanceState.getLong("id_recipe",-1);
-        }
-        else{
-            Intent intent = getIntent();
-            idRecipe = intent.getLongExtra("id_recipe", -1);
-        }
+        Intent myIntent = getIntent();
+        idRecipe = myIntent.getLongExtra("id_recipe", -1);
 
         loadRecipe();
 
-        recipeImageView = findViewById(R.id.new_recipe_image);
+        recipeImageView = findViewById(R.id.modify_recipe_image);
 
         recipeImageView.setOnClickListener( v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -125,7 +122,7 @@ public class ModifyRecipe extends AppCompatActivity {
     private void loadRecipe(){
         ProgressBar pbMain = (ProgressBar) findViewById(R.id.pb_modify_recipe);
         pbMain.setVisibility(View.VISIBLE);
-        String url = R.string.main_url + "recipeapi/getRecipe" + idRecipe;
+        String url = getResources().getString(R.string.main_url) + "recipeapi/getRecipe" + idRecipe;
         if (isNetworkAvailable()) {
             for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
                 try {
@@ -154,6 +151,7 @@ public class ModifyRecipe extends AppCompatActivity {
                 ApiOperator apiOp= ApiOperator.getInstance();
                 String result = apiOp.getString(url);
                 handler.post(new Runnable() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void run() {
                         if(result.equalsIgnoreCase("error.IOException")||
@@ -172,13 +170,15 @@ public class ModifyRecipe extends AppCompatActivity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void fillInformation(String result){
         try {
             JSONObject jsonShop=new JSONObject(result);
             Recipe recipe = new Recipe();
             recipe.fromJSON(jsonShop);
 
-            idUser = recipe.getUser().getId_user();
+            Intent myIntent = getIntent();
+            idUser = myIntent.getLongExtra("id_user", -1);
 
             EditText etTitle = findViewById(R.id.modify_recipe_title);
             EditText etDescription = findViewById(R.id.modify_recipe_description);
@@ -189,26 +189,13 @@ public class ModifyRecipe extends AppCompatActivity {
 
             ImageView imageView = findViewById(R.id.modify_recipe_image);
 
-            LinearLayout layoutIngredients = findViewById(R.id.modify_ingredientList);
-            ImageButton addIngredientButton = findViewById(R.id.modify_recipe_add_ingredient_button);
-
-            LinearLayout layoutSteps = findViewById(R.id.modify_stepList);
-            ImageButton addStepButton = findViewById(R.id.modify_recipe_add_step_button);
-
-            // Load data
-            if (recipe.getImagePath() == "")
-            {
-                imagePath = recipe.getImagePath();
-                Picasso.get().load(imagePath).into(imageView);
-            }
-            else
-            {
-                Picasso.get().load(R.drawable.default_recipe_image).into(imageView);
-            }
+            File file = new File(getFilesDir(), recipe.getImagePath() );
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            imageView.setImageBitmap(bitmap);
 
             etTitle.setText(recipe.getName());
             etDescription.setText(recipe.getDescription());
-            etPreparationTime.setText(recipe.getPreparationTime());
+            etPreparationTime.setText(String.valueOf(recipe.getPreparationTime()));
 
             ArrayList<String> ratings = new ArrayList<>();
 
@@ -218,8 +205,17 @@ public class ModifyRecipe extends AppCompatActivity {
             ratings.add(getResources().getString(R.string.fourStars));
             ratings.add(getResources().getString(R.string.fiveStars));
 
+            ArrayAdapter<String> adRating = new ArrayAdapter<>(this ,android.R.layout.simple_spinner_item,
+                    ratings);
+
+            adRating.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            sRating.setAdapter(adRating);
+
             switch (recipe.getRating())
             {
+                case "One Star":
+                    sRating.setSelection(0);
+                    break;
                 case "Two Stars":
                     sRating.setSelection(1);
                     break;
@@ -232,16 +228,7 @@ public class ModifyRecipe extends AppCompatActivity {
                 case "Five Stars":
                     sRating.setSelection(4);
                     break;
-                default:
-                    sRating.setSelection(0);
-                    break;
             }
-            ArrayAdapter<String> adRating = new ArrayAdapter<>(this ,android.R.layout.simple_spinner_item,
-                    ratings);
-
-            adRating.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            sRating.setAdapter(adRating);
-
 
             ArrayList<String> tags = new ArrayList<>();
 
@@ -250,143 +237,187 @@ public class ModifyRecipe extends AppCompatActivity {
             tags.add(getResources().getString(R.string.dinner));
             tags.add(getResources().getString(R.string.snack));
 
-            switch (recipe.getTag())
-            {
-                case "Launch":
-                    sRating.setSelection(1);
-                    break;
-                case "Dinner":
-                    sRating.setSelection(2);
-                    break;
-                case "Snack":
-                    sRating.setSelection(3);
-                    break;
-                default:
-                    sRating.setSelection(0);
-                    break;
-            }
-
             ArrayAdapter<String> adTag = new ArrayAdapter<>(this ,android.R.layout.simple_spinner_item,
                     tags);
-
             adTag.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             sTag.setAdapter(adTag);
 
-
-            LinearLayout horizontalLayout = new LinearLayout(getBaseContext());
-            horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            horizontalLayout.setLayoutParams(layoutParams);
-
-            for (int i = 0; i < recipe.getIngredients().size(); i++) {
-                EditText editText = new EditText(getBaseContext());
-                LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1
-                );
-                editText.setLayoutParams(editTextParams);
-                editText.setHint(recipe.getIngredients().get(i).getName());
-                editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-                editText.setTextColor(Color.parseColor("#808080"));
-                editText.setPadding(5, 5, 5, 5);
-
-                ImageButton deleteButton = new ImageButton(getBaseContext());
-                LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                deleteButton.setLayoutParams(deleteButtonParams);
-                deleteButton.setImageResource(R.drawable.eliminate_blue);
-                deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
-                deleteButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                deleteButton.setPadding(16, 16, 16, 16);
-
-                editText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                               int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        deleteButton.getLayoutParams().height = bottom - top;
-                        deleteButton.requestLayout();
-                    }
-                });
-                deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        layoutSteps.removeView(horizontalLayout);
-                    }
-                });
-
-                horizontalLayout.addView(editText);
-                horizontalLayout.addView(deleteButton);
+            switch (recipe.getTag())
+            {
+                case "Breakfast":
+                    sTag.setSelection(0);
+                    break;
+                case "Lunch":
+                    sTag.setSelection(1);
+                    break;
+                case "Dinner":
+                    sTag.setSelection(2);
+                    break;
+                case "Snack":
+                    sTag.setSelection(3);
+                    break;
             }
 
-            layoutIngredients.addView(horizontalLayout);
 
 
-            LinearLayout horizontalLayout2 = new LinearLayout(getBaseContext());
-            horizontalLayout2.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            horizontalLayout2.setLayoutParams(layoutParams2);
+            // Sorting the order of the Ingredient list
+            List<Ingredient> sortedIngredients = recipe.getIngredients();
+            Collections.sort(sortedIngredients, Comparator.comparingLong(Ingredient::getId_ingredient));
 
-            for (int i = 0; i < recipe.getSteps().size(); i++) {
-                EditText editText = new EditText(getBaseContext());
-                LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1
-                );
-                editText.setLayoutParams(editTextParams);
-                editText.setHint(recipe.getIngredients().get(i).getName());
-                editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-                editText.setTextColor(Color.parseColor("#808080"));
-                editText.setPadding(5, 5, 5, 5);
-
-                ImageButton deleteButton = new ImageButton(getBaseContext());
-                LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                deleteButton.setLayoutParams(deleteButtonParams);
-                deleteButton.setImageResource(R.drawable.eliminate_blue);
-                deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
-                deleteButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                deleteButton.setPadding(16, 16, 16, 16);
-
-                editText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                               int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        deleteButton.getLayoutParams().height = bottom - top;
-                        deleteButton.requestLayout();
-                    }
-                });
-                deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        layoutSteps.removeView(horizontalLayout2);
-                    }
-                });
-
-                horizontalLayout2.addView(editText);
-                horizontalLayout2.addView(deleteButton);
+            // Populate existing ingredients
+            LinearLayout ingredientList = findViewById(R.id.modify_ingredientList);
+            for (Ingredient ingredient : sortedIngredients) {
+                addIngredientView(ingredientList, ingredient.getName());
             }
 
-            layoutSteps.addView(horizontalLayout2);
+            // Button to add new ingredient
+            ImageButton addIngredientButton = findViewById(R.id.modify_recipe_add_ingredient_button);
+            addIngredientButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addIngredientView(ingredientList, "");
+                }
+            });
 
+            // Sorting the order of the Step list
+            List<Step> sortedSteps = recipe.getSteps();
+            Collections.sort(sortedSteps, Comparator.comparingLong(Step::getId_step));
 
+            // Populate existing steps
+            LinearLayout stepList = findViewById(R.id.modify_stepList);
+            for (Step step : sortedSteps) {
+                addStepView(stepList, step.getStep());
+            }
+
+            // Button to add new step
+            ImageButton addStepButton = findViewById(R.id.modify_recipe_add_step_button);
+            addStepButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addStepView(stepList, "");
+                }
+            });
 
             ProgressBar pbMain = (ProgressBar) findViewById(R.id.pb_modify_recipe);
             pbMain.setVisibility(View.GONE);
         } catch (JSONException | ParseException e) {
             showError("error.json");
         }
+    }
+
+    // Method to add an Ingredient view dynamically
+    private void addIngredientView(LinearLayout ingredientList, String ingredientName) {
+        // Create a horizontal layout to contain ingredient name and delete button
+        LinearLayout horizontalLayout = new LinearLayout(this);
+        horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        layoutParams.setMargins(0, 0, 0, 16);
+        horizontalLayout.setLayoutParams(layoutParams);
+
+        // Create EditText for ingredient name
+        EditText editText = new EditText(this);
+        LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1
+        );
+        editText.setLayoutParams(editTextParams);
+        editText.setText(ingredientName);
+        editText.setHint("Ingredient");
+        editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
+        editText.setTextColor(Color.parseColor("#808080"));
+        editText.setPadding(5, 5, 5, 5);
+
+        // Create ImageButton to delete ingredient
+        ImageButton deleteButton = new ImageButton(this);
+        LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+        deleteButton.setLayoutParams(deleteButtonParams);
+        deleteButton.setImageResource(R.drawable.eliminate_blue);
+        deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
+        deleteButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        deleteButton.setPadding(16, 16, 16, 16);
+
+        editText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                deleteButton.getLayoutParams().height = bottom - top;
+                deleteButton.requestLayout();
+            }
+        });
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ingredientList.removeView(horizontalLayout);
+            }
+        });
+
+        horizontalLayout.addView(editText);
+        horizontalLayout.addView(deleteButton);
+        ingredientList.addView(horizontalLayout);
+    }
+
+    // Method to add a step view dynamically
+    private void addStepView(LinearLayout stepList, String stepText) {
+        LinearLayout horizontalLayout = new LinearLayout(this);
+        horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        layoutParams.setMargins(0, 0, 0, 16);
+        horizontalLayout.setLayoutParams(layoutParams);
+
+        EditText editText = new EditText(this);
+        LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1
+        );
+        editText.setLayoutParams(editTextParams);
+        editText.setText(stepText);
+        editText.setHint("Step");
+        editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
+        editText.setTextColor(Color.parseColor("#808080"));
+        editText.setPadding(5, 5, 5, 5);
+
+        ImageButton deleteButton = new ImageButton(this);
+        LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+        deleteButton.setLayoutParams(deleteButtonParams);
+        deleteButton.setImageResource(R.drawable.eliminate_blue);
+        deleteButton.setBackgroundColor(Color.parseColor("#354F52"));
+        deleteButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        deleteButton.setPadding(16, 16, 16, 16);
+
+        editText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                deleteButton.getLayoutParams().height = bottom - top;
+                deleteButton.requestLayout();
+            }
+        });
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stepList.removeView(horizontalLayout);
+            }
+        });
+
+        horizontalLayout.addView(editText);
+        horizontalLayout.addView(deleteButton);
+        stepList.addView(horizontalLayout);
     }
 
     private Boolean isNetworkAvailable() {
@@ -431,7 +462,7 @@ public class ModifyRecipe extends AppCompatActivity {
     //region Save State
     private ArrayList<String> getSteps() {
         ArrayList<String> steps = new ArrayList<>();
-        LinearLayout stepList = findViewById(R.id.stepList);
+        LinearLayout stepList = findViewById(R.id.modify_stepList);
 
         for (int i = 0; i < stepList.getChildCount(); i++) {
             View view = stepList.getChildAt(i);
@@ -448,7 +479,7 @@ public class ModifyRecipe extends AppCompatActivity {
     }
     private ArrayList<String> getIngredients() {
         ArrayList<String> ingredients = new ArrayList<>();
-        LinearLayout ingredientList = findViewById(R.id.ingredientList);
+        LinearLayout ingredientList = findViewById(R.id.modify_ingredientList);
 
         for (int i = 0; i < ingredientList.getChildCount(); i++) {
             View view = ingredientList.getChildAt(i);
@@ -463,7 +494,7 @@ public class ModifyRecipe extends AppCompatActivity {
         }
         return ingredients;
     }
-    public void Save(){
+    public void Save(View view){
         boolean continueToCreate = true;
 
         EditText etTitle = findViewById(R.id.modify_recipe_title);
@@ -471,32 +502,16 @@ public class ModifyRecipe extends AppCompatActivity {
         EditText etPreparationTime = findViewById(R.id.modify_recipe_et_preparationTime);
         Spinner sTags = (Spinner) findViewById(R.id.modify_recipe_tagSpinner);
         Spinner sRating =(Spinner) findViewById(R.id.modify_recipe_ratingSpinner);
-        ImageView imageView = findViewById(R.id.modify_recipe_image);
 
         // Obtain the actual values
-        List<String> ingredients = new ArrayList<>(getIngredients());
-        List<String> steps = new ArrayList<>(getSteps());
+        List<String> ingredients = getIngredients();
+        List<String> steps = getSteps();
 
         String title = etTitle.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
         String preparationTime = etPreparationTime.getText().toString().trim();
         String tag = sTags.getSelectedItem().toString();
         String rating = sRating.getSelectedItem().toString();
-
-        // Obtain the current date using Calendar
-        Calendar calendar = Calendar.getInstance();
-
-        Date currentDate = calendar.getTime();
-        String formattedDate = DateUtil.formatDate(currentDate);
-
-        Date creationDate = null;
-
-        try {
-            creationDate = DateUtil.parseDate(formattedDate);
-        }catch (ParseException e) {
-            e.printStackTrace();
-            continueToCreate=false;
-        }
 
         if(title.isEmpty()){
             etTitle.setError(getResources().getString(R.string.compulsory_field));
@@ -512,14 +527,14 @@ public class ModifyRecipe extends AppCompatActivity {
         }
 
         if (continueToCreate) {
-            Button btCreate= findViewById(R.id.new_recipe_button_create);
-            ProgressBar pbCreate= findViewById(R.id.pb_create_recipe);
-            btCreate.setEnabled(false);
-            btCreate.setClickable(false);
-            pbCreate.setVisibility(View.VISIBLE);
+            Button btSave= findViewById(R.id.modify_recipe_button_save);
+            ProgressBar pbModify= findViewById(R.id.pb_modify_recipe);
+            btSave.setEnabled(false);
+            btSave.setClickable(false);
+            pbModify.setVisibility(View.VISIBLE);
             if (isNetworkAvailable()) {
                 String url = getResources().getString(R.string.main_url) + "recipeapi/updateRecipe";
-                sendTask(url, idRecipe+"",title, rating, description, preparationTime, tag, ingredients, steps, creationDate);
+                sendTask(url, idRecipe+"",title, rating, description, preparationTime, tag, ingredients, steps);
             } else {
                 showError("error.IOException");
             }
@@ -528,7 +543,7 @@ public class ModifyRecipe extends AppCompatActivity {
 
     private void sendTask(String url, String idrecipe,String title, String rating, String description,
                           String preparationTime, String tag, List<String> ingredients,
-                          List<String> steps, Date date) {
+                          List<String> steps) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(new Runnable() {
@@ -536,17 +551,16 @@ public class ModifyRecipe extends AppCompatActivity {
             public void run() {
                 ApiOperator apiOperator=ApiOperator.getInstance();
                 HashMap<String, Object> params = new HashMap<>();
-                params.put("name", title);
                 params.put("id_recipe", idrecipe);
-                params.put("imagePath", imagePath);
-                params.put("rating", rating);
+                params.put("name", title);
                 params.put("description", description);
+                params.put("imagePath", imagePath);
                 params.put("preparationTime", preparationTime);
                 params.put("tag", tag);
+                params.put("rating", rating);
                 params.put("ingredients", ingredients);
                 params.put("steps", steps);
                 params.put("userId", idUser);
-                params.put("date", date);
                 String result = apiOperator.putText(url,params);
                 handler.post(new Runnable() {
                     @Override
@@ -616,9 +630,11 @@ public class ModifyRecipe extends AppCompatActivity {
             Uri imageUri = data.getData();
             // Using Picasso to load the Image View
             ImageView imageView = findViewById(R.id.modify_recipe_image);
-            Picasso.get().load(imageUri).into(imageView);
+
             // Obtain the path for the image
             imagePath = getRealPathFromURI(imageUri);
+
+            Picasso.get().load(imagePath).into(imageView);
         }
     }
 

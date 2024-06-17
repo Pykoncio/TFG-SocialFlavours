@@ -2,6 +2,10 @@ package com.iesvegademijas.socialflavours.presentation.home;
 
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -11,6 +15,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,8 +43,8 @@ import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
+import com.iesvegademijas.socialflavours.presentation.home.fragments.friends.Friends;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.inbox.IncomingFriendshipRequests;
-import com.iesvegademijas.socialflavours.presentation.home.fragments.meal_planner.MealPlanner;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.outbox.SendFriendshipRequest;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.recipe.CreateRecipe;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.friend_recipe.FriendsRecipes;
@@ -82,6 +87,18 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
 
     // Tries to make the connection
     private static final int MAX_RETRIES = 5;
+
+    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        setUpRecipes();
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -275,7 +292,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 Recipe recipe = recipeModels.get(position);
                 Intent myIntent = new Intent().setClass(this, ModifyRecipe.class);
                 myIntent.putExtra("id_recipe", recipe.getId_recipe());
-                startActivity(myIntent);
+                myIntent.putExtra("id_user", user.getId_user());
+                activityResultLauncher.launch(myIntent);
             }
         }
     }
@@ -389,21 +407,21 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         {
             return 1;
         }
-        else if (idMenu == R.id.MyFriendsRecipes)
+        else if (idMenu == R.id.friends)
         {
             return 2;
         }
-        else if (idMenu == R.id.incomingFriendshipRequests)
+        else if (idMenu == R.id.myFriendsRecipes)
         {
             return 3;
         }
-        else if (idMenu == R.id.sendFriendRequest) {
+        else if (idMenu == R.id.incomingFriendshipRequests) {
             return 4;
         }
-        else if (idMenu == R.id.createRecipe) {
+        else if (idMenu == R.id.sendFriendRequest) {
             return 5;
         }
-        else if (idMenu == R.id.mealPlanner){
+        else if (idMenu == R.id.createRecipe){
             return 6;
         }
         else if (idMenu == R.id.shoppingLists){
@@ -427,24 +445,24 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
                 startActivity(intent);
                 return;
             case 2:
+                fragment = Friends.newInstance(String.valueOf(user.getId_user()), "");
+                title = "Friends";
+                break;
+            case 3:
                 fragment = FriendsRecipes.newInstance(String.valueOf(user.getId_user()), "");
                 title = "My Friends Recipes";
                 break;
-            case 3:
+            case 4:
                 fragment = IncomingFriendshipRequests.newInstance(String.valueOf(user.getId_user()), "");
                 title = "Incoming Friendships Requests";
                 break;
-            case 4:
+            case 5:
                 fragment = SendFriendshipRequest.newInstance(String.valueOf(user.getId_user()), "");
                 title = "Outgoing Friendships Requests";
                 break;
-            case 5:
+            case 6:
                 fragment = CreateRecipe.newInstance(String.valueOf(user.getId_user()), "");
                 title = "Create a new Recipe";
-                break;
-            case 6:
-                fragment = MealPlanner.newInstance(String.valueOf(user.getId_user()), "");
-                title = "Meal Planner";
                 break;
             case 7:
                 fragment = ShoppingLists.newInstance(String.valueOf(user.getId_user()), "");

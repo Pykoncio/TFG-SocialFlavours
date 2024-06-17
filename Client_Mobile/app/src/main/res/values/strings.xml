@@ -75,4 +75,13 @@
     <string name="no_shopping_lists_created">No shopping lists created yet.</string>
     <string name="no_items_created">No items created yet.</string>
     <string name="friendshipRequest">Friendship Request Sent Successfully!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="myFriends">Friends</string>
+    <string name="helpMessage">Tap on a recipe to edit it or press to delete it.</string>
+    <string name="defaultFriendMessage">"Friends with: "</string>
+    <string name="no_friends_yet">You don\'t have any friends yet.</string>
+    <string name="delete_friend">Delete Friend</string>
+    <string name="are_you_sure_friend">Are You Sure? You won\'t be able to see more of this friend recipes.</string>
+    <string name="back">Back</string>
 </resources>

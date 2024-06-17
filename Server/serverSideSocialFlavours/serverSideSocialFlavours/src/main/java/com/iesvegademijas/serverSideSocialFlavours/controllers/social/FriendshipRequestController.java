@@ -117,8 +117,8 @@ public class FriendshipRequestController {
     }
 
     @DeleteMapping("/{id}/reject")
-    public ResponseEntity<String> rejectFriendRequest(@PathVariable("id") Long requestId) {
-        Optional<FriendshipRequest> friendshipRequest = friendshipRequestRepository.findById(requestId);
+    public ResponseEntity<String> rejectFriendRequest(@PathVariable Long id) {
+        Optional<FriendshipRequest> friendshipRequest = friendshipRequestRepository.findById(id);
 
         if (friendshipRequest.isPresent()) {
             friendshipRequestRepository.delete(friendshipRequest.get());

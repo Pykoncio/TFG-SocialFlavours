@@ -201,12 +201,12 @@
                 android:orientation="vertical"/>
 
             <Button
-                android:id="@+id/not_editable_recipe_button_create"
+                android:id="@+id/not_editable_recipe_button_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#84A98C"
-                android:text="@string/accept"
-                android:onClick="Accept"
+                android:text="@string/back"
+                android:onClick="Back"
                 android:textColor="@color/white"
                 android:layout_below="@id/not_editable_stepList"
                 android:layout_centerHorizontal="true"/>

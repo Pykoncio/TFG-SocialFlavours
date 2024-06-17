@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,15 +80,18 @@ public class RecipeAdapter extends BaseAdapter {
         Recipe recipe = recipes.get(position);
 
         recipeWrapper.title.setText(recipe.getName());
-        recipeWrapper.preparationTime.setText(recipe.getPreparationTime());
+        recipeWrapper.preparationTime.setText("Preparation time: " + String.valueOf(recipe.getPreparationTime()) + " min");
         recipeWrapper.tag.setText(recipe.getTag());
 
-        // Load the recipeIcon or set a default image
-        if (recipe.getImagePath() != null && !recipe.getImagePath().isEmpty()) {
+        if (recipe.getImagePath() != null && !recipe.getImagePath().isEmpty())
+        {
             Picasso.get().load(recipe.getImagePath()).into(recipeWrapper.recipeIcon);
-        } else {
+        }
+        else
+        {
             recipeWrapper.recipeIcon.setImageResource(R.drawable.default_recipe_image);
         }
+
 
         recipeWrapper.container.setOnClickListener(new View.OnClickListener() {
             @Override

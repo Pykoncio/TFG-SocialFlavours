@@ -21,13 +21,12 @@ public class Recipe {
     private String rating;
     private String imagePath;
     private int preparationTime;
-    private Date date;
     private String tag;
     private List<Ingredient> ingredients;
     private List<Step> steps;
     public Recipe(){}
 
-    public Recipe(long id_recipe, User user, String name, String description, String rating, String imagePath, int preparationTime, Date date, String tag) {
+    public Recipe(long id_recipe, User user, String name, String description, String rating, String imagePath, int preparationTime, String tag) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
@@ -35,11 +34,10 @@ public class Recipe {
         this.rating = rating;
         this.imagePath = imagePath;
         this.preparationTime = preparationTime;
-        this.date = date;
         this.tag = tag;
     }
 
-    public Recipe(long id_recipe, User user, String name, String description, String rating, String imagePath, int preparationTime, Date date, String tag,  List<Ingredient> ingredients, List<Step> steps) {
+    public Recipe(long id_recipe, User user, String name, String description, String rating, String imagePath, int preparationTime, String tag,  List<Ingredient> ingredients, List<Step> steps) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
@@ -47,7 +45,6 @@ public class Recipe {
         this.rating = rating;
         this.imagePath = imagePath;
         this.preparationTime = preparationTime;
-        this.date = date;
         this.tag  = tag;
         this.ingredients = ingredients;
         this.steps = steps;
@@ -117,14 +114,6 @@ public class Recipe {
         this.preparationTime = preparationTime;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public List<Ingredient> getIngredients() {
         return ingredients;
     }
@@ -187,37 +176,36 @@ public class Recipe {
             this.preparationTime = 0;
         }
 
-        if (!jsonObject.isNull("date")) {
-            String unParsedDate = jsonObject.getString("date");
-            this.date = DateUtil.parseDate(unParsedDate);
-        } else {
-            this.date = null;
-        }
-
         if (!jsonObject.isNull("tag")) {
             this.tag = jsonObject.getString("tag");
         } else {
             this.tag = "";
         }
 
-        // Handling lists
-
+        // Parse ingredients array
         this.ingredients = new ArrayList<>();
-        JSONArray ingredientsArray = jsonObject.getJSONArray("ingredients");
-        for (int i = 0; i < ingredientsArray.length(); i++) {
-            JSONObject ingredientObject = ingredientsArray.getJSONObject(i);
-            Ingredient ingredient = new Ingredient();
-            ingredient.fromJSON(ingredientObject);
-            this.ingredients.add(ingredient);
+        if (!jsonObject.isNull("ingredients")) {
+            JSONArray ingredientsArray = jsonObject.getJSONArray("ingredients");
+            for (int i = 0; i < ingredientsArray.length(); i++) {
+                JSONObject ingredientObject = ingredientsArray.getJSONObject(i);
+                Ingredient ingredient = new Ingredient();
+                ingredient.setId_ingredient(ingredientObject.getLong("id_ingredient"));
+                ingredient.setName(ingredientObject.getString("name"));
+                this.ingredients.add(ingredient);
+            }
         }
 
+        // Parse steps array
         this.steps = new ArrayList<>();
-        JSONArray stepsArray = jsonObject.getJSONArray("steps");
-        for (int i = 0; i < stepsArray.length(); i++) {
-            JSONObject stepObject = stepsArray.getJSONObject(i);
-            Step step = new Step();
-            step.fromJSON(stepObject);
-            this.steps.add(step);
+        if (!jsonObject.isNull("steps")) {
+            JSONArray stepsArray = jsonObject.getJSONArray("steps");
+            for (int i = 0; i < stepsArray.length(); i++) {
+                JSONObject stepObject = stepsArray.getJSONObject(i);
+                Step step = new Step();
+                step.setId_step(stepObject.getLong("id_step"));
+                step.setStep(stepObject.getString("step"));
+                this.steps.add(step);
+            }
         }
     }
 

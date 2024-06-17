@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuItemImpl;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -30,6 +31,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -42,6 +44,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.material.navigation.NavigationView;
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.common.DateUtil;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
@@ -411,20 +414,6 @@ public class CreateRecipe extends Fragment {
         String tag = sTags.getSelectedItem().toString();
         String rating = sRating.getSelectedItem().toString();
 
-        // Obtain the current date using Calendar
-        Calendar calendar = Calendar.getInstance();
-        Date currentDate = calendar.getTime();
-        String formattedDate = DateUtil.formatDate(currentDate);
-
-        Date creationDate = null;
-
-        try {
-            creationDate = DateUtil.parseDate(formattedDate);
-            System.out.println(creationDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
         if(title.isEmpty()){
             etTitle.setError(getResources().getString(R.string.compulsory_field));
             continueToCreate=false;
@@ -446,7 +435,7 @@ public class CreateRecipe extends Fragment {
             pbCreate.setVisibility(View.VISIBLE);
             if (isNetworkAvailable()) {
                 String url = getResources().getString(R.string.main_url) + "recipeapi/createRecipe";
-                sendTask(url, title, rating, description, preparationTime, tag, ingredients, steps, creationDate);
+                sendTask(url, title, rating, description, preparationTime, tag, ingredients, steps);
             } else {
                 showError("error.IOException");
             }
@@ -458,8 +447,7 @@ public class CreateRecipe extends Fragment {
     private void sendTask(String url, String title, String rating,
                           String description, String preparationTime,
                           String tag, List<String> ingredients,
-                          List<String> steps, Date date
-                          ) {
+                          List<String> steps) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(new Runnable() {
@@ -468,15 +456,14 @@ public class CreateRecipe extends Fragment {
                 ApiOperator apiOperator= ApiOperator.getInstance();
                 HashMap<String, Object> params = new HashMap<>();
                 params.put("name", title);
-                params.put("imagePath", imagePath);
-                params.put("rating", rating);
                 params.put("description", description);
+                params.put("imagePath", imagePath);
                 params.put("preparationTime", preparationTime);
                 params.put("tag", tag);
+                params.put("rating", rating);
                 params.put("ingredients", ingredients);
                 params.put("steps", steps);
                 params.put("userId", mParam1);
-                params.put("date", date);
                 String result = apiOperator.postText(url,params);
                 handler.post(new Runnable() {
                     @Override
@@ -493,8 +480,7 @@ public class CreateRecipe extends Fragment {
                             idCreated=-1;
                         }
                         if(idCreated>0){
-                            // getActivity().getSupportFragmentManager().popBackStack(); One way to do it
-                            getActivity().finish();
+                            launchFirstMenuItem();
                         }
                         else {
                             showError("error.Unknown");
@@ -503,6 +489,14 @@ public class CreateRecipe extends Fragment {
                 });
             }
         });
+    }
+
+    private void launchFirstMenuItem() {
+        if (getActivity() instanceof HomePage) {
+            NavigationView navigationView = getActivity().findViewById(R.id.navigation_view);
+            MenuItem menuItem = navigationView.getMenu().findItem(R.id.myRecipes);
+            menuItem.setChecked(true);
+        }
     }
 
     //endregion

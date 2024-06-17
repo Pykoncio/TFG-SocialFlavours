@@ -8,7 +8,11 @@
             android:title="@string/myRecipes"
             android:icon="@drawable/baseline_boy_24"/>
 
-        <item android:id="@+id/MyFriendsRecipes"
+        <item android:id="@+id/friends"
+            android:title="@string/myFriends"
+            android:icon="@drawable/baseline_contact_page_24"/>
+
+        <item android:id="@+id/myFriendsRecipes"
             android:title="@string/myFriendRecipes"
             android:icon="@drawable/baseline_connect_without_contact_24"/>
 
@@ -23,10 +27,6 @@
         <item android:id="@+id/createRecipe"
             android:title="@string/createRecipe"
             android:icon="@drawable/baseline_add_circle_outline_24"/>
-
-        <item android:id="@+id/mealPlanner"
-            android:title="@string/mealPlanner"
-            android:icon="@drawable/baseline_calendar_month_24"/>
 
         <item android:id="@+id/shoppingLists"
             android:title="@string/shoppingLists"

@@ -2,10 +2,12 @@ package com.iesvegademijas.socialflavours.data.remote;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -46,9 +48,16 @@ public class ApiOperator {
         try {
             OkHttpClient client = new OkHttpClient();
             JSONObject jsonObject = new JSONObject();
-            for (String pair : params.keySet()) {
-                jsonObject.put(pair, params.get(pair));
+
+            for (String key : params.keySet()) {
+                Object value = params.get(key);
+                if (value instanceof List) {
+                    jsonObject.put(key, new JSONArray((List) value));
+                } else {
+                    jsonObject.put(key, value);
+                }
             }
+
             RequestBody body = RequestBody.create(jsonObject.toString(),
                     MediaType.parse("application/json"));
             Request request = new Request.Builder()
@@ -88,9 +97,16 @@ public class ApiOperator {
         try {
             OkHttpClient client = new OkHttpClient();
             JSONObject jsonObject = new JSONObject();
-            for (String pair : params.keySet()) {
-                jsonObject.put(pair, params.get(pair));
+
+            for (String key : params.keySet()) {
+                Object value = params.get(key);
+                if (value instanceof List) {
+                    jsonObject.put(key, new JSONArray((List) value));
+                } else {
+                    jsonObject.put(key, value);
+                }
             }
+
             RequestBody body = RequestBody.create(jsonObject.toString(),
                     MediaType.parse("application/json"));
             Request request = new Request.Builder()
@@ -129,9 +145,14 @@ public class ApiOperator {
     private String okPutText(String url) {
         try {
             OkHttpClient client = new OkHttpClient();
+            RequestBody body = RequestBody.create("",
+                    MediaType.parse("application/json"));
+
             Request request = new Request.Builder()
                     .url(url)
+                    .put(body)
                     .build();
+
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
                 Log.e(TAG, "okPutText error: " + response.code());

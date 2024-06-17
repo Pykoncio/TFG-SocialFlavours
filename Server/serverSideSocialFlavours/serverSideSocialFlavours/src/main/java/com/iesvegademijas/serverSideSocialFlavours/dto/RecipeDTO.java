@@ -18,15 +18,12 @@ public class RecipeDTO {
     private String rating;
     private List<String> ingredients;
     private List<String> steps;
-
     private Long userId;
-
-    private String date;
 
     public RecipeDTO() {}
 
     public RecipeDTO(Long id_recipe, String name, String imagePath, String rating, String description,  String preparationTime, String tag,
-                     List<String> ingredients, List<String> steps, String userId, String date) {
+                     List<String> ingredients, List<String> steps, String userId) {
         this.id_recipe = id_recipe;
         this.name = name;
         this.description = description;
@@ -37,7 +34,6 @@ public class RecipeDTO {
         this.ingredients = ingredients;
         this.steps = steps;
         this.userId = Long.parseLong(userId);
-        this.date = date;
     }
 
     // Getters and Setters
@@ -49,14 +45,6 @@ public class RecipeDTO {
 
     public void setId_recipe(long id_recipe) {
         this.id_recipe = id_recipe;
-    }
-
-    public Date getDate() throws ParseException {
-        return dateFormat.parse(this.date);
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public Long getUserId() {

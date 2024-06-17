@@ -128,9 +128,9 @@ public class UserController {
         }
     }
 
-    @GetMapping(path = "/userFriends")
-    public ResponseEntity<List<User>> userFriends(@RequestParam Long userId) {
-        Optional<User> user = userRepository.findById(userId);
+    @GetMapping(path = "/userFriends{id}")
+    public ResponseEntity<List<User>> userFriends(@PathVariable Long id) {
+        Optional<User> user = userRepository.findById(id);
 
         if (user.isPresent()) {
             List<User> result = new ArrayList<>();
@@ -148,5 +148,46 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @DeleteMapping(path = "/userDeleteFriendship{userId}/{friendUsername}")
+    public ResponseEntity<Object> userDeleteFriendship(@PathVariable Long userId,
+                                                       @PathVariable String friendUsername) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        User friend = userRepository.findByUsername(friendUsername);
+
+        if (userOptional.isPresent() && friend != null) {
+            User user = userOptional.get();
+
+            // Check if there is an existing friendship request between these two users
+            FriendshipRequest friendshipRequest = null;
+            for (FriendshipRequest request : user.getReceivedFriendshipRequests()) {
+                if (request.getSender().equals(friend) && request.getStatus().equals(FriendshipRequest.Status.APPROVED.toString())) {
+                    friendshipRequest = request;
+                    break;
+                }
+            }
+            if (friendshipRequest == null) {
+                for (FriendshipRequest request : user.getSentFriendshipRequests()) {
+                    if (request.getReceiver().equals(friend) && request.getStatus().equals(FriendshipRequest.Status.APPROVED.toString())) {
+                        friendshipRequest = request;
+                        break;
+                    }
+                }
+            }
+
+            if (friendshipRequest != null) {
+                user.getReceivedFriendshipRequests().remove(friendshipRequest);
+                friend.getSentFriendshipRequests().remove(friendshipRequest);
+                userRepository.save(user);
+                userRepository.save(friend);
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Friendship not found");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User or friend not found");
+        }
+    }
+
 
 }

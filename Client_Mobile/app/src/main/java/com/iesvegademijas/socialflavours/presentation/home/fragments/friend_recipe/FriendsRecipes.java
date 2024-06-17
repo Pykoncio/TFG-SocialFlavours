@@ -1,5 +1,6 @@
 package com.iesvegademijas.socialflavours.presentation.home.fragments.friend_recipe;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -10,6 +11,10 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -51,6 +56,18 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
     private ListView listView;
     private ArrayList<Recipe> recipeModels;
     private RecipeAdapter recipesAdapter;
+
+    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        setUpFriendsRecipes();
+                    }
+                }
+            }
+    );
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -244,7 +261,7 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
                 Recipe recipe = recipeModels.get(position);
                 Intent myIntent = new Intent().setClass(getContext(), NotEditableRecipe.class);
                 myIntent.putExtra("id_recipe", recipe.getId_recipe());
-                startActivity(myIntent);
+                activityResultLauncher.launch(myIntent);
             }
         }
     }

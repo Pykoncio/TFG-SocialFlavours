@@ -1,5 +1,6 @@
 package com.iesvegademijas.serverSideSocialFlavours.models.social;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.planner.Planner;
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.Recipe;
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.ShoppingList;
@@ -22,8 +23,6 @@ public class User implements Serializable {
     private Set<FriendshipRequest> receivedFriendshipRequests = new HashSet<>();
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private Set<FriendshipRequest> sentFriendshipRequests = new HashSet<>();
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Planner mealPlan;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<ShoppingList> shoppingLists = new HashSet<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -99,14 +98,6 @@ public class User implements Serializable {
 
     public void setSentFriendshipRequests(Set<FriendshipRequest> sentFriendshipRequests) {
         this.sentFriendshipRequests = sentFriendshipRequests;
-    }
-
-    public Planner getMealPlan() {
-        return mealPlan;
-    }
-
-    public void setMealPlan(Planner mealPlan) {
-        this.mealPlan = mealPlan;
     }
 
     public Set<ShoppingList> getShoppingLists() {

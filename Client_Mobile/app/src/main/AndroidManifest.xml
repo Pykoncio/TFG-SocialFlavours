@@ -40,7 +40,7 @@
             android:name=".presentation.home.fragments.inbox.IncomingFriendshipRequests"
             android:exported="false" />
         <activity
-            android:name=".presentation.home.fragments.meal_planner.MealPlanner"
+            android:name=".presentation.home.fragments.friends.MealPlanner"
             android:exported="false" />
         <activity
             android:name=".presentation.home.fragments.friend_recipe.NotEditableRecipe"

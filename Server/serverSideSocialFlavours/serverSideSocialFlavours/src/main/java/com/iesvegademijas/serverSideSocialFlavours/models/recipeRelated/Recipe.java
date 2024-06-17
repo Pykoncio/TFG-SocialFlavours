@@ -1,5 +1,6 @@
 package com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iesvegademijas.serverSideSocialFlavours.models.entities.Ingredient;
 import com.iesvegademijas.serverSideSocialFlavours.models.entities.Step;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
@@ -14,6 +15,7 @@ public class Recipe {
     private Long id_recipe;
 
     @ManyToOne
+    @JsonIgnore
     private User user;
 
     private String name;
@@ -26,20 +28,17 @@ public class Recipe {
 
     private int preparationTime;
 
-    @Column(columnDefinition = "date")
-    private Date creationDate;
-
     private String tag;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
-    private Set<Ingredient> ingredients = new HashSet<>();
+    private List<Ingredient> ingredients = new ArrayList<>();
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
-    private Set<Step> steps = new HashSet<>();
+    private List<Step> steps = new ArrayList<>();
 
     public Recipe(){}
 
-    public Recipe(Long id_recipe, User user, String name, String description, String rating, String imagePath, int preparationTime, Date creationDate, String tag) {
+    public Recipe(Long id_recipe, User user, String name, String description, String rating, String imagePath, int preparationTime, String tag) {
         this.id_recipe = id_recipe;
         this.user = user;
         this.name = name;
@@ -47,7 +46,6 @@ public class Recipe {
         this.rating = rating;
         this.imagePath = imagePath;
         this.preparationTime = preparationTime;
-        this.creationDate = creationDate;
         this.tag = tag;
     }
 
@@ -115,27 +113,19 @@ public class Recipe {
         this.preparationTime = preparationTime;
     }
 
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Set<Ingredient> getIngredients() {
+    public List<Ingredient> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(Set<Ingredient> ingredients) {
+    public void setIngredients(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
     }
 
-    public Set<Step> getSteps() {
+    public List<Step> getSteps() {
         return steps;
     }
 
-    public void setSteps(Set<Step> steps) {
+    public void setSteps(List<Step> steps) {
         this.steps = steps;
     }
 
