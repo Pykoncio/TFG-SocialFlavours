@@ -18,18 +18,14 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuItemImpl;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,14 +42,10 @@ import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.iesvegademijas.socialflavours.R;
-import com.iesvegademijas.socialflavours.common.DateUtil;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.presentation.home.HomePage;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -146,10 +138,8 @@ public class CreateRecipe extends Fragment {
 
         myView = inflater.inflate(R.layout.fragment_create_recipe, container, false);
 
-        // Find the toolbar from the inflated layout
         Toolbar toolbar = myView.findViewById(R.id.toolbar_createRecipe);
 
-        // Set the toolbar as the SupportActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
@@ -170,7 +160,6 @@ public class CreateRecipe extends Fragment {
 
         Button createButton = myView.findViewById(R.id.new_recipe_button_create);
 
-        // Set OnClickListener for the button
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -195,7 +184,6 @@ public class CreateRecipe extends Fragment {
         addIngredientButton.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View v) {
-                   // Create a horizontal layout to contain the String of the list and the Button to eliminate it
                    LinearLayout horizontalLayout = new LinearLayout(getContext());
                    horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -205,7 +193,6 @@ public class CreateRecipe extends Fragment {
                    layoutParams.setMargins(0, 0, 0, 16);
                    horizontalLayout.setLayoutParams(layoutParams);
 
-                   // Create the editText
                    EditText editText = new EditText(getContext());
                    LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
                            0,
@@ -218,7 +205,6 @@ public class CreateRecipe extends Fragment {
                    editText.setTextColor(Color.parseColor("#808080"));
                    editText.setPadding(5, 5, 5, 5);
 
-                   // Create the imageButton to eliminate this String
                    ImageButton deleteButton = new ImageButton(getContext());
                    LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
                            LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -245,11 +231,9 @@ public class CreateRecipe extends Fragment {
                        }
                    });
 
-                   // Add both resources to the horizontalLayout
                    horizontalLayout.addView(editText);
                    horizontalLayout.addView(deleteButton);
 
-                   // Add the horizontalLayout to the ingredient list
                    ingredientList.addView(horizontalLayout);
                }
            });
@@ -326,9 +310,7 @@ public class CreateRecipe extends Fragment {
     }
 
     //region Populate Spinners and Create Recipe
-
     private void populateSpinners(){
-        // Rating
         Resources res = getResources();
 
         Spinner sRating = (Spinner) myView.findViewById(R.id.new_recipe_ratingSpinner);
@@ -346,7 +328,6 @@ public class CreateRecipe extends Fragment {
         adRating.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sRating.setAdapter(adRating);
 
-        // Tags
         Spinner sTag = (Spinner) myView.findViewById(R.id.new_recipe_tagSpinner);
         ArrayList<String> tags = new ArrayList<>();
 
@@ -404,7 +385,6 @@ public class CreateRecipe extends Fragment {
         Spinner sTags = (Spinner) myView.findViewById(R.id.new_recipe_tagSpinner);
         Spinner sRating =(Spinner) myView.findViewById(R.id.new_recipe_ratingSpinner);
 
-        // Obtain the actual values
         List<String> ingredients = new ArrayList<>(getIngredients());
         List<String> steps = new ArrayList<>(getSteps());
 
@@ -501,7 +481,7 @@ public class CreateRecipe extends Fragment {
 
     //endregion
 
-    //region Utils
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);

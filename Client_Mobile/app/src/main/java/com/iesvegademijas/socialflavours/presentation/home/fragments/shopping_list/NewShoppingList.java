@@ -26,9 +26,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -55,43 +53,7 @@ public class NewShoppingList extends AppCompatActivity {
         });
     }
 
-    private Boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Network nw = connectivityManager.getActiveNetwork();
-            if (nw == null) {
-                return false;
-            } else {
-                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
-                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-            }
-        } else {
-            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
-            return nwInfo != null && nwInfo.isConnected();
-        }
-    }
-
-    private void showError(String error) {
-        String message;
-        Resources res = getResources();
-        int duration;
-        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
-            message = res.getString(R.string.error_connection);
-            duration = Toast.LENGTH_SHORT;
-        }
-        else if(error.equals("error.undelivered")){
-            message = res.getString(R.string.error_undelivered);
-            duration = Toast.LENGTH_LONG;
-        }
-        else {
-            message = res.getString(R.string.error_unknown);
-            duration = Toast.LENGTH_SHORT;
-        }
-        Toast toast = Toast.makeText(this, message, duration);
-        toast.show();
-    }
+    //region Create Shopping List
     public void createShoppingList(View view)
     {
         EditText etName = findViewById(R.id.new_shopping_list_name);
@@ -153,4 +115,45 @@ public class NewShoppingList extends AppCompatActivity {
             }
         });
     }
+    //endregion
+
+    //region Network Utils
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network nw = connectivityManager.getActiveNetwork();
+            if (nw == null) {
+                return false;
+            } else {
+                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
+                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+            }
+        } else {
+            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
+            return nwInfo != null && nwInfo.isConnected();
+        }
+    }
+
+    private void showError(String error) {
+        String message;
+        Resources res = getResources();
+        int duration;
+        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
+            message = res.getString(R.string.error_connection);
+            duration = Toast.LENGTH_SHORT;
+        }
+        else if(error.equals("error.undelivered")){
+            message = res.getString(R.string.error_undelivered);
+            duration = Toast.LENGTH_LONG;
+        }
+        else {
+            message = res.getString(R.string.error_unknown);
+            duration = Toast.LENGTH_SHORT;
+        }
+        Toast toast = Toast.makeText(this, message, duration);
+        toast.show();
+    }
+    //endregion
 }

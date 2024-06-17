@@ -27,9 +27,7 @@ import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.adapter.FriendAdapter;
-import com.iesvegademijas.socialflavours.data.adapter.FriendshipRequestAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
-import com.iesvegademijas.socialflavours.data.remote.dto.social.FriendShip;
 import com.iesvegademijas.socialflavours.data.remote.dto.social.User;
 import com.iesvegademijas.socialflavours.presentation.home.HomePage;
 
@@ -103,10 +101,8 @@ public class Friends extends Fragment implements FriendAdapter.FriendAdapterCall
 
         listView = myView.findViewById(R.id.friends_list);
 
-        // Find the toolbar from the inflated layout
         Toolbar toolbar = myView.findViewById(R.id.toolbar_friends);
 
-        // Set the toolbar as the SupportActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
@@ -130,6 +126,7 @@ public class Friends extends Fragment implements FriendAdapter.FriendAdapterCall
         return myView;
     }
 
+    //region Retrieve Friends
     private void setUpFriends()
     {
         String url = getResources().getString(R.string.main_url) + "userapi/userFriends" + mParam1;
@@ -241,7 +238,9 @@ public class Friends extends Fragment implements FriendAdapter.FriendAdapterCall
             throw new RuntimeException(e);
         }
     }
+    //endregion
 
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -279,7 +278,10 @@ public class Friends extends Fragment implements FriendAdapter.FriendAdapterCall
         Toast toast = Toast.makeText(getContext(), message, duration);
         toast.show();
     }
+    //endregion
 
+
+    //region Delete Friend
     @Override
     public void deleteFriendship(int position) {
         androidx.appcompat.app.AlertDialog diaBox = AskOption(position);
@@ -350,4 +352,6 @@ public class Friends extends Fragment implements FriendAdapter.FriendAdapterCall
             }
         });
     }
+    //endregion
+
 }

@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,6 +45,7 @@ public class Register extends AppCompatActivity {
         finish();
     }
 
+    //region Register User
     public void register(View view)
     {
         EditText editTextUsername = findViewById(R.id.register_user_input);
@@ -94,8 +94,6 @@ public class Register extends AppCompatActivity {
             }
         }
     }
-
-    //region server request
     private void sendTask(String url, String username, String email,String password) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -140,6 +138,7 @@ public class Register extends AppCompatActivity {
             }
         });
     }
+    //endregion
 
     private void sendUserToHomePage()
     {
@@ -148,6 +147,7 @@ public class Register extends AppCompatActivity {
         finish();
     }
 
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);

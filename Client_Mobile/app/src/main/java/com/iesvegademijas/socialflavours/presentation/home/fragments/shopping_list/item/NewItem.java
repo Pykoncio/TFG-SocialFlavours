@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -53,6 +52,7 @@ public class NewItem extends AppCompatActivity {
         });
     }
 
+    //region Create Item
     public void addItem(View view)
     {
         boolean addItem = true;
@@ -129,7 +129,9 @@ public class NewItem extends AppCompatActivity {
             }
         });
     }
+    //endregion
 
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -167,4 +169,5 @@ public class NewItem extends AppCompatActivity {
         Toast toast = Toast.makeText(this, message, duration);
         toast.show();
     }
+    //endregion
 }

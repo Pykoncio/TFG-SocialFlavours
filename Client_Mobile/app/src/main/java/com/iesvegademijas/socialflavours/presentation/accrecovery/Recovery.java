@@ -42,14 +42,6 @@ public class Recovery extends AppCompatActivity {
             return insets;
         });
     }
-
-    public void returnToLoginScreenFromRecovery(View view)
-    {
-        Intent intent = new Intent().setClass(this, Login.class);
-        startActivity(intent);
-        finish();
-    }
-
     public void rememberPassword(View view)
     {
         EditText etUsername = findViewById(R.id.recovery_username_input);
@@ -102,12 +94,10 @@ public class Recovery extends AppCompatActivity {
 
                             if(result.equalsIgnoreCase("error.IOException")||
                                     result.equals("error.OKHttp")) {
-                                // showError(result);
-                                showError(getResources().getString(R.string.emailSent));
+                                showError(result);
                             }
                             else if(result.equalsIgnoreCase("null")){
-                                // showError("error.Unknown");
-                                showError(getResources().getString(R.string.emailSent));
+                                showError("error.Unknown");
                             } else{
                                 showError(getResources().getString(R.string.emailSent));
                             }
@@ -175,5 +165,12 @@ public class Recovery extends AppCompatActivity {
         }
         Toast toast = Toast.makeText(this, message, duration);
         toast.show();
+    }
+
+    public void returnToLoginScreenFromRecovery(View view)
+    {
+        Intent intent = new Intent().setClass(this, Login.class);
+        startActivity(intent);
+        finish();
     }
 }

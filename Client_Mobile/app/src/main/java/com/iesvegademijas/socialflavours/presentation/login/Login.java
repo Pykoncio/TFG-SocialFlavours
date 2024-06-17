@@ -1,12 +1,8 @@
 package com.iesvegademijas.socialflavours.presentation.login;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -81,6 +77,7 @@ public class Login extends AppCompatActivity {
         finish();
     }
 
+    //region User Login
     public void login(View view) {
         EditText editTextUsername = findViewById(R.id.login_username_input);
         EditText editTextPassword = findViewById(R.id.login_password_input);
@@ -152,8 +149,6 @@ public class Login extends AppCompatActivity {
         btLogin.setClickable(true);
         pbLogin.setVisibility(View.GONE);
     }
-
-    //region server request
     private void getListTask(String url) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -196,7 +191,6 @@ public class Login extends AppCompatActivity {
             }
         });
     }
-
     private void getResultFromJSON(String result)
     {
         try
@@ -214,6 +208,9 @@ public class Login extends AppCompatActivity {
             showError(e.getMessage());
         }
     }
+    //endregion
+
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -251,6 +248,6 @@ public class Login extends AppCompatActivity {
         Toast toast = Toast.makeText(this, message, duration);
         toast.show();
     }
-
     //endregion
+
 }

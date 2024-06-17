@@ -1,7 +1,6 @@
 package com.iesvegademijas.socialflavours.data.remote.dto.social;
 
 import android.net.ParseException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

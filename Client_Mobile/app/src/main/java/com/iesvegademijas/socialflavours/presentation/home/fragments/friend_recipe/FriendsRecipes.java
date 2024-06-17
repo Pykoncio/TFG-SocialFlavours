@@ -114,10 +114,8 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
                              Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_friends_recipes, container, false);
 
-        // Find the toolbar from the inflated layout
         Toolbar toolbar = myView.findViewById(R.id.toolbar_friends_recipes);
 
-        // Set the toolbar as the SupportActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
@@ -142,6 +140,7 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
         return myView;
     }
 
+    //region Retrieve Friends Recipes
     private void setUpFriendsRecipes()
     {
         String url = getResources().getString(R.string.main_url) + "recipeapi/getAllRecipesFromUserFriends" + mParam1;
@@ -251,7 +250,7 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
             throw new RuntimeException(e);
         }
     }
-
+    //endregion
     @Override
     public void editPressed(int position) {
         if (recipeModels!=null)
@@ -269,6 +268,7 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
     @Override
     public void deletePressed(int position) {}
 
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -306,4 +306,5 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
         Toast toast = Toast.makeText(getContext(), message, duration);
         toast.show();
     }
+    //endregion
 }

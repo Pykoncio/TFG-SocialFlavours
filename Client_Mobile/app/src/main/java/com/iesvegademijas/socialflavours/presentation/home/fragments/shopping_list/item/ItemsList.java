@@ -29,17 +29,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.iesvegademijas.socialflavours.R;
-import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
 import com.iesvegademijas.socialflavours.data.adapter.ShoppingListItemAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.entities.Item;
-import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -82,6 +79,7 @@ public class ItemsList extends AppCompatActivity implements ShoppingListItemAdap
         });
     }
 
+    //region Retrieve Items
     private void setUpItems()
     {
         ProgressBar pbItemList = findViewById(R.id.pb_shopping_list_items);
@@ -196,6 +194,7 @@ public class ItemsList extends AppCompatActivity implements ShoppingListItemAdap
             throw new RuntimeException(e);
         }
     }
+    //endregion
 
     @Override
     public void editItem(int position) {
@@ -219,6 +218,7 @@ public class ItemsList extends AppCompatActivity implements ShoppingListItemAdap
         activityResultLauncher.launch(myIntent);
     }
 
+    //region Delete Item
     @Override
     public void deleteItem(int position) {
         deleteItemFromList(position);
@@ -277,7 +277,9 @@ public class ItemsList extends AppCompatActivity implements ShoppingListItemAdap
             }
         });
     }
+    //endregion
 
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -315,4 +317,5 @@ public class ItemsList extends AppCompatActivity implements ShoppingListItemAdap
         Toast toast = Toast.makeText(this, message, duration);
         toast.show();
     }
+    //endregion
 }

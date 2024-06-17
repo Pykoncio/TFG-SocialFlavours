@@ -28,18 +28,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.iesvegademijas.socialflavours.R;
-import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
 import com.iesvegademijas.socialflavours.data.adapter.ShoppingListAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
-import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.ShoppingList;
 import com.iesvegademijas.socialflavours.presentation.home.HomePage;
 import com.iesvegademijas.socialflavours.presentation.home.fragments.shopping_list.item.ItemsList;
@@ -127,10 +123,8 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
 
         listView = myView.findViewById(R.id.shopping_lists_shoppingList);
 
-        // Find the toolbar from the inflated layout
         Toolbar toolbar = myView.findViewById(R.id.toolbar_shoppingLists);
 
-        // Set the toolbar as the SupportActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
@@ -161,15 +155,27 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
 
         return myView;
     }
-
-    //region Create Shopping List
     private void createShoppingList(View view)
     {
         Intent intent = new Intent().setClass(getContext(), NewShoppingList.class);
         intent.putExtra("id_user", mParam1);
         startActivity(intent);
     }
-    //endregion
+
+    @Override
+    public void goToList(int position) {
+        if (shoppingListsModels!=null)
+        {
+            if (shoppingListsModels.size() > position)
+            {
+                ShoppingList shoppingList = shoppingListsModels.get(position);
+                Intent myIntent = new Intent().setClass(getContext(), ItemsList.class);
+                myIntent.putExtra("id_shoppingList", shoppingList.getId_shoppingList());
+                activityResultLauncher.launch(myIntent);
+                setUpShoppingLists();
+            }
+        }
+    }
 
     //region Set Up Shopping Lists
     private void setUpShoppingLists()
@@ -287,20 +293,6 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
         }
     }
     //endregion
-    @Override
-    public void goToList(int position) {
-        if (shoppingListsModels!=null)
-        {
-            if (shoppingListsModels.size() > position)
-            {
-                ShoppingList shoppingList = shoppingListsModels.get(position);
-                Intent myIntent = new Intent().setClass(getContext(), ItemsList.class);
-                myIntent.putExtra("id_shoppingList", shoppingList.getId_shoppingList());
-                activityResultLauncher.launch(myIntent);
-                setUpShoppingLists();
-            }
-        }
-    }
 
     //region Delete Shopping Lists
     @Override

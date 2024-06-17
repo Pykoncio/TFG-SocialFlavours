@@ -5,12 +5,10 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -20,7 +18,7 @@ import okhttp3.Response;
 public class ApiOperator {
 
     private static ApiOperator me = null;
-    private static final String TAG = "ApiOperatorTag"; // Log tag
+    private static final String TAG = "ApiOperatorTag";
 
     private ApiOperator(){}
 
@@ -79,6 +77,32 @@ public class ApiOperator {
         } catch (JSONException e) {
             Log.e(TAG, "JSONException in okPostText", e);
             return "error.JSONException";
+        }
+    }
+
+
+    public String postText(String url) {
+        try {
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = RequestBody.create("",
+                    MediaType.parse("application/json"));
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                Log.e(TAG, "postText error: " + response.code());
+                return "error.OKHttp";
+            } else {
+                String result = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG, "postText result: " + result);
+                return result;
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "IOException in postText", e);
+            return "error.PIPE";
         }
     }
 
@@ -164,31 +188,6 @@ public class ApiOperator {
             }
         } catch (IOException e) {
             Log.e(TAG, "IOException in okPutText", e);
-            return "error.PIPE";
-        }
-    }
-
-    public String postText(String url) {
-        try {
-            OkHttpClient client = new OkHttpClient();
-            RequestBody body = RequestBody.create("",
-                    MediaType.parse("application/json"));
-
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                Log.e(TAG, "postText error: " + response.code());
-                return "error.OKHttp";
-            } else {
-                String result = Objects.requireNonNull(response.body()).string();
-                Log.d(TAG, "postText result: " + result);
-                return result;
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "IOException in postText", e);
             return "error.PIPE";
         }
     }

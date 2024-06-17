@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -44,7 +43,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.iesvegademijas.socialflavours.R;
-import com.iesvegademijas.socialflavours.common.DateUtil;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.entities.Ingredient;
 import com.iesvegademijas.socialflavours.data.remote.dto.entities.Step;
@@ -57,10 +55,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -118,7 +114,7 @@ public class ModifyRecipe extends AppCompatActivity {
         });
     }
 
-    //region Load Recipe Data
+    //region Retrieve Recipe
     private void loadRecipe(){
         ProgressBar pbMain = (ProgressBar) findViewById(R.id.pb_modify_recipe);
         pbMain.setVisibility(View.VISIBLE);
@@ -258,19 +254,14 @@ public class ModifyRecipe extends AppCompatActivity {
                     break;
             }
 
-
-
-            // Sorting the order of the Ingredient list
             List<Ingredient> sortedIngredients = recipe.getIngredients();
             Collections.sort(sortedIngredients, Comparator.comparingLong(Ingredient::getId_ingredient));
 
-            // Populate existing ingredients
             LinearLayout ingredientList = findViewById(R.id.modify_ingredientList);
             for (Ingredient ingredient : sortedIngredients) {
                 addIngredientView(ingredientList, ingredient.getName());
             }
 
-            // Button to add new ingredient
             ImageButton addIngredientButton = findViewById(R.id.modify_recipe_add_ingredient_button);
             addIngredientButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -279,17 +270,14 @@ public class ModifyRecipe extends AppCompatActivity {
                 }
             });
 
-            // Sorting the order of the Step list
             List<Step> sortedSteps = recipe.getSteps();
             Collections.sort(sortedSteps, Comparator.comparingLong(Step::getId_step));
 
-            // Populate existing steps
             LinearLayout stepList = findViewById(R.id.modify_stepList);
             for (Step step : sortedSteps) {
                 addStepView(stepList, step.getStep());
             }
 
-            // Button to add new step
             ImageButton addStepButton = findViewById(R.id.modify_recipe_add_step_button);
             addStepButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -304,10 +292,7 @@ public class ModifyRecipe extends AppCompatActivity {
             showError("error.json");
         }
     }
-
-    // Method to add an Ingredient view dynamically
     private void addIngredientView(LinearLayout ingredientList, String ingredientName) {
-        // Create a horizontal layout to contain ingredient name and delete button
         LinearLayout horizontalLayout = new LinearLayout(this);
         horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -317,7 +302,6 @@ public class ModifyRecipe extends AppCompatActivity {
         layoutParams.setMargins(0, 0, 0, 16);
         horizontalLayout.setLayoutParams(layoutParams);
 
-        // Create EditText for ingredient name
         EditText editText = new EditText(this);
         LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
                 0,
@@ -331,7 +315,6 @@ public class ModifyRecipe extends AppCompatActivity {
         editText.setTextColor(Color.parseColor("#808080"));
         editText.setPadding(5, 5, 5, 5);
 
-        // Create ImageButton to delete ingredient
         ImageButton deleteButton = new ImageButton(this);
         LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -363,8 +346,6 @@ public class ModifyRecipe extends AppCompatActivity {
         horizontalLayout.addView(deleteButton);
         ingredientList.addView(horizontalLayout);
     }
-
-    // Method to add a step view dynamically
     private void addStepView(LinearLayout stepList, String stepText) {
         LinearLayout horizontalLayout = new LinearLayout(this);
         horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -419,47 +400,6 @@ public class ModifyRecipe extends AppCompatActivity {
         horizontalLayout.addView(deleteButton);
         stepList.addView(horizontalLayout);
     }
-
-    private Boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Network nw = connectivityManager.getActiveNetwork();
-            if (nw == null) {
-                return false;
-            } else {
-                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
-                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-            }
-        } else {
-            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
-            return nwInfo != null && nwInfo.isConnected();
-        }
-    }
-
-    private void showError(String error) {
-        String message;
-        Resources res = getResources();
-        int duration;
-        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
-            message = res.getString(R.string.error_connection);
-            duration = Toast.LENGTH_SHORT;
-        }
-        else if(error.equals("error.undelivered")){
-            message = res.getString(R.string.error_undelivered);
-            duration = Toast.LENGTH_LONG;
-        }
-        else {
-            message = res.getString(R.string.error_unknown);
-            duration = Toast.LENGTH_SHORT;
-        }
-        Toast toast = Toast.makeText(this, message, duration);
-        toast.show();
-    }
-    //endregion
-
-    //region Save State
     private ArrayList<String> getSteps() {
         ArrayList<String> steps = new ArrayList<>();
         LinearLayout stepList = findViewById(R.id.modify_stepList);
@@ -494,6 +434,9 @@ public class ModifyRecipe extends AppCompatActivity {
         }
         return ingredients;
     }
+    //endregion
+
+    //region Update Recipe
     public void Save(View view){
         boolean continueToCreate = true;
 
@@ -503,7 +446,6 @@ public class ModifyRecipe extends AppCompatActivity {
         Spinner sTags = (Spinner) findViewById(R.id.modify_recipe_tagSpinner);
         Spinner sRating =(Spinner) findViewById(R.id.modify_recipe_ratingSpinner);
 
-        // Obtain the actual values
         List<String> ingredients = getIngredients();
         List<String> steps = getSteps();
 
@@ -594,13 +536,11 @@ public class ModifyRecipe extends AppCompatActivity {
     public void checkPermissionAndPickImage() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            // If we dont have the permissions, ask the user
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             }
         } else {
-            // If we have the permissions, pick the image
             pickImageFromGallery();
         }
     }
@@ -616,7 +556,6 @@ public class ModifyRecipe extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso concedido, proceder con la acción
                 pickImageFromGallery();
             }
         }
@@ -627,10 +566,9 @@ public class ModifyRecipe extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri imageUri = data.getData();
-            // Using Picasso to load the Image View
+
             ImageView imageView = findViewById(R.id.modify_recipe_image);
 
-            // Obtain the path for the image
             imagePath = getRealPathFromURI(imageUri);
 
             Picasso.get().load(imagePath).into(imageView);
@@ -650,5 +588,45 @@ public class ModifyRecipe extends AppCompatActivity {
         return null;
     }
 
+    //endregion
+
+    //region Network Utils
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network nw = connectivityManager.getActiveNetwork();
+            if (nw == null) {
+                return false;
+            } else {
+                NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
+                return (actNw != null) && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+            }
+        } else {
+            NetworkInfo nwInfo = connectivityManager.getActiveNetworkInfo();
+            return nwInfo != null && nwInfo.isConnected();
+        }
+    }
+
+    private void showError(String error) {
+        String message;
+        Resources res = getResources();
+        int duration;
+        if (error.equals("error.IOException")||error.equals("error.OKHttp")) {
+            message = res.getString(R.string.error_connection);
+            duration = Toast.LENGTH_SHORT;
+        }
+        else if(error.equals("error.undelivered")){
+            message = res.getString(R.string.error_undelivered);
+            duration = Toast.LENGTH_LONG;
+        }
+        else {
+            message = res.getString(R.string.error_unknown);
+            duration = Toast.LENGTH_SHORT;
+        }
+        Toast toast = Toast.makeText(this, message, duration);
+        toast.show();
+    }
     //endregion
 }

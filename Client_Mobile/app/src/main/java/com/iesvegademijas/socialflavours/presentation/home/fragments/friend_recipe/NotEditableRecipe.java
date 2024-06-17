@@ -3,8 +3,6 @@ package com.iesvegademijas.socialflavours.presentation.home.fragments.friend_rec
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -37,12 +35,10 @@ import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.data.remote.dto.entities.Ingredient;
 import com.iesvegademijas.socialflavours.data.remote.dto.entities.Step;
 import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,6 +70,7 @@ public class NotEditableRecipe extends AppCompatActivity {
         });
     }
 
+    //region Load Recipe and Fill Information
     private void loadRecipe(){
         ProgressBar pbNotEditable = (ProgressBar) findViewById(R.id.pb_not_editable_recipe);
         pbNotEditable.setVisibility(View.VISIBLE);
@@ -149,7 +146,8 @@ public class NotEditableRecipe extends AppCompatActivity {
 
             ImageView imageView = findViewById(R.id.not_editable_recipe_image);
 
-            /*
+            /* IMPORTANT: NOT IMPLEMENTED LOADING THE IMAGE WITH THE URL SINCE IT DOESN'T LOAD PROPERLY
+
             File file = new File(getFilesDir(), recipe.getImagePath() );
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             imageView.setImageBitmap(bitmap);
@@ -228,21 +226,17 @@ public class NotEditableRecipe extends AppCompatActivity {
             sTag.setEnabled(false);
             sTag.setClickable(false);
 
-            // Sorting the order of the Ingredient list
             List<Ingredient> sortedIngredients = recipe.getIngredients();
             Collections.sort(sortedIngredients, Comparator.comparingLong(Ingredient::getId_ingredient));
 
-            // Populate existing ingredients
             LinearLayout ingredientList = findViewById(R.id.not_editable_ingredientList);
             for (Ingredient ingredient : sortedIngredients) {
                 addIngredientView(ingredientList, ingredient.getName());
             }
 
-            // Sorting the order of the Step list
             List<Step> sortedSteps = recipe.getSteps();
             Collections.sort(sortedSteps, Comparator.comparingLong(Step::getId_step));
 
-            // Populate existing steps
             LinearLayout stepList = findViewById(R.id.not_editable_stepList);
             for (Step step : sortedSteps) {
                 addStepView(stepList, step.getStep());
@@ -256,7 +250,6 @@ public class NotEditableRecipe extends AppCompatActivity {
     }
 
     private void addIngredientView(LinearLayout ingredientList, String ingredientName) {
-        // Create a horizontal layout to contain ingredient name and delete button
         LinearLayout horizontalLayout = new LinearLayout(this);
         horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -266,7 +259,6 @@ public class NotEditableRecipe extends AppCompatActivity {
         layoutParams.setMargins(0, 0, 0, 16);
         horizontalLayout.setLayoutParams(layoutParams);
 
-        // Create EditText for ingredient name
         EditText editText = new EditText(this);
         LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
                 0,
@@ -282,7 +274,6 @@ public class NotEditableRecipe extends AppCompatActivity {
         editText.setEnabled(false);
         editText.setClickable(false);
 
-        // Create ImageButton to delete ingredient
         ImageButton deleteButton = new ImageButton(this);
         LinearLayout.LayoutParams deleteButtonParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -358,7 +349,9 @@ public class NotEditableRecipe extends AppCompatActivity {
         horizontalLayout.addView(deleteButton);
         stepList.addView(horizontalLayout);
     }
+    //endregion
 
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -396,6 +389,7 @@ public class NotEditableRecipe extends AppCompatActivity {
         Toast toast = Toast.makeText(this, message, duration);
         toast.show();
     }
+    //endregion
 
     public void Back(View view){
         setResult(RESULT_OK);

@@ -18,21 +18,16 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.adapter.FriendshipRequestAdapter;
-import com.iesvegademijas.socialflavours.data.adapter.RecipeAdapter;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
-import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
 import com.iesvegademijas.socialflavours.data.remote.dto.social.FriendShip;
 import com.iesvegademijas.socialflavours.presentation.home.HomePage;
 
@@ -40,12 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -110,10 +100,8 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
 
         listView = myView.findViewById(R.id.incoming_friendship_requests_list);
 
-        // Find the toolbar from the inflated layout
         Toolbar toolbar = myView.findViewById(R.id.toolbar_incoming_friendships_request);
 
-        // Set the toolbar as the SupportActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
@@ -137,6 +125,7 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
         return myView;
     }
 
+    //region Retrieve Incoming Friendship Requests
     private void setUpFriendshipRequests()
     {
         String url = getResources().getString(R.string.main_url) + "friendshipapi/incomingFriendshipRequests/" + mParam1;
@@ -246,7 +235,9 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
             throw new RuntimeException(e);
         }
     }
+    //endregion
 
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -284,7 +275,9 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
         Toast toast = Toast.makeText(getContext(), message, duration);
         toast.show();
     }
+    //endregion
 
+    //region Accept Friendship Request
     @Override
     public void acceptFriendship(int position) {
         if (friendshipRequestsModels!=null)
@@ -331,7 +324,9 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
             }
         });
     }
+    //endregion
 
+    //region Decline Friendship Request
     @Override
     public void declineFriendship(int position) {
 
@@ -403,4 +398,5 @@ public class IncomingFriendshipRequests extends Fragment implements FriendshipRe
             }
         });
     }
+    //endregion
 }

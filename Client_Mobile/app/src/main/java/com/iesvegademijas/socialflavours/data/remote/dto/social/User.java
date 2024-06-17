@@ -1,17 +1,8 @@
 package com.iesvegademijas.socialflavours.data.remote.dto.social;
 
 import android.net.ParseException;
-
-import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.mealPlanner.MealPlan;
-import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.Recipe;
-import com.iesvegademijas.socialflavours.data.remote.dto.foodRelated.ShoppingList;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class User {
     private long id_user;

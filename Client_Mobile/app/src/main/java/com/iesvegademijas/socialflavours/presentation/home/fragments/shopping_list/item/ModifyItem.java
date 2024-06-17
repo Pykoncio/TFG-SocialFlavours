@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -31,9 +30,7 @@ import com.iesvegademijas.socialflavours.data.remote.dto.entities.Item;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -66,6 +63,7 @@ public class ModifyItem extends AppCompatActivity {
         });
     }
 
+    //region Retrieve Item
     private void loadItem()
     {
         ProgressBar pbEdit = (ProgressBar) findViewById(R.id.pb_modify_item);
@@ -137,7 +135,9 @@ public class ModifyItem extends AppCompatActivity {
             throw new RuntimeException(e);
         }
     }
+    //endregion
 
+    //region Modify Item
     public void modifyItem(View view){
         boolean continueToModify = true;
 
@@ -211,7 +211,9 @@ public class ModifyItem extends AppCompatActivity {
             }
         });
     }
+    //endregion
 
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -249,4 +251,5 @@ public class ModifyItem extends AppCompatActivity {
         Toast toast = Toast.makeText(this, message, duration);
         toast.show();
     }
+    //endregion
 }

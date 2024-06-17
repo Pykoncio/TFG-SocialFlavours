@@ -28,9 +28,6 @@ import com.iesvegademijas.socialflavours.R;
 import com.iesvegademijas.socialflavours.data.remote.ApiOperator;
 import com.iesvegademijas.socialflavours.presentation.home.HomePage;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,7 +46,7 @@ public class SendFriendshipRequest extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1; // Long id of the current user
+    private String mParam1;
     private String mParam2;
 
     public SendFriendshipRequest() {
@@ -89,10 +86,8 @@ public class SendFriendshipRequest extends Fragment {
 
         myView = inflater.inflate(R.layout.fragment_send_friendship_request, container, false);
 
-        // Find the toolbar from the inflated layout
         Toolbar toolbar = myView.findViewById(R.id.toolbar_send_friendship_request);
 
-        // Set the toolbar as the SupportActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
@@ -124,6 +119,7 @@ public class SendFriendshipRequest extends Fragment {
         return myView;
     }
 
+    //region Send Friendship Request
     private void sendFriendshipRequest()
     {
         EditText etUsername = myView.findViewById(R.id.send_request_to_user);
@@ -179,7 +175,9 @@ public class SendFriendshipRequest extends Fragment {
             });
         });
     }
+    //endregion
 
+    //region Network Utils
     private Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -222,4 +220,5 @@ public class SendFriendshipRequest extends Fragment {
         Toast toast = Toast.makeText(myView.getContext(), message, duration);
         toast.show();
     }
+    //endregion
 }
