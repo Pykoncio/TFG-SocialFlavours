@@ -1,6 +1,5 @@
 package com.iesvegademijas.serverSideSocialFlavours.controllers.social;
 
-import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.Recipe;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.FriendshipRequest;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
 import com.iesvegademijas.serverSideSocialFlavours.repository.social.FriendshipRequestRepository;
@@ -10,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +25,7 @@ public class FriendshipRequestController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping(path = "/pending{id}") // Obtain all the pending request so the user can see them in the inbox
+    @GetMapping(path = "/pending{id}")
     public ResponseEntity<List<FriendshipRequest>> getPendingFriendRequestsFromUser(@PathVariable Long id) {
 
         Optional<User> optionalUser = userRepository.findById(id);
@@ -42,7 +40,7 @@ public class FriendshipRequestController {
 
     }
 
-    @GetMapping(path = "/approved{id}") // Obtain all the friends from the user
+    @GetMapping(path = "/approved{id}")
     public ResponseEntity<List<FriendshipRequest>> getApprovedFriendRequestsFromUser(@PathVariable Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
 

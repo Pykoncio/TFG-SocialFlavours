@@ -7,8 +7,6 @@ import java.util.List;
 
 public class RecipeDTO {
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
     private long id_recipe;
     private String name;
     private String description;
@@ -35,9 +33,6 @@ public class RecipeDTO {
         this.steps = steps;
         this.userId = Long.parseLong(userId);
     }
-
-    // Getters and Setters
-
 
     public long getId_recipe() {
         return id_recipe;

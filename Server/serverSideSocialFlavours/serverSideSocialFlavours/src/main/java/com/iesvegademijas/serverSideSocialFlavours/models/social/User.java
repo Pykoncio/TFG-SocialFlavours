@@ -1,7 +1,6 @@
 package com.iesvegademijas.serverSideSocialFlavours.models.social;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.planner.Planner;
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.Recipe;
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.ShoppingList;
 import jakarta.persistence.*;

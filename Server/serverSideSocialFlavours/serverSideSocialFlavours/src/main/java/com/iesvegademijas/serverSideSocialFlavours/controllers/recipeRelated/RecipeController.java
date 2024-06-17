@@ -24,15 +24,11 @@ import java.util.stream.Collectors;
 public class RecipeController {
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
-    private final IngredientRepository ingredientRepository;
-    private final StepRepository stepRepository;
 
     @Autowired
-    public RecipeController(RecipeRepository recipeRepository, UserRepository userRepository, IngredientRepository ingredientRepository, StepRepository stepRepository) {
+    public RecipeController(RecipeRepository recipeRepository, UserRepository userRepository) {
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
-        this.ingredientRepository = ingredientRepository;
-        this.stepRepository = stepRepository;
     }
 
     @GetMapping(path = "/getAllRecipesFromUser{id}")
@@ -60,7 +56,6 @@ public class RecipeController {
         Optional<User> user = userRepository.findById(recipeDTO.getUserId());
 
         if (user.isPresent()) {
-            // Mapping the DTO to the Recipe entity
             Recipe recipe = new Recipe();
             recipe.setName(recipeDTO.getName());
             recipe.setUser(user.get());
@@ -70,7 +65,6 @@ public class RecipeController {
             recipe.setPreparationTime(recipeDTO.getPreparationTime());
             recipe.setTag(recipeDTO.getTag());
 
-            // Convert ingredients from DTO to Ingredient entities and associate them with the recipe
             List<Ingredient> ingredients = recipeDTO.getIngredients().stream()
                     .map(ingredientName -> {
                         Ingredient ingredient = new Ingredient(ingredientName);
@@ -80,7 +74,6 @@ public class RecipeController {
                     .collect(Collectors.toList());
             recipe.setIngredients(ingredients);
 
-            // Convert steps from DTO to Step entities and associate them with the recipe
             List<Step> steps = recipeDTO.getSteps().stream()
                     .map(stepDescription -> {
                         Step step = new Step(stepDescription);
@@ -104,14 +97,11 @@ public class RecipeController {
     public ResponseEntity<List<Recipe>> getAllRecipesFromUserFriends(@PathVariable Long idUser) {
         List<Recipe> recipesFromFriends = new ArrayList<>();
 
-        // Fetch the user based on userId
         User user = userRepository.findById(idUser).orElse(null);
 
         if (user != null) {
-            // Get approved friends
             Set<User> approvedFriends = user.getFriends();
 
-            // Iterate over approved friends and fetch their recipes
             for (User friend : approvedFriends) {
                 recipesFromFriends.addAll(friend.getRecipes());
             }
@@ -142,7 +132,6 @@ public class RecipeController {
 
         if (user.isPresent())
         {
-            // Mapping the DTO to the Recipe entity
             Recipe recipe = new Recipe();
             recipe.setId_recipe(recipeDTO.getId_recipe());
             recipe.setName(recipeDTO.getName());
@@ -153,11 +142,9 @@ public class RecipeController {
             recipe.setPreparationTime(recipeDTO.getPreparationTime());
             recipe.setTag(recipeDTO.getTag());
 
-            // Delete existing steps and ingredients
             recipeRepository.deleteStepsByRecipeId(recipe.getId_recipe());
             recipeRepository.deleteIngredientsByRecipeId(recipe.getId_recipe());
 
-            // Convert ingredients from DTO to Ingredient entities and associate them with the recipe
             List<Ingredient> ingredients = recipeDTO.getIngredients().stream()
                     .map(ingredientName -> {
                         Ingredient ingredient = new Ingredient(ingredientName);
@@ -167,7 +154,6 @@ public class RecipeController {
                     .collect(Collectors.toList());
             recipe.setIngredients(ingredients);
 
-            // Convert steps from DTO to Step entities and associate them with the recipe
             List<Step> steps = recipeDTO.getSteps().stream()
                     .map(stepDescription -> {
                         Step step = new Step(stepDescription);

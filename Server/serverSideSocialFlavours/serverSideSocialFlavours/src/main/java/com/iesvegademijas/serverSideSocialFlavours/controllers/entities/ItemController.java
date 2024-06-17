@@ -1,11 +1,8 @@
 package com.iesvegademijas.serverSideSocialFlavours.controllers.entities;
 
 import com.iesvegademijas.serverSideSocialFlavours.dto.ItemDTO;
-import com.iesvegademijas.serverSideSocialFlavours.dto.ShoppingListDTO;
 import com.iesvegademijas.serverSideSocialFlavours.models.entities.Item;
-import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.Recipe;
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.ShoppingList;
-import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
 import com.iesvegademijas.serverSideSocialFlavours.repository.entities.ItemRepository;
 import com.iesvegademijas.serverSideSocialFlavours.repository.recipeRelated.ShoppingListRepository;
 import com.iesvegademijas.serverSideSocialFlavours.repository.social.UserRepository;
@@ -15,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,13 +19,11 @@ import java.util.Optional;
 @RequestMapping("/itemapi")
 public class ItemController {
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
     private final ShoppingListRepository shoppingListRepository;
 
     @Autowired
-    public ItemController(ItemRepository itemRepository, UserRepository userRepository, ShoppingListRepository shoppingListRepository) {
+    public ItemController(ItemRepository itemRepository, ShoppingListRepository shoppingListRepository) {
         this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
         this.shoppingListRepository = shoppingListRepository;
     }
 

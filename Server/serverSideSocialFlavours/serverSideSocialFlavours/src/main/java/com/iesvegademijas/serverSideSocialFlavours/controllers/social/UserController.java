@@ -33,7 +33,7 @@ public class UserController {
 
         if (userAlreadyExisting != null)
         {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build(); // There is a user with the same username
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
         else
         {
@@ -67,12 +67,12 @@ public class UserController {
             }
             else
             {
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build(); // Password Incorrect
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
             }
         }
         else
         {
-            return ResponseEntity.notFound().build(); // User Not Found
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -162,7 +162,6 @@ public class UserController {
         if (userOptional.isPresent() && friend != null) {
             User user = userOptional.get();
 
-            // Check if there is an existing friendship request between these two users
             FriendshipRequest friendshipRequest = null;
             for (FriendshipRequest request : user.getReceivedFriendshipRequests()) {
                 if (request.getSender().equals(friend) && request.getStatus().equals(FriendshipRequest.Status.APPROVED.toString())) {

@@ -24,7 +24,7 @@ public class MailController {
 
         User user = userRepository.findByUsername(username);
 
-        if (user != null) // This means the user provided exists
+        if (user != null)
         {
             emailSenderService.SendEmail(
                     user.getEmail(),
