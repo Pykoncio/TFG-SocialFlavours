@@ -20,12 +20,16 @@ public class User implements Serializable {
     private String password;
     private String email;
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<FriendshipRequest> receivedFriendshipRequests = new HashSet<>();
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<FriendshipRequest> sentFriendshipRequests = new HashSet<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<ShoppingList> shoppingLists = new HashSet<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Recipe> recipes = new HashSet<>();
 
     public User(){}
@@ -37,6 +41,7 @@ public class User implements Serializable {
         this.email = email;
     }
 
+    @JsonIgnore
     public Set<User> getFriends() {
         Set<User> friends = new HashSet<>();
         for (FriendshipRequest request : receivedFriendshipRequests) {

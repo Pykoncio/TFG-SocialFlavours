@@ -223,15 +223,15 @@ public class Friends extends Fragment implements FriendAdapter.FriendAdapterCall
                 friendsAdapter.notifyDataSetChanged();
             }
 
-            TextView tvIncomingFriendshipRequests = myView.findViewById(R.id.tv_empty_list_incoming_friendship_requests);
+            TextView noFriendsYet = myView.findViewById(R.id.tv_no_friends_yet);
 
             if (friendModels.isEmpty())
             {
-                tvIncomingFriendshipRequests.setVisibility(View.VISIBLE);
+                noFriendsYet.setVisibility(View.VISIBLE);
             }
             else
             {
-                tvIncomingFriendshipRequests.setVisibility(View.GONE);
+                noFriendsYet.setVisibility(View.GONE);
             }
         }
         catch (JSONException e)

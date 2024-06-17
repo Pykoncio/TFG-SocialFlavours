@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -74,8 +75,11 @@ public class NotEditableRecipe extends AppCompatActivity {
     }
 
     private void loadRecipe(){
-        ProgressBar pbMain = (ProgressBar) findViewById(R.id.pb_modify_recipe);
-        pbMain.setVisibility(View.VISIBLE);
+        ProgressBar pbNotEditable = (ProgressBar) findViewById(R.id.pb_not_editable_recipe);
+        pbNotEditable.setVisibility(View.VISIBLE);
+        Button back = findViewById(R.id.not_editable_recipe_button_back);
+        back.setClickable(false);
+        back.setEnabled(false);
         String url = getResources().getString(R.string.main_url) + "recipeapi/getRecipe" + idRecipe;
         if (isNetworkAvailable()) {
             for (int retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
@@ -108,6 +112,11 @@ public class NotEditableRecipe extends AppCompatActivity {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void run() {
+                        ProgressBar pbNotEditable = (ProgressBar) findViewById(R.id.pb_not_editable_recipe);
+                        pbNotEditable.setVisibility(View.GONE);
+                        Button back = findViewById(R.id.not_editable_recipe_button_back);
+                        back.setClickable(true);
+                        back.setEnabled(true);
                         if(result.equalsIgnoreCase("error.IOException")||
                                 result.equals("error.OKHttp")) {
                             showError(result);
@@ -140,9 +149,13 @@ public class NotEditableRecipe extends AppCompatActivity {
 
             ImageView imageView = findViewById(R.id.not_editable_recipe_image);
 
+            /*
             File file = new File(getFilesDir(), recipe.getImagePath() );
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             imageView.setImageBitmap(bitmap);
+            */
+
+            imageView.setImageResource(R.drawable.default_recipe_image);
 
             etTitle.setText(recipe.getName());
             etDescription.setText(recipe.getDescription());
@@ -181,6 +194,9 @@ public class NotEditableRecipe extends AppCompatActivity {
                     break;
             }
 
+            sRating.setEnabled(false);
+            sRating.setClickable(false);
+
             ArrayList<String> tags = new ArrayList<>();
 
             tags.add(getResources().getString(R.string.breakfast));
@@ -208,6 +224,9 @@ public class NotEditableRecipe extends AppCompatActivity {
                     sTag.setSelection(3);
                     break;
             }
+
+            sTag.setEnabled(false);
+            sTag.setClickable(false);
 
             // Sorting the order of the Ingredient list
             List<Ingredient> sortedIngredients = recipe.getIngredients();

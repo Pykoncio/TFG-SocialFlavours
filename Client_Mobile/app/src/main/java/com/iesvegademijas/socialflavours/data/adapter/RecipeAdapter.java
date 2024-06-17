@@ -82,7 +82,9 @@ public class RecipeAdapter extends BaseAdapter {
         recipeWrapper.title.setText(recipe.getName());
         recipeWrapper.preparationTime.setText("Preparation time: " + String.valueOf(recipe.getPreparationTime()) + " min");
         recipeWrapper.tag.setText(recipe.getTag());
+        recipeWrapper.recipeIcon.setImageResource(R.drawable.default_recipe_image);
 
+        /*
         if (recipe.getImagePath() != null && !recipe.getImagePath().isEmpty())
         {
             Picasso.get().load(recipe.getImagePath()).into(recipeWrapper.recipeIcon);
@@ -91,7 +93,7 @@ public class RecipeAdapter extends BaseAdapter {
         {
             recipeWrapper.recipeIcon.setImageResource(R.drawable.default_recipe_image);
         }
-
+        */
 
         recipeWrapper.container.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -34,7 +34,8 @@
                     android:layout_margin="10dp"
                     android:layout_below="@+id/toolbar_createRecipe"
                     android:background="@drawable/edit_text_border"
-                    android:textColor="#808080"
+                    android:textColor="@color/black"
+                    android:textColorHint="#808080"
                     android:hint="@string/new_recipe_title"
                     android:padding="5dp"/>
 
@@ -75,7 +76,8 @@
                     android:inputType="textMultiLine"
                     android:gravity="top|start"
                     android:background="@drawable/edit_text_border"
-                    android:textColor="#808080"
+                    android:textColor="@color/black"
+                    android:textColorHint="#808080"
                     android:hint="@string/new_recipe_description"
                     android:padding="5dp"/>
 
@@ -100,7 +102,8 @@
                     android:layout_margin="10dp"
                     android:layout_below="@+id/new_recipe_description"
                     android:background="@drawable/edit_text_border"
-                    android:textColor="#808080"
+                    android:textColor="@color/black"
+                    android:textColorHint="#808080"
                     android:hint="@string/new_recipe_et_preparationTime"
                     android:padding="5dp"/>
 

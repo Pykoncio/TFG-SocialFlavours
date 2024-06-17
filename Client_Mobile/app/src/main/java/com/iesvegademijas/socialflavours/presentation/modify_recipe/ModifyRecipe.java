@@ -588,7 +588,6 @@ public class ModifyRecipe extends AppCompatActivity {
             }
         });
     }
-
     //endregion
 
     //region Image Picker

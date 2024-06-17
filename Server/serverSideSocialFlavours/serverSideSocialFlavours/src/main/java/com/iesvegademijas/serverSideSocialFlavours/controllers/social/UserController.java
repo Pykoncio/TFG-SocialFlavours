@@ -3,6 +3,7 @@ package com.iesvegademijas.serverSideSocialFlavours.controllers.social;
 import com.iesvegademijas.serverSideSocialFlavours.dto.UserDTO;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.FriendshipRequest;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
+import com.iesvegademijas.serverSideSocialFlavours.repository.social.FriendshipRequestRepository;
 import com.iesvegademijas.serverSideSocialFlavours.repository.social.UserRepository;
 import com.iesvegademijas.serverSideSocialFlavours.security.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,14 @@ import java.util.*;
 @RequestMapping("/userapi")
 public class UserController {
     private final UserRepository userRepository;
+    private final FriendshipRequestRepository friendshipRequestRepository;
 
     private final PasswordEncoder passwordEncoder = new PasswordEncoder();
 
     @Autowired
-    public UserController(UserRepository userRepository) {this.userRepository = userRepository;}
+    public UserController(UserRepository userRepository, FriendshipRequestRepository friendshipRequestRepository) {this.userRepository = userRepository;
+        this.friendshipRequestRepository = friendshipRequestRepository;
+    }
 
     @PostMapping(path = "/register")
     public ResponseEntity<Long> userRegistration(@RequestBody UserDTO userDTO) {
@@ -180,7 +184,17 @@ public class UserController {
                 friend.getSentFriendshipRequests().remove(friendshipRequest);
                 userRepository.save(user);
                 userRepository.save(friend);
-                return ResponseEntity.noContent().build();
+                Optional<FriendshipRequest> wantToDelete = friendshipRequestRepository.findById(friendshipRequest.getId_friendship());
+
+                if (wantToDelete.isPresent()) {
+                    friendshipRequestRepository.delete(wantToDelete.get());
+                    return ResponseEntity.noContent().build();
+                }
+                else
+                {
+                    return ResponseEntity.notFound().build();
+                }
+
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Friendship not found");
             }
