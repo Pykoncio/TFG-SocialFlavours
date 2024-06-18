@@ -5,8 +5,6 @@ import com.iesvegademijas.serverSideSocialFlavours.models.entities.Step;
 import com.iesvegademijas.serverSideSocialFlavours.models.recipeRelated.Recipe;
 import com.iesvegademijas.serverSideSocialFlavours.dto.RecipeDTO;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
-import com.iesvegademijas.serverSideSocialFlavours.repository.entities.IngredientRepository;
-import com.iesvegademijas.serverSideSocialFlavours.repository.entities.StepRepository;
 import com.iesvegademijas.serverSideSocialFlavours.repository.recipeRelated.RecipeRepository;
 import com.iesvegademijas.serverSideSocialFlavours.repository.social.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 

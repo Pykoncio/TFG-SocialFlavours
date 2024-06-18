@@ -157,9 +157,9 @@ public class ShoppingLists extends Fragment implements ShoppingListAdapter.Shopp
     }
     private void createShoppingList(View view)
     {
-        Intent intent = new Intent().setClass(getContext(), NewShoppingList.class);
-        intent.putExtra("id_user", mParam1);
-        startActivity(intent);
+        Intent myIntent = new Intent().setClass(view.getContext(), NewShoppingList.class);
+        myIntent.putExtra("id_user", Long.parseLong(mParam1));
+        activityResultLauncher.launch(myIntent);
     }
 
     @Override

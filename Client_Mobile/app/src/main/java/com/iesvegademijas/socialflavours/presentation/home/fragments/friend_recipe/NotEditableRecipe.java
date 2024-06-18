@@ -269,7 +269,8 @@ public class NotEditableRecipe extends AppCompatActivity {
         editText.setText(ingredientName);
         editText.setHint("Ingredient");
         editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-        editText.setTextColor(Color.parseColor("#808080"));
+        editText.setHintTextColor(Color.parseColor("#808080"));
+        editText.setTextColor(Color.parseColor("#000000"));
         editText.setPadding(5, 5, 5, 5);
         editText.setEnabled(false);
         editText.setClickable(false);
@@ -319,7 +320,8 @@ public class NotEditableRecipe extends AppCompatActivity {
         editText.setText(stepText);
         editText.setHint("Step");
         editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-        editText.setTextColor(Color.parseColor("#808080"));
+        editText.setHintTextColor(Color.parseColor("#808080"));
+        editText.setTextColor(Color.parseColor("#000000"));
         editText.setPadding(5, 5, 5, 5);
         editText.setEnabled(false);
         editText.setClickable(false);

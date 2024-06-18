@@ -5,7 +5,9 @@ import com.iesvegademijas.serverSideSocialFlavours.models.entities.Item;
 import com.iesvegademijas.serverSideSocialFlavours.models.social.User;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -16,14 +18,13 @@ public class ShoppingList {
     @ManyToOne
     @JsonIgnore
     private User user;
-    @Column(unique = true)
     private String shoppingListName;
     @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL)
-    private Set<Item> itemList = new HashSet<>();
+    private List<Item> itemList = new ArrayList<>();
 
     public ShoppingList(){}
 
-    public ShoppingList(Long id_ShoppingList, User user, String shoppingListName,Set<Item> itemList) {
+    public ShoppingList(Long id_ShoppingList, User user, String shoppingListName,List<Item> itemList) {
         this.id_shoppingList = id_ShoppingList;
         this.user = user;
         this.shoppingListName = shoppingListName;
@@ -54,11 +55,11 @@ public class ShoppingList {
         this.user = user;
     }
 
-    public Set<Item> getItemList() {
+    public List<Item> getItemList() {
         return itemList;
     }
 
-    public void setItemList(Set<Item> itemList) {
+    public void setItemList(List<Item> itemList) {
         this.itemList = itemList;
     }
 }

@@ -119,6 +119,7 @@ public class NewItem extends AppCompatActivity {
                             idCreated=-1;
                         }
                         if(idCreated>0){
+                            setResult(RESULT_OK);
                             finish();
                         }
                         else {

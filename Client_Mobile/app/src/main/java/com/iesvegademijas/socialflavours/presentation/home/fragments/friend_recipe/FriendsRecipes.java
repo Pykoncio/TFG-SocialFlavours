@@ -119,7 +119,7 @@ public class FriendsRecipes extends Fragment implements RecipeAdapter.RecipesAda
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
-            activity.getSupportActionBar().setTitle("Outgoing Friendships Requests");
+            activity.getSupportActionBar().setTitle("Friends Recipes");
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
             activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_hamburguer_24);

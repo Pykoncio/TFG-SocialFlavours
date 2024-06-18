@@ -41,10 +41,8 @@ public class NewShoppingList extends AppCompatActivity {
         setContentView(R.layout.activity_new_shopping_list);
 
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("id_user")) {
-            String value = intent.getStringExtra("id_user");
-            id_user = Long.parseLong(value);
-        }
+        id_user = intent.getLongExtra("id_user", -1);
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -105,6 +103,7 @@ public class NewShoppingList extends AppCompatActivity {
                             idCreated=-1;
                         }
                         if(idCreated>0){
+                            setResult(RESULT_OK);
                             finish();
                         }
                         else {

@@ -34,9 +34,10 @@ public class ShoppingListController {
 
         if (user.isPresent()) {
             ShoppingList shoppingList = new ShoppingList();
+
             shoppingList.setShoppingListName(shoppingListDTO.getName());
             shoppingList.setUser(user.get());
-            shoppingList.setItemList(new HashSet<>());
+            shoppingList.setItemList(new ArrayList<>());
 
             ShoppingList savedShoppingList = shoppingListRepository.save(shoppingList);
             return new ResponseEntity<>(savedShoppingList.getId_shoppingList(), HttpStatus.CREATED);
@@ -49,23 +50,7 @@ public class ShoppingListController {
 
     @GetMapping(path = "/getAllShoppingListsFromUser{id}")
     public ResponseEntity<List<ShoppingList>> getAllShoppingListsFromUser(@PathVariable Long id) {
-        Optional<User> user = userRepository.findById(id);
-
-        if (user.isPresent()) {
-            List<ShoppingList> result = new ArrayList<>();
-
-            Iterable<ShoppingList> shoppingLists = user.get().getShoppingLists();
-
-            for (ShoppingList shoppingList : shoppingLists) {
-                result.add(shoppingList);
-            }
-
-            return ResponseEntity.ok(result);
-        }
-        else
-        {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(shoppingListRepository.findShoppingListByUserId(id));
     }
 
     @DeleteMapping(path = "/deleteShoppingList{id}")

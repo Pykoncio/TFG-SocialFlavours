@@ -163,7 +163,6 @@ public class CreateRecipe extends Fragment {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Call your create method here
                 create();
             }
         });
