@@ -45,7 +45,7 @@
                 android:textColor="#354F52"
                 android:textSize="20dp"
                 android:textStyle="bold"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:text="HugoPemu13"/>
 
             <ImageButton

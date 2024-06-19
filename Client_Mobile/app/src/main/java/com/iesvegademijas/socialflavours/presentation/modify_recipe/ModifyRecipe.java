@@ -185,9 +185,7 @@ public class ModifyRecipe extends AppCompatActivity {
 
             ImageView imageView = findViewById(R.id.modify_recipe_image);
 
-            File file = new File(getFilesDir(), recipe.getImagePath() );
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            imageView.setImageBitmap(bitmap);
+            imageView.setImageResource(R.drawable.default_recipe_image);
 
             etTitle.setText(recipe.getName());
             etDescription.setText(recipe.getDescription());
@@ -312,7 +310,8 @@ public class ModifyRecipe extends AppCompatActivity {
         editText.setText(ingredientName);
         editText.setHint("Ingredient");
         editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-        editText.setTextColor(Color.parseColor("#808080"));
+        editText.setTextColor(Color.parseColor("#000000"));
+        editText.setHintTextColor(Color.parseColor("#808080"));
         editText.setPadding(5, 5, 5, 5);
 
         ImageButton deleteButton = new ImageButton(this);
@@ -366,7 +365,8 @@ public class ModifyRecipe extends AppCompatActivity {
         editText.setText(stepText);
         editText.setHint("Step");
         editText.setBackground(getResources().getDrawable(R.drawable.edit_text_border));
-        editText.setTextColor(Color.parseColor("#808080"));
+        editText.setTextColor(Color.parseColor("#000000"));
+        editText.setHintTextColor(Color.parseColor("#808080"));
         editText.setPadding(5, 5, 5, 5);
 
         ImageButton deleteButton = new ImageButton(this);
